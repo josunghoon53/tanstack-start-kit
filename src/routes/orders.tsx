@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -40,6 +41,7 @@ function Orders() {
               <TableHead>금액</TableHead>
               <TableHead>상태</TableHead>
               <TableHead>주문일</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -52,6 +54,9 @@ function Orders() {
                   <Badge variant={STATUS_VARIANT[order.status]}>{order.status}</Badge>
                 </TableCell>
                 <TableCell>{order.date}</TableCell>
+                <TableCell>
+                  <RowActions label={order.id} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

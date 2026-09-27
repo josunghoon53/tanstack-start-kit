@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -41,6 +42,7 @@ function Payments() {
               <TableHead>결제수단</TableHead>
               <TableHead>상태</TableHead>
               <TableHead>날짜</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,6 +56,9 @@ function Payments() {
                   <Badge variant={STATUS_VARIANT[payment.status]}>{payment.status}</Badge>
                 </TableCell>
                 <TableCell>{payment.date}</TableCell>
+                <TableCell>
+                  <RowActions label={payment.id} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

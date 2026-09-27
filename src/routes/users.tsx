@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -30,17 +31,21 @@ function Users() {
           <TableHeader>
             <TableRow>
               <TableHead>이름</TableHead>
-              <TableHead>이메일</TableHead>
               <TableHead>역할</TableHead>
               <TableHead>상태</TableHead>
               <TableHead>가입일</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {USERS.map((user) => (
               <TableRow key={user.email}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{user.name}</span>
+                    <span className="text-xs text-muted-foreground">{user.email}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
                   <Badge variant={user.status === '활성' ? 'default' : 'secondary'}>
@@ -48,6 +53,9 @@ function Users() {
                   </Badge>
                 </TableCell>
                 <TableCell>{user.joinedAt}</TableCell>
+                <TableCell>
+                  <RowActions label={user.name} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

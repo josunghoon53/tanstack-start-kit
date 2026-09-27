@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -33,6 +34,7 @@ function Contents() {
               <TableHead>작성자</TableHead>
               <TableHead>상태</TableHead>
               <TableHead>작성일</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -46,6 +48,9 @@ function Contents() {
                   </Badge>
                 </TableCell>
                 <TableCell>{content.date}</TableCell>
+                <TableCell>
+                  <RowActions label={content.title} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
