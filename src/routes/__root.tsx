@@ -41,11 +41,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere]">
-        <SidebarProvider>
+        <SidebarProvider className="h-svh overflow-hidden">
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="overflow-hidden">
             <SiteHeader />
-            <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+            <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
+              {children}
+            </div>
           </SidebarInset>
         </SidebarProvider>
         <TanStackDevtools

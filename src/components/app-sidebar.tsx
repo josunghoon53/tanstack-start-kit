@@ -18,7 +18,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <span className="px-2 text-sm font-semibold">Admin</span>
+        <span className="px-2 text-sm font-semibold group-data-[collapsible=icon]:hidden">
+          Admin
+        </span>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
