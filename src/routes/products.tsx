@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -29,9 +29,6 @@ const PRODUCTS = [
 function Products() {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>상품</CardTitle>
-      </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
