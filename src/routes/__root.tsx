@@ -35,7 +35,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
