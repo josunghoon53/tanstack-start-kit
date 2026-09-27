@@ -27,7 +27,7 @@ const CONTENTS = [
 
 function Contents() {
   return (
-    <Table>
+    <Table className="border-y">
       <TableHeader>
         <TableRow>
           <TableHead>제목</TableHead>

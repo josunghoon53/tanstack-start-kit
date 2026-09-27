@@ -28,7 +28,7 @@ const ORDERS = [
 
 function Orders() {
   return (
-    <Table>
+    <Table className="border-y">
       <TableHeader>
         <TableRow>
           <TableHead>주문번호</TableHead>

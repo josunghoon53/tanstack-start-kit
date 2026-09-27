@@ -68,7 +68,7 @@ const PAYMENTS = [
 
 function Payments() {
   return (
-    <Table>
+    <Table className="border-y">
       <TableHeader>
         <TableRow>
           <TableHead>상태</TableHead>

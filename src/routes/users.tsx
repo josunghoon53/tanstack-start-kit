@@ -27,7 +27,7 @@ const USERS = [
 
 function Users() {
   return (
-    <Table>
+    <Table className="border-y">
       <TableHeader>
         <TableRow>
           <TableHead>이름</TableHead>

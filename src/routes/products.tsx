@@ -27,7 +27,7 @@ const PRODUCTS = [
 
 function Products() {
   return (
-    <Table>
+    <Table className="border-y">
       <TableHeader>
         <TableRow>
           <TableHead>상품명</TableHead>
