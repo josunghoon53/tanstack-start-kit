@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Badge } from '@/components/ui/badge'
+import { StatusDot } from '@/components/status-dot'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/payments')({ component: Payments })
 
@@ -86,12 +85,7 @@ function Payments() {
         {PAYMENTS.map((payment) => (
           <TableRow key={payment.id}>
             <TableCell>
-              <Badge
-                variant="outline"
-                className={statusBadgeClass(STATUS_TONE[payment.status])}
-              >
-                {payment.status}
-              </Badge>
+              <StatusDot tone={STATUS_TONE[payment.status]}>{payment.status}</StatusDot>
             </TableCell>
             <TableCell className="text-muted-foreground">{payment.approvedAt}</TableCell>
             <TableCell className="font-medium">{payment.orderNo}</TableCell>

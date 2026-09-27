@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
-import { Badge } from '@/components/ui/badge'
+import { StatusDot } from '@/components/status-dot'
 import {
   Table,
   TableBody,
@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/orders')({ component: Orders })
 
@@ -46,12 +45,7 @@ function Orders() {
             <TableCell>{order.customer}</TableCell>
             <TableCell>{order.amount}</TableCell>
             <TableCell>
-              <Badge
-                variant="outline"
-                className={statusBadgeClass(STATUS_TONE[order.status])}
-              >
-                {order.status}
-              </Badge>
+              <StatusDot tone={STATUS_TONE[order.status]}>{order.status}</StatusDot>
             </TableCell>
             <TableCell>{order.date}</TableCell>
             <TableCell>
