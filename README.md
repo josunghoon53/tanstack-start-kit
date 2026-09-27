@@ -1,4 +1,4 @@
-Welcome to your new TanStack Start app!
+TanStack Start 기반 최소 어드민 셸 킷입니다. shadcn/ui(사이드바 + 헤더 + 다크모드)로 뼈대만 갖추고, 필요한 기능(인증, 데이터 테이블, 폼 등)은 그때그때 `shadcn` CLI로 하나씩 추가하는 것을 기본 워크플로우로 합니다.
 
 # Getting Started
 
@@ -19,19 +19,13 @@ pnpm build
 
 ## Styling
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+This project uses [Tailwind CSS](https://tailwindcss.com/) for styling, with [shadcn/ui](https://ui.shadcn.com/) components on top. Add new components with:
 
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
+```bash
+pnpm dlx shadcn@latest add <component>
+```
 
 ## Linting & Formatting
-
 
 This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
 
@@ -40,8 +34,6 @@ pnpm lint
 pnpm format
 pnpm check
 ```
-
-
 
 ## Routing
 
@@ -52,8 +44,6 @@ This project uses [TanStack Router](https://tanstack.com/router) with file-based
 To add a new route to your application just add a new file in the `./src/routes` directory.
 
 TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
 
 ### Adding Links
 
@@ -66,51 +56,18 @@ import { Link } from "@tanstack/react-router";
 Then anywhere in your JSX you can use it like so:
 
 ```tsx
-<Link to="/about">About</Link>
+<Link to="/">Dashboard</Link>
 ```
-
-This will create a link that will navigate to the `/about` route.
 
 More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
 
-### Using A Layout
+### Layout
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
+`src/routes/__root.tsx`가 전체 레이아웃(사이드바 + 헤더)을 정의합니다. 모든 라우트는 이 셸 안에서 렌더링됩니다.
 
-Here is an example layout that includes a header:
+### Sidebar Navigation
 
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
+사이드바 메뉴는 `src/config/nav.ts` 배열 하나로 관리합니다. 새 메뉴를 추가하려면 이 파일에 항목을 추가하면 됩니다.
 
 ## Server Functions
 
@@ -185,14 +142,10 @@ function PeopleComponent() {
 
 Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
 
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-
 # Learn More
 
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
 
 For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+
+For shadcn/ui components, visit [ui.shadcn.com](https://ui.shadcn.com).
