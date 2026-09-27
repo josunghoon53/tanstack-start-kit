@@ -16,7 +16,7 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="none" className="shrink-0 border-r">
       <SidebarHeader>
         <span className="px-2 text-sm font-semibold">Admin</span>
       </SidebarHeader>
