@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -28,40 +27,36 @@ const CONTENTS = [
 
 function Contents() {
   return (
-    <Card>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>제목</TableHead>
-              <TableHead>작성자</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead>작성일</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {CONTENTS.map((content) => (
-              <TableRow key={content.title}>
-                <TableCell className="font-medium">{content.title}</TableCell>
-                <TableCell>{content.author}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant="outline"
-                    className={statusBadgeClass(STATUS_TONE[content.status])}
-                  >
-                    {content.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{content.date}</TableCell>
-                <TableCell>
-                  <RowActions label={content.title} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>제목</TableHead>
+          <TableHead>작성자</TableHead>
+          <TableHead>상태</TableHead>
+          <TableHead>작성일</TableHead>
+          <TableHead className="w-10" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {CONTENTS.map((content) => (
+          <TableRow key={content.title}>
+            <TableCell className="font-medium">{content.title}</TableCell>
+            <TableCell>{content.author}</TableCell>
+            <TableCell>
+              <Badge
+                variant="outline"
+                className={statusBadgeClass(STATUS_TONE[content.status])}
+              >
+                {content.status}
+              </Badge>
+            </TableCell>
+            <TableCell>{content.date}</TableCell>
+            <TableCell>
+              <RowActions label={content.title} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }

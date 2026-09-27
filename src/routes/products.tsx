@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -28,42 +27,38 @@ const PRODUCTS = [
 
 function Products() {
   return (
-    <Card>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>상품명</TableHead>
-              <TableHead>카테고리</TableHead>
-              <TableHead>재고</TableHead>
-              <TableHead>가격</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {PRODUCTS.map((product) => (
-              <TableRow key={product.name}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant="outline"
-                    className={statusBadgeClass(STATUS_TONE[product.status])}
-                  >
-                    {product.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <RowActions label={product.name} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>상품명</TableHead>
+          <TableHead>카테고리</TableHead>
+          <TableHead>재고</TableHead>
+          <TableHead>가격</TableHead>
+          <TableHead>상태</TableHead>
+          <TableHead className="w-10" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {PRODUCTS.map((product) => (
+          <TableRow key={product.name}>
+            <TableCell className="font-medium">{product.name}</TableCell>
+            <TableCell>{product.category}</TableCell>
+            <TableCell>{product.stock}</TableCell>
+            <TableCell>{product.price}</TableCell>
+            <TableCell>
+              <Badge
+                variant="outline"
+                className={statusBadgeClass(STATUS_TONE[product.status])}
+              >
+                {product.status}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <RowActions label={product.name} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }

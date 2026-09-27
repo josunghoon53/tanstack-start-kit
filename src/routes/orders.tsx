@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -29,42 +28,38 @@ const ORDERS = [
 
 function Orders() {
   return (
-    <Card>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>주문번호</TableHead>
-              <TableHead>고객</TableHead>
-              <TableHead>금액</TableHead>
-              <TableHead>상태</TableHead>
-              <TableHead>주문일</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {ORDERS.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.amount}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant="outline"
-                    className={statusBadgeClass(STATUS_TONE[order.status])}
-                  >
-                    {order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>
-                  <RowActions label={order.id} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>주문번호</TableHead>
+          <TableHead>고객</TableHead>
+          <TableHead>금액</TableHead>
+          <TableHead>상태</TableHead>
+          <TableHead>주문일</TableHead>
+          <TableHead className="w-10" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {ORDERS.map((order) => (
+          <TableRow key={order.id}>
+            <TableCell className="font-medium">{order.id}</TableCell>
+            <TableCell>{order.customer}</TableCell>
+            <TableCell>{order.amount}</TableCell>
+            <TableCell>
+              <Badge
+                variant="outline"
+                className={statusBadgeClass(STATUS_TONE[order.status])}
+              >
+                {order.status}
+              </Badge>
+            </TableCell>
+            <TableCell>{order.date}</TableCell>
+            <TableCell>
+              <RowActions label={order.id} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
