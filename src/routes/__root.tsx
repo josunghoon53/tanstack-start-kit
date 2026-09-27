@@ -45,10 +45,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <AppSidebar />
           <SidebarInset className="overflow-hidden">
             <SiteHeader />
-            <div className="flex-1 overflow-auto">
-              <div className="flex min-w-[720px] flex-col gap-4 p-4">
-                {children}
-              </div>
+            <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
+              {children}
             </div>
           </SidebarInset>
         </SidebarProvider>
