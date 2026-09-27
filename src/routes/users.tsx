@@ -1,13 +1,58 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PlaceholderPage } from '@/components/placeholder-page'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 export const Route = createFileRoute('/users')({ component: Users })
 
+const USERS = [
+  { name: '김민지', email: 'minji.kim@example.com', role: '관리자', status: '활성' as const, joinedAt: '2026-01-14' },
+  { name: '이서준', email: 'seojun.lee@example.com', role: '편집자', status: '활성' as const, joinedAt: '2026-02-03' },
+  { name: '박지훈', email: 'jihoon.park@example.com', role: '뷰어', status: '비활성' as const, joinedAt: '2026-03-21' },
+  { name: '최유나', email: 'yuna.choi@example.com', role: '편집자', status: '활성' as const, joinedAt: '2026-05-09' },
+]
+
 function Users() {
   return (
-    <PlaceholderPage
-      title="사용자"
-      description="필요한 위젯을 여기에 하나씩 추가하세요."
-    />
+    <Card>
+      <CardHeader>
+        <CardTitle>사용자</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>이름</TableHead>
+              <TableHead>이메일</TableHead>
+              <TableHead>역할</TableHead>
+              <TableHead>상태</TableHead>
+              <TableHead>가입일</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {USERS.map((user) => (
+              <TableRow key={user.email}>
+                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell>
+                  <Badge variant={user.status === '활성' ? 'default' : 'secondary'}>
+                    {user.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{user.joinedAt}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   )
 }

@@ -1,13 +1,27 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PlaceholderPage } from '@/components/placeholder-page'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/analytics')({ component: Analytics })
 
+const STATS = [
+  { label: '총 매출', value: '₩42,180,000', hint: '지난 30일' },
+  { label: '신규 사용자', value: '312명', hint: '지난 30일' },
+  { label: '주문 수', value: '1,048건', hint: '지난 30일' },
+  { label: '전환율', value: '3.2%', hint: '지난 30일' },
+]
+
 function Analytics() {
   return (
-    <PlaceholderPage
-      title="분석"
-      description="필요한 위젯을 여기에 하나씩 추가하세요."
-    />
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {STATS.map((stat) => (
+        <Card key={stat.label}>
+          <CardHeader>
+            <CardDescription>{stat.label}</CardDescription>
+            <CardTitle className="text-2xl">{stat.value}</CardTitle>
+            <CardDescription>{stat.hint}</CardDescription>
+          </CardHeader>
+        </Card>
+      ))}
+    </div>
   )
 }
