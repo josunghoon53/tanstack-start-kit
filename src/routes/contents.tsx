@@ -10,8 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/contents')({ component: Contents })
+
+const STATUS_TONE = {
+  발행: 'success',
+  초안: 'neutral',
+} as const
 
 const CONTENTS = [
   { title: '9월 신규 기능 안내', author: '김민지', status: '발행' as const, date: '2026-09-15' },
@@ -43,7 +49,10 @@ function Contents() {
                 <TableCell className="font-medium">{content.title}</TableCell>
                 <TableCell>{content.author}</TableCell>
                 <TableCell>
-                  <Badge variant={content.status === '발행' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant="outline"
+                    className={statusBadgeClass(STATUS_TONE[content.status])}
+                  >
                     {content.status}
                   </Badge>
                 </TableCell>

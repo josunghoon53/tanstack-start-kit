@@ -10,8 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/products')({ component: Products })
+
+const STATUS_TONE = {
+  판매중: 'success',
+  품절: 'danger',
+} as const
 
 const PRODUCTS = [
   { name: '무선 이어폰 Pro', category: '전자기기', stock: 128, price: '89,000원', status: '판매중' as const },
@@ -46,7 +52,10 @@ function Products() {
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>{product.price}</TableCell>
                 <TableCell>
-                  <Badge variant={product.status === '판매중' ? 'default' : 'destructive'}>
+                  <Badge
+                    variant="outline"
+                    className={statusBadgeClass(STATUS_TONE[product.status])}
+                  >
                     {product.status}
                   </Badge>
                 </TableCell>

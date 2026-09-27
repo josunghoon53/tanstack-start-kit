@@ -10,8 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/users')({ component: Users })
+
+const STATUS_TONE = {
+  활성: 'success',
+  비활성: 'neutral',
+} as const
 
 const USERS = [
   { name: '김민지', email: 'minji.kim@example.com', role: '관리자', status: '활성' as const, joinedAt: '2026-01-14' },
@@ -48,7 +54,10 @@ function Users() {
                 </TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  <Badge variant={user.status === '활성' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant="outline"
+                    className={statusBadgeClass(STATUS_TONE[user.status])}
+                  >
                     {user.status}
                   </Badge>
                 </TableCell>

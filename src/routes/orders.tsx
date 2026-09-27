@@ -10,13 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { statusBadgeClass } from '@/lib/status-badge'
 
 export const Route = createFileRoute('/orders')({ component: Orders })
 
-const STATUS_VARIANT = {
-  배송중: 'outline',
-  완료: 'default',
-  취소: 'destructive',
+const STATUS_TONE = {
+  배송중: 'warning',
+  완료: 'success',
+  취소: 'danger',
 } as const
 
 const ORDERS = [
@@ -51,7 +52,12 @@ function Orders() {
                 <TableCell>{order.customer}</TableCell>
                 <TableCell>{order.amount}</TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[order.status]}>{order.status}</Badge>
+                  <Badge
+                    variant="outline"
+                    className={statusBadgeClass(STATUS_TONE[order.status])}
+                  >
+                    {order.status}
+                  </Badge>
                 </TableCell>
                 <TableCell>{order.date}</TableCell>
                 <TableCell>
