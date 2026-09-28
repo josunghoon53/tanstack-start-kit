@@ -1,8 +1,8 @@
 import { useRouterState } from '@tanstack/react-router'
+import { NotificationsMenu } from '@/components/notifications-menu'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { NAV_ITEMS } from '@/config/nav'
-import ThemeToggle from './ThemeToggle'
 
 function findTitle(pathname: string) {
   for (const item of NAV_ITEMS) {
@@ -28,7 +28,7 @@ export function SiteHeader() {
       <Separator orientation="vertical" className="mr-2 h-4" />
       <h1 className="text-lg font-bold">{title}</h1>
       <div className="ml-auto">
-        <ThemeToggle />
+        <NotificationsMenu />
       </div>
     </header>
   )

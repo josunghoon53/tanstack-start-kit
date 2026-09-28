@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { NavHeader } from '@/components/nav-header'
 import { NavUser } from '@/components/nav-user'
+import ThemeToggle from '@/components/ThemeToggle'
 import {
   Collapsible,
   CollapsibleContent,
@@ -203,7 +204,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarSeparator className="mx-0" />
       <SidebarFooter>
-        <NavUser />
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <NavUser />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <ThemeToggle />
+          </div>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )
