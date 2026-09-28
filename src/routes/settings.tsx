@@ -21,12 +21,12 @@ function Settings() {
   const [maintenanceMode, setMaintenanceMode] = useState(false)
 
   return (
-    <Card>
+    <Card className="max-w-md">
       <CardHeader>
         <CardTitle>설정</CardTitle>
         <CardDescription>사이트 기본 설정을 관리하세요.</CardDescription>
       </CardHeader>
-      <CardContent className="flex max-w-md flex-col gap-6">
+      <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Label htmlFor="site-name">사이트 이름</Label>
           <Input
