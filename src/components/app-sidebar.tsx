@@ -49,10 +49,19 @@ function TreeLines({ count }: { count: number }) {
       <path
         d={`M${TRUNK_X} 0 L${TRUNK_X} ${cornerStartY} Q${TRUNK_X} ${lastY} ${TRUNK_X + CORNER_RADIUS} ${lastY} H${STUB_END_X}`}
         stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
         fill="none"
       />
       {branches.map((d) => (
-        <path key={d} d={d} stroke="currentColor" fill="none" />
+        <path
+          key={d}
+          d={d}
+          stroke="currentColor"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          fill="none"
+        />
       ))}
     </svg>
   )
