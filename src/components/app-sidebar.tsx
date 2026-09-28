@@ -1,6 +1,8 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 import { useLayoutEffect, useRef, useState } from 'react'
+import { NavHeader } from '@/components/nav-header'
+import { NavUser } from '@/components/nav-user'
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,9 +11,9 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -19,6 +21,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { NAV_ITEMS, type NavSection } from '@/config/nav'
 
@@ -138,14 +141,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <span className="px-2 text-sm font-semibold group-data-[collapsible=icon]:hidden">
-          Admin
-        </span>
+      <SidebarHeader className="h-14 justify-center border-b py-0">
+        <NavHeader />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>메뉴</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1.5">
               {NAV_ITEMS.map((item) => {
@@ -201,6 +201,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarSeparator className="mx-0" />
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
     </Sidebar>
   )
 }
