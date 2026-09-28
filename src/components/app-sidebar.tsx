@@ -147,7 +147,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1.5">
+            <SidebarMenu className="gap-2">
               {NAV_ITEMS.map((item) => {
                 if (item.type === 'link') {
                   const Icon = item.icon
