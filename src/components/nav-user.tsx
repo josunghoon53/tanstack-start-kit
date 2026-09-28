@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouter } from '@tanstack/react-router'
 import { ChevronsUpDown, LogOut, Settings, User } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -14,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { logoutFn } from '@/server/auth'
 
 const USER = {
   name: '관리자',
@@ -22,6 +23,14 @@ const USER = {
 }
 
 export function NavUser() {
+  const router = useRouter()
+
+  async function handleLogout() {
+    await logoutFn()
+    await router.invalidate()
+    await router.navigate({ to: '/login' })
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -71,7 +80,7 @@ export function NavUser() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <LogOut />
               로그아웃
             </DropdownMenuItem>
