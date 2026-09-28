@@ -45,7 +45,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>메뉴</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1.5">
               {NAV_ITEMS.map((item) => {
                 if (item.type === 'link') {
                   const Icon = item.icon
@@ -83,28 +83,31 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <SidebarMenuSub className="mx-0 gap-0.5 border-l-0 px-0 pl-6">
+                        <SidebarMenuSub className="gap-1.5 border-foreground/15 py-1.5">
                           {item.sections.map((section) => (
-                            <div key={section.label} className="pt-3 first:pt-1">
-                              <div className="px-2 pb-1 text-xs font-medium text-muted-foreground">
+                            <div key={section.label} className="pt-4 first:pt-1">
+                              <div className="px-2 pb-1.5 text-xs font-medium text-muted-foreground">
                                 {section.label}
                               </div>
-                              {section.items.map((leaf) => {
-                                const LeafIcon = leaf.icon
-                                return (
-                                  <SidebarMenuSubItem key={leaf.href}>
-                                    <SidebarMenuSubButton
-                                      asChild
-                                      isActive={pathname === leaf.href}
-                                    >
-                                      <Link to={leaf.href}>
-                                        <LeafIcon />
-                                        <span>{leaf.label}</span>
-                                      </Link>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                )
-                              })}
+                              <div className="flex flex-col gap-1">
+                                {section.items.map((leaf) => {
+                                  const LeafIcon = leaf.icon
+                                  return (
+                                    <SidebarMenuSubItem key={leaf.href}>
+                                      <SidebarMenuSubButton
+                                        asChild
+                                        isActive={pathname === leaf.href}
+                                        className="h-8"
+                                      >
+                                        <Link to={leaf.href}>
+                                          <LeafIcon />
+                                          <span>{leaf.label}</span>
+                                        </Link>
+                                      </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                  )
+                                })}
+                              </div>
                             </div>
                           ))}
                         </SidebarMenuSub>
