@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
+import { TablePagination } from '@/components/table-pagination'
+import { TableSearchInput } from '@/components/table-search-input'
 import {
   Table,
   TableBody,
@@ -9,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { usePaginatedSearch } from '@/hooks/use-paginated-search'
 
 export const Route = createFileRoute('/contents')({ component: Contents })
 
@@ -25,32 +28,55 @@ const CONTENTS = [
 ]
 
 function Contents() {
+  const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
+    usePaginatedSearch(
+      CONTENTS,
+      (content, q) =>
+        content.title.toLowerCase().includes(q) || content.author.toLowerCase().includes(q),
+    )
+
   return (
-    <Table className="border-y">
-      <TableHeader>
-        <TableRow>
-          <TableHead>제목</TableHead>
-          <TableHead>작성자</TableHead>
-          <TableHead>상태</TableHead>
-          <TableHead>작성일</TableHead>
-          <TableHead className="w-10" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {CONTENTS.map((content) => (
-          <TableRow key={content.title}>
-            <TableCell className="font-medium">{content.title}</TableCell>
-            <TableCell>{content.author}</TableCell>
-            <TableCell>
-              <StatusDot tone={STATUS_TONE[content.status]}>{content.status}</StatusDot>
-            </TableCell>
-            <TableCell>{content.date}</TableCell>
-            <TableCell>
-              <RowActions label={content.title} />
-            </TableCell>
+    <div className="flex flex-col gap-3">
+      <TableSearchInput value={query} onChange={setQuery} placeholder="제목, 작성자로 검색" />
+      <Table className="border-y">
+        <TableHeader>
+          <TableRow>
+            <TableHead>제목</TableHead>
+            <TableHead>작성자</TableHead>
+            <TableHead>상태</TableHead>
+            <TableHead>작성일</TableHead>
+            <TableHead className="w-10" />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {pageItems.map((content) => (
+            <TableRow key={content.title}>
+              <TableCell className="font-medium">{content.title}</TableCell>
+              <TableCell>{content.author}</TableCell>
+              <TableCell>
+                <StatusDot tone={STATUS_TONE[content.status]}>{content.status}</StatusDot>
+              </TableCell>
+              <TableCell>{content.date}</TableCell>
+              <TableCell>
+                <RowActions label={content.title} />
+              </TableCell>
+            </TableRow>
+          ))}
+          {pageItems.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
+                검색 결과가 없어요.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <TablePagination
+        page={page}
+        totalPages={totalPages}
+        totalCount={totalCount}
+        onPageChange={setPage}
+      />
+    </div>
   )
 }

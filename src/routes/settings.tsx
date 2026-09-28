@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { ColorThemePicker } from '@/components/color-theme-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,7 +25,7 @@ function Settings() {
 
   return (
     <div className="flex flex-1 gap-8">
-      <nav className="flex w-40 shrink-0 flex-col gap-1 self-stretch border-r pr-4">
+      <nav className="-mt-4 flex w-40 shrink-0 flex-col gap-1 self-stretch border-r pt-4 pr-4">
         {SETTINGS_SECTIONS.map((item) => (
           <button
             key={item.key}
@@ -53,12 +54,14 @@ function SettingRow({
   htmlFor,
   label,
   description,
+  descriptionClassName,
   children,
   last,
 }: {
   htmlFor: string
   label: string
   description: string
+  descriptionClassName?: string
   children: React.ReactNode
   last?: boolean
 }) {
@@ -71,7 +74,9 @@ function SettingRow({
     >
       <div className="flex flex-col gap-0.5">
         <Label htmlFor={htmlFor}>{label}</Label>
-        <span className="text-sm text-muted-foreground">{description}</span>
+        <span className={cn('text-sm text-muted-foreground', descriptionClassName)}>
+          {description}
+        </span>
       </div>
       {children}
     </div>
@@ -82,6 +87,19 @@ function GeneralSection() {
   const [siteName, setSiteName] = useState('My Admin')
   const [notifyEmail, setNotifyEmail] = useState(true)
   const [maintenanceMode, setMaintenanceMode] = useState(false)
+  const [siteNameError, setSiteNameError] = useState('')
+
+  function handleSave() {
+    const trimmed = siteName.trim()
+    if (!trimmed) {
+      setSiteNameError('사이트 이름을 입력해주세요.')
+      toast.error('사이트 이름을 입력해주세요.')
+      return
+    }
+
+    setSiteNameError('')
+    toast.success('일반 설정이 저장됐어요.')
+  }
 
   return (
     <div className="flex flex-col">
@@ -90,13 +108,18 @@ function GeneralSection() {
         <SettingRow
           htmlFor="site-name"
           label="사이트 이름"
-          description="관리자 콘솔 상단에 표시돼요."
+          description={siteNameError || '관리자 콘솔 상단에 표시돼요.'}
+          descriptionClassName={siteNameError ? 'text-destructive' : undefined}
         >
           <Input
             id="site-name"
             className="w-56"
             value={siteName}
-            onChange={(event) => setSiteName(event.target.value)}
+            onChange={(event) => {
+              setSiteName(event.target.value)
+              if (siteNameError) setSiteNameError('')
+            }}
+            aria-invalid={Boolean(siteNameError)}
           />
         </SettingRow>
         <SettingRow
@@ -124,7 +147,7 @@ function GeneralSection() {
         </SettingRow>
       </div>
       <div className="pt-4">
-        <Button type="button" size="sm">
+        <Button type="button" size="sm" onClick={handleSave}>
           저장
         </Button>
       </div>
@@ -155,6 +178,33 @@ function SecuritySection() {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+
+  function handleChangePassword() {
+    if (!currentPassword) {
+      setError('현재 비밀번호를 입력해주세요.')
+      toast.error('현재 비밀번호를 입력해주세요.')
+      return
+    }
+
+    if (newPassword.length < 8) {
+      setError('새 비밀번호는 8자 이상이어야 해요.')
+      toast.error('새 비밀번호는 8자 이상이어야 해요.')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('새 비밀번호가 일치하지 않아요.')
+      toast.error('새 비밀번호가 일치하지 않아요.')
+      return
+    }
+
+    setError('')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+    toast.success('비밀번호가 변경됐어요.')
+  }
 
   return (
     <div className="flex flex-col">
@@ -204,8 +254,9 @@ function SecuritySection() {
           />
         </SettingRow>
       </div>
+      {error && <p className="pt-2 text-sm text-destructive">{error}</p>}
       <div className="pt-4">
-        <Button type="button" size="sm">
+        <Button type="button" size="sm" onClick={handleChangePassword}>
           비밀번호 변경
         </Button>
       </div>
