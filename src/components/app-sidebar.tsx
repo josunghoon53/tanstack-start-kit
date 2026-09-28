@@ -1,9 +1,9 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
-import { useLayoutEffect, useRef, useState } from 'react'
 import { NavHeader } from '@/components/nav-header'
 import { NavUser } from '@/components/nav-user'
 import ThemeToggle from '@/components/ThemeToggle'
+import { TreeConnector } from '@/components/tree-connector'
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,11 +24,10 @@ import {
   SidebarMenuSubItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { NAV_ITEMS, type NavSection } from '@/config/nav'
-
-const TRUNK_X = 8
-const STUB_END_X = 20
-const CORNER_RADIUS = 6
+import { NAV_ITEMS  } from '@/config/nav'
+import type {NavSection} from '@/config/nav';
+import { useAccordionGroup } from '@/hooks/use-accordion-group'
+import { useTreeBranches } from '@/hooks/use-tree-branches'
 
 function findOpenGroup(pathname: string) {
   return NAV_ITEMS.find(
@@ -47,69 +46,11 @@ function GroupSubmenu({
   pathname: string
   isOpen: boolean
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [branchYs, setBranchYs] = useState<Array<number>>([])
-
-  useLayoutEffect(() => {
-    const container = containerRef.current
-    if (!container || !isOpen) {
-      setBranchYs([])
-      return
-    }
-
-    function measure() {
-      if (!container) return
-      const leaves = Array.from(container.querySelectorAll<HTMLElement>('[data-tree-leaf]'))
-      const containerTop = container.getBoundingClientRect().top
-      setBranchYs(
-        leaves.map((el) => {
-          const rect = el.getBoundingClientRect()
-          return rect.top - containerTop + rect.height / 2
-        }),
-      )
-    }
-
-    // Radix's own effects (which finalize the open/expanded layout) run after
-    // this one, so measuring synchronously here can catch a stale, still-
-    // collapsing layout. A ResizeObserver re-measures once the real layout settles.
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [sections, isOpen])
-
-  const lastY = branchYs.at(-1) ?? 0
-  const cornerStartY = Math.max(lastY - CORNER_RADIUS, 0)
+  const { containerRef, branchYs } = useTreeBranches<HTMLDivElement>(isOpen, [sections])
 
   return (
     <div ref={containerRef} className="relative">
-      {branchYs.length > 0 && (
-        <svg
-          width={STUB_END_X}
-          height={lastY}
-          viewBox={`0 0 ${STUB_END_X} ${lastY}`}
-          className="pointer-events-none absolute top-0 left-0 text-muted-foreground/50"
-          aria-hidden="true"
-        >
-          <path
-            d={`M${TRUNK_X} 0 L${TRUNK_X} ${cornerStartY} Q${TRUNK_X} ${lastY} ${TRUNK_X + CORNER_RADIUS} ${lastY} H${STUB_END_X}`}
-            stroke="currentColor"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            fill="none"
-          />
-          {branchYs.slice(0, -1).map((y) => (
-            <path
-              key={y}
-              d={`M${TRUNK_X} ${y} H${STUB_END_X}`}
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              fill="none"
-            />
-          ))}
-        </svg>
-      )}
+      <TreeConnector branchYs={branchYs} />
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
           <div className="pb-1.5 pl-6 text-xs font-medium text-muted-foreground">
@@ -138,7 +79,7 @@ function GroupSubmenu({
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const [openGroup, setOpenGroup] = useState(() => findOpenGroup(pathname))
+  const { isOpen, setOpen } = useAccordionGroup(findOpenGroup(pathname))
 
   return (
     <Sidebar collapsible="icon">
@@ -168,13 +109,12 @@ export function AppSidebar() {
                 const isGroupActive = item.sections.some((section) =>
                   section.items.some((leaf) => leaf.href === pathname),
                 )
-                const isOpen = openGroup === item.label
 
                 return (
                   <Collapsible
                     key={item.label}
-                    open={isOpen}
-                    onOpenChange={(open) => setOpenGroup(open ? item.label : undefined)}
+                    open={isOpen(item.label)}
+                    onOpenChange={(open) => setOpen(item.label, open)}
                     className="group/collapsible"
                   >
                     <SidebarMenuItem>
@@ -190,7 +130,7 @@ export function AppSidebar() {
                           <GroupSubmenu
                             sections={item.sections}
                             pathname={pathname}
-                            isOpen={isOpen}
+                            isOpen={isOpen(item.label)}
                           />
                         </SidebarMenuSub>
                       </CollapsibleContent>
