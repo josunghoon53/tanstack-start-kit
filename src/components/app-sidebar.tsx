@@ -23,7 +23,7 @@ import {
 import { NAV_ITEMS, type NavSection } from '@/config/nav'
 
 const TRUNK_X = 8
-const STUB_END_X = 16
+const STUB_END_X = 24
 const CORNER_RADIUS = 6
 
 function findOpenGroup(pathname: string) {
@@ -37,16 +37,21 @@ function findOpenGroup(pathname: string) {
 function GroupSubmenu({
   sections,
   pathname,
+  isOpen,
 }: {
   sections: Array<NavSection>
   pathname: string
+  isOpen: boolean
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [branchYs, setBranchYs] = useState<Array<number>>([])
 
   useLayoutEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container || !isOpen) {
+      setBranchYs([])
+      return
+    }
     const leaves = Array.from(container.querySelectorAll<HTMLElement>('[data-tree-leaf]'))
     const containerTop = container.getBoundingClientRect().top
     setBranchYs(
@@ -55,7 +60,7 @@ function GroupSubmenu({
         return rect.top - containerTop + rect.height / 2
       }),
     )
-  }, [sections])
+  }, [sections, isOpen])
 
   const lastY = branchYs.at(-1) ?? 0
   const cornerStartY = Math.max(lastY - CORNER_RADIUS, 0)
@@ -91,7 +96,7 @@ function GroupSubmenu({
       )}
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
-          <div className="pb-1.5 text-xs font-medium text-muted-foreground">
+          <div className="pb-1.5 pl-4 text-xs font-medium text-muted-foreground">
             {section.label}
           </div>
           <div className="flex flex-col gap-1 pl-4">
@@ -169,7 +174,11 @@ export function AppSidebar() {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub className="mx-0 gap-1.5 border-l-0 px-2 py-1.5">
-                          <GroupSubmenu sections={item.sections} pathname={pathname} />
+                          <GroupSubmenu
+                            sections={item.sections}
+                            pathname={pathname}
+                            isOpen={isOpen}
+                          />
                         </SidebarMenuSub>
                       </CollapsibleContent>
                     </SidebarMenuItem>
