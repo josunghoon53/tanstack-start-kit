@@ -4,9 +4,23 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { NAV_ITEMS } from '@/config/nav'
 import ThemeToggle from './ThemeToggle'
 
+function findTitle(pathname: string) {
+  for (const item of NAV_ITEMS) {
+    if (item.type === 'link') {
+      if (item.href === pathname) return item.label
+      continue
+    }
+    for (const section of item.sections) {
+      const leaf = section.items.find((candidate) => candidate.href === pathname)
+      if (leaf) return leaf.label
+    }
+  }
+  return ''
+}
+
 export function SiteHeader() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const title = NAV_ITEMS.find((item) => item.href === pathname)?.label ?? ''
+  const title = findTitle(pathname)
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
