@@ -9,21 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ORDER_STATUS_TONE, ORDERS } from '@/config/orders'
 
 export const Route = createFileRoute('/orders')({ component: Orders })
-
-const STATUS_TONE = {
-  배송중: 'warning',
-  완료: 'success',
-  취소: 'danger',
-} as const
-
-const ORDERS = [
-  { id: 'ORD-1042', customer: '김민지', amount: '128,000원', status: '배송중' as const, date: '2026-09-21' },
-  { id: 'ORD-1041', customer: '이서준', amount: '54,000원', status: '완료' as const, date: '2026-09-20' },
-  { id: 'ORD-1040', customer: '박지훈', amount: '212,500원', status: '완료' as const, date: '2026-09-18' },
-  { id: 'ORD-1039', customer: '최유나', amount: '39,900원', status: '취소' as const, date: '2026-09-17' },
-]
 
 function Orders() {
   return (
@@ -45,7 +33,7 @@ function Orders() {
             <TableCell>{order.customer}</TableCell>
             <TableCell>{order.amount}</TableCell>
             <TableCell>
-              <StatusDot tone={STATUS_TONE[order.status]}>{order.status}</StatusDot>
+              <StatusDot tone={ORDER_STATUS_TONE[order.status]}>{order.status}</StatusDot>
             </TableCell>
             <TableCell>{order.date}</TableCell>
             <TableCell>
