@@ -14,11 +14,9 @@ import {
   Megaphone,
   Package,
   PackagePlus,
-  Palette,
   Receipt,
   RefreshCw,
   Settings,
-  Settings2,
   ShieldCheck,
   ShoppingCart,
   Tags,
@@ -188,25 +186,5 @@ export const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
-  {
-    type: 'group',
-    label: '설정',
-    icon: Settings,
-    sections: [
-      {
-        label: '일반',
-        items: [
-          { label: '사이트 설정', href: '/settings', icon: Settings2 },
-          { label: '브랜딩', href: '/settings/branding', icon: Palette },
-        ],
-      },
-      {
-        label: '계정',
-        items: [
-          { label: '팀 관리', href: '/settings/team', icon: UsersRound },
-          { label: '결제 정보', href: '/settings/billing', icon: CreditCard },
-        ],
-      },
-    ],
-  },
+  { type: 'link', label: '설정', href: '/settings', icon: Settings },
 ]
