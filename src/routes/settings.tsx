@@ -23,8 +23,8 @@ function Settings() {
   const ActiveSection = active.component
 
   return (
-    <div className="flex gap-8">
-      <nav className="flex w-40 shrink-0 flex-col gap-1">
+    <div className="flex flex-1 gap-8">
+      <nav className="flex w-40 shrink-0 flex-col gap-1 self-stretch border-r pr-4">
         {SETTINGS_SECTIONS.map((item) => (
           <button
             key={item.key}
