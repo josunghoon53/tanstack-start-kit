@@ -24,6 +24,12 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Tailwind v4's preflight no longer sets cursor: pointer on buttons. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
