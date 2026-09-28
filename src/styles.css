@@ -134,7 +134,7 @@ button:not(:disabled),
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.546 0.245 262.881);
+  --primary: oklch(0.5 0.15 260);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -142,10 +142,10 @@ button:not(:disabled),
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.577 0.15 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.623 0.214 259.815);
+  --ring: oklch(0.58 0.16 260);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -153,12 +153,48 @@ button:not(:disabled),
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.96 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary: oklch(0.5 0.15 260);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --sidebar-ring: oklch(0.58 0.16 260);
+}
+
+/* 테마 색상 프리셋: settings 페이지에서 선택하면 data-color가 <html>에 설정됨 */
+:root[data-color="green"] {
+  --primary: oklch(0.45 0.08 155);
+  --ring: oklch(0.5 0.09 155);
+  --sidebar-primary: oklch(0.45 0.08 155);
+  --sidebar-ring: oklch(0.5 0.09 155);
+}
+
+:root[data-color="purple"] {
+  --primary: oklch(0.5 0.15 300);
+  --ring: oklch(0.58 0.16 300);
+  --sidebar-primary: oklch(0.5 0.15 300);
+  --sidebar-ring: oklch(0.58 0.16 300);
+}
+
+:root[data-color="rose"] {
+  --primary: oklch(0.5 0.15 15);
+  --ring: oklch(0.58 0.16 15);
+  --sidebar-primary: oklch(0.5 0.15 15);
+  --sidebar-ring: oklch(0.58 0.16 15);
+}
+
+:root[data-color="orange"] {
+  --primary: oklch(0.58 0.15 60);
+  --ring: oklch(0.62 0.16 60);
+  --sidebar-primary: oklch(0.58 0.15 60);
+  --sidebar-ring: oklch(0.62 0.16 60);
+}
+
+:root[data-color="slate"] {
+  --primary: oklch(0.35 0 0);
+  --ring: oklch(0.55 0 0);
+  --sidebar-primary: oklch(0.35 0 0);
+  --sidebar-ring: oklch(0.55 0 0);
 }
 
 .dark {
@@ -168,7 +204,7 @@ button:not(:disabled),
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.623 0.214 259.815);
+  --primary: oklch(0.65 0.15 260);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -176,10 +212,10 @@ button:not(:disabled),
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.704 0.13 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.546 0.245 262.881);
+  --ring: oklch(0.5 0.16 260);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -187,12 +223,49 @@ button:not(:disabled),
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary: oklch(0.65 0.15 260);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.546 0.245 262.881);
+  --sidebar-ring: oklch(0.5 0.16 260);
+}
+
+.dark[data-color="green"] {
+  --primary: oklch(0.58 0.08 155);
+  --ring: oklch(0.46 0.09 155);
+  --sidebar-primary: oklch(0.58 0.08 155);
+  --sidebar-ring: oklch(0.46 0.09 155);
+}
+
+.dark[data-color="purple"] {
+  --primary: oklch(0.65 0.15 300);
+  --ring: oklch(0.5 0.16 300);
+  --sidebar-primary: oklch(0.65 0.15 300);
+  --sidebar-ring: oklch(0.5 0.16 300);
+}
+
+.dark[data-color="rose"] {
+  --primary: oklch(0.65 0.15 15);
+  --ring: oklch(0.5 0.16 15);
+  --sidebar-primary: oklch(0.65 0.15 15);
+  --sidebar-ring: oklch(0.5 0.16 15);
+}
+
+.dark[data-color="orange"] {
+  --primary: oklch(0.68 0.15 60);
+  --ring: oklch(0.53 0.16 60);
+  --sidebar-primary: oklch(0.68 0.15 60);
+  --sidebar-ring: oklch(0.53 0.16 60);
+}
+
+.dark[data-color="slate"] {
+  --primary: oklch(0.75 0 0);
+  --ring: oklch(0.55 0 0);
+  --sidebar-primary: oklch(0.75 0 0);
+  --sidebar-ring: oklch(0.55 0 0);
+  --primary-foreground: oklch(0.145 0 0);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
 }
 
 @layer base {

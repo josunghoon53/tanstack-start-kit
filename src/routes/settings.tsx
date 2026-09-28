@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { ColorThemePicker } from '@/components/color-theme-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/settings')({ component: Settings })
 // 탭을 추가/제거하려면 이 배열만 고치면 됩니다.
 const SETTINGS_SECTIONS = [
   { key: 'general', label: '일반', component: GeneralSection },
+  { key: 'theme', label: '테마', component: ThemeSection },
   { key: 'security', label: '보안', component: SecuritySection },
 ] as const
 
@@ -31,7 +33,7 @@ function Settings() {
             className={cn(
               'rounded-md px-3 py-2 text-left text-sm transition-colors',
               activeKey === item.key
-                ? 'bg-accent font-medium text-accent-foreground'
+                ? 'bg-primary/12 font-medium text-primary'
                 : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
             )}
           >
@@ -125,6 +127,25 @@ function GeneralSection() {
         <Button type="button" size="sm">
           저장
         </Button>
+      </div>
+    </div>
+  )
+}
+
+function ThemeSection() {
+  return (
+    <div className="flex flex-col">
+      <h2 className="pb-2 text-lg font-bold">테마</h2>
+      <div className="rounded-xl bg-muted/50 px-4 py-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-0.5">
+            <Label>강조 색상</Label>
+            <span className="text-sm text-muted-foreground">
+              버튼, 링크 등에 사용되는 포인트 컬러를 선택하세요.
+            </span>
+          </div>
+          <ColorThemePicker />
+        </div>
       </div>
     </div>
   )

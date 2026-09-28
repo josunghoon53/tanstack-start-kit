@@ -41,7 +41,7 @@ function Dashboard() {
           <CardHeader>
             <CardTitle>최근 주문</CardTitle>
             <CardDescription>
-              <Link to="/orders" className="hover:text-foreground hover:underline">
+              <Link to="/orders" className="hover:text-primary hover:underline">
                 전체 주문 보기
               </Link>
             </CardDescription>
@@ -84,8 +84,8 @@ function Dashboard() {
               const Icon = item.icon
               return (
                 <div key={index} className="flex items-start gap-3 rounded-lg px-2 py-2">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                    <Icon className="size-4 text-muted-foreground" />
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Icon className="size-4 text-primary" />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <span className="text-sm">{item.message}</span>
