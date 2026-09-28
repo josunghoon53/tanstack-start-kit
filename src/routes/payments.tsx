@@ -1,7 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { StatusDot } from '@/components/status-dot'
 import { TablePagination } from '@/components/table-pagination'
 import { TableSearchInput } from '@/components/table-search-input'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -112,13 +125,10 @@ function Payments() {
                 <span className="text-xs text-muted-foreground">KRW</span>
               </TableCell>
               <TableCell>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <CancelPaymentAction
+                  orderName={payment.orderName}
                   disabled={payment.status !== '결제완료'}
-                >
-                  취소
-                </Button>
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -138,5 +148,42 @@ function Payments() {
         onPageChange={setPage}
       />
     </div>
+  )
+}
+
+function CancelPaymentAction({
+  orderName,
+  disabled,
+}: {
+  orderName: string
+  disabled: boolean
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" size="sm" disabled={disabled}>
+          취소
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>결제를 취소할까요?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {orderName} 결제가 취소되고 고객에게 환불 처리돼요. 이 작업은 되돌릴 수 없어요.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>닫기</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => toast.success(`${orderName} 결제가 취소됐어요.`)}
+          >
+            결제 취소
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

@@ -1,5 +1,16 @@
 import { Link, useRouter } from '@tanstack/react-router'
 import { ChevronsUpDown, LogOut, Settings, User } from 'lucide-react'
+import { useState } from 'react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -24,6 +35,7 @@ const USER = {
 
 export function NavUser() {
   const router = useRouter()
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   async function handleLogout() {
     await logoutFn()
@@ -80,13 +92,33 @@ export function NavUser() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={() => setLogoutOpen(true)}
+            >
               <LogOut />
               로그아웃
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+
+      <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>로그아웃할까요?</AlertDialogTitle>
+            <AlertDialogDescription>
+              다시 로그인해야 관리자 콘솔에 접근할 수 있어요.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleLogout}>
+              로그아웃
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SidebarMenu>
   )
 }
