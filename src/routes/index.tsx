@@ -46,8 +46,8 @@ function Dashboard() {
               </Link>
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-0">
-            <Table>
+          <CardContent>
+            <Table className="border-y">
               <TableHeader>
                 <TableRow>
                   <TableHead>주문번호</TableHead>
