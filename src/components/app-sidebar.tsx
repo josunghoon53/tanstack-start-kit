@@ -23,7 +23,7 @@ import {
 import { NAV_ITEMS, type NavSection } from '@/config/nav'
 
 const TRUNK_X = 8
-const STUB_END_X = 24
+const STUB_END_X = 20
 const CORNER_RADIUS = 6
 
 function findOpenGroup(pathname: string) {
@@ -52,14 +52,26 @@ function GroupSubmenu({
       setBranchYs([])
       return
     }
-    const leaves = Array.from(container.querySelectorAll<HTMLElement>('[data-tree-leaf]'))
-    const containerTop = container.getBoundingClientRect().top
-    setBranchYs(
-      leaves.map((el) => {
-        const rect = el.getBoundingClientRect()
-        return rect.top - containerTop + rect.height / 2
-      }),
-    )
+
+    function measure() {
+      if (!container) return
+      const leaves = Array.from(container.querySelectorAll<HTMLElement>('[data-tree-leaf]'))
+      const containerTop = container.getBoundingClientRect().top
+      setBranchYs(
+        leaves.map((el) => {
+          const rect = el.getBoundingClientRect()
+          return rect.top - containerTop + rect.height / 2
+        }),
+      )
+    }
+
+    // Radix's own effects (which finalize the open/expanded layout) run after
+    // this one, so measuring synchronously here can catch a stale, still-
+    // collapsing layout. A ResizeObserver re-measures once the real layout settles.
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(container)
+    return () => observer.disconnect()
   }, [sections, isOpen])
 
   const lastY = branchYs.at(-1) ?? 0
@@ -96,10 +108,10 @@ function GroupSubmenu({
       )}
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
-          <div className="pb-1.5 pl-4 text-xs font-medium text-muted-foreground">
+          <div className="pb-1.5 pl-6 text-xs font-medium text-muted-foreground">
             {section.label}
           </div>
-          <div className="flex flex-col gap-1 pl-4">
+          <div className="flex flex-col gap-1 pl-6">
             {section.items.map((leaf) => {
               const LeafIcon = leaf.icon
               return (
@@ -107,7 +119,7 @@ function GroupSubmenu({
                   <SidebarMenuSubButton asChild isActive={pathname === leaf.href} className="h-8">
                     <Link to={leaf.href}>
                       <LeafIcon />
-                      <span>{leaf.label}</span>
+                      <span className="leading-none">{leaf.label}</span>
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
@@ -144,7 +156,7 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild isActive={pathname === item.href}>
                         <Link to={item.href}>
                           <Icon />
-                          <span>{item.label}</span>
+                          <span className="leading-none">{item.label}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -168,7 +180,7 @@ export function AppSidebar() {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton isActive={isGroupActive}>
                           <Icon />
-                          <span>{item.label}</span>
+                          <span className="leading-none">{item.label}</span>
                           <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
