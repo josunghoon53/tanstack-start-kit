@@ -27,25 +27,33 @@ const ITEM_GAP = 4
 const SLOT = ITEM_HEIGHT + ITEM_GAP
 const TRUNK_X = 8
 const STUB_END_X = 16
+const CORNER_RADIUS = 6
 
 function TreeLines({ count }: { count: number }) {
-  const height = (count - 1) * SLOT + ITEM_HEIGHT / 2
+  const lastY = (count - 1) * SLOT + ITEM_HEIGHT / 2
+  const cornerStartY = lastY - CORNER_RADIUS
+
+  const branches = Array.from({ length: count - 1 }, (_, index) => {
+    const y = index * SLOT + ITEM_HEIGHT / 2
+    return `M${TRUNK_X} ${y} H${STUB_END_X}`
+  })
 
   return (
     <svg
       width={STUB_END_X}
-      height={height}
-      viewBox={`0 0 ${STUB_END_X} ${height}`}
-      className="pointer-events-none absolute top-0 left-0 text-border"
+      height={lastY}
+      viewBox={`0 0 ${STUB_END_X} ${lastY}`}
+      className="pointer-events-none absolute top-0 left-0 text-muted-foreground/50"
       aria-hidden="true"
     >
-      <path d={`M${TRUNK_X} 0 V${height}`} stroke="currentColor" fill="none" />
-      {Array.from({ length: count }).map((_, index) => {
-        const y = index * SLOT + ITEM_HEIGHT / 2
-        return (
-          <path key={y} d={`M${TRUNK_X} ${y} H${STUB_END_X}`} stroke="currentColor" fill="none" />
-        )
-      })}
+      <path
+        d={`M${TRUNK_X} 0 L${TRUNK_X} ${cornerStartY} Q${TRUNK_X} ${lastY} ${TRUNK_X + CORNER_RADIUS} ${lastY} H${STUB_END_X}`}
+        stroke="currentColor"
+        fill="none"
+      />
+      {branches.map((d) => (
+        <path key={d} d={d} stroke="currentColor" fill="none" />
+      ))}
     </svg>
   )
 }
