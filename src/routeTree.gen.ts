@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as ContentsRouteImport } from './routes/contents'
-import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -32,11 +31,6 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
 const ContentsRoute = ContentsRouteImport.update({
   id: '/contents',
   path: '/contents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersRoute = OrdersRouteImport.update({
@@ -69,7 +63,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
-  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/products': typeof ProductsRoute
@@ -80,7 +73,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
-  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/products': typeof ProductsRoute
@@ -92,7 +84,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
-  '/notifications': typeof NotificationsRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/products': typeof ProductsRoute
@@ -105,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
-    | '/notifications'
     | '/orders'
     | '/payments'
     | '/products'
@@ -116,7 +106,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
-    | '/notifications'
     | '/orders'
     | '/payments'
     | '/products'
@@ -127,7 +116,6 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
-    | '/notifications'
     | '/orders'
     | '/payments'
     | '/products'
@@ -139,7 +127,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   ContentsRoute: typeof ContentsRoute
-  NotificationsRoute: typeof NotificationsRoute
   OrdersRoute: typeof OrdersRoute
   PaymentsRoute: typeof PaymentsRoute
   ProductsRoute: typeof ProductsRoute
@@ -168,13 +155,6 @@ declare module '@tanstack/react-router' {
       path: '/contents'
       fullPath: '/contents'
       preLoaderRoute: typeof ContentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders': {
@@ -219,7 +199,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   ContentsRoute: ContentsRoute,
-  NotificationsRoute: NotificationsRoute,
   OrdersRoute: OrdersRoute,
   PaymentsRoute: PaymentsRoute,
   ProductsRoute: ProductsRoute,

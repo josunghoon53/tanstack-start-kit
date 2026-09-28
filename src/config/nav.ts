@@ -1,8 +1,6 @@
 import type { ComponentType } from 'react'
 import {
-  AlertTriangle,
   BarChart3,
-  Bell,
   Boxes,
   CalendarClock,
   ClipboardList,
@@ -13,14 +11,12 @@ import {
   Gauge,
   KeyRound,
   LayoutDashboard,
-  LayoutTemplate,
   Megaphone,
   Package,
   PackagePlus,
   Palette,
   Receipt,
   RefreshCw,
-  Send,
   Settings,
   Settings2,
   ShieldCheck,
@@ -167,27 +163,6 @@ export const NAV_ITEMS: Array<NavItem> = [
         items: [
           { label: '발행 예약', href: '/contents/scheduled', icon: CalendarClock },
           { label: '임시 저장', href: '/contents/drafts', icon: FileEdit },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '알림',
-    icon: Bell,
-    sections: [
-      {
-        label: '알림',
-        items: [
-          { label: '전체 알림', href: '/notifications', icon: Bell },
-          { label: '시스템 알림', href: '/notifications/system', icon: AlertTriangle },
-        ],
-      },
-      {
-        label: '설정',
-        items: [
-          { label: '알림 채널', href: '/notifications/channels', icon: Send },
-          { label: '템플릿', href: '/notifications/templates', icon: LayoutTemplate },
         ],
       },
     ],
