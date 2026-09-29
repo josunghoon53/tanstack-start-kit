@@ -13,6 +13,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import appCss from '../styles.css?url'
 import { AppSidebar } from '../components/app-sidebar'
 import { NotFound } from '../components/not-found'
+import { SiteFooter } from '../components/site-footer'
 import { SiteHeader } from '../components/site-header'
 import { SidebarInset, SidebarProvider } from '../components/ui/sidebar'
 import { Toaster } from '../components/ui/sonner'
@@ -43,8 +44,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         charSet: 'utf-8',
       },
       {
+        // 이 킷은 데스크톱 전용 어드민이라 모바일 반응형을 지원하지 않는다.
+        // width=device-width 대신 고정 너비를 줘서, 좁은 화면에서도 축소된
+        // "모바일 레이아웃"으로 깨지지 않고 데스크톱 레이아웃 그대로 가로 스크롤되게 한다.
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        content: 'width=1280, initial-scale=1',
       },
       {
         title: 'Admin',
@@ -79,8 +83,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <AppSidebar />
             <SidebarInset className="overflow-hidden">
               <SiteHeader />
-              <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
-                {children}
+              <div className="flex min-h-0 flex-1 flex-col overflow-auto">
+                <div className="flex min-h-full min-w-5xl flex-col gap-4 p-4">
+                  {children}
+                </div>
+                <SiteFooter />
               </div>
             </SidebarInset>
           </SidebarProvider>

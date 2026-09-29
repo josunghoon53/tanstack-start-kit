@@ -181,6 +181,48 @@ orders / users / contents에서 재사용 중. 완전 클라이언트 사이드,
 
 ---
 
+## 레이아웃 — 데스크톱 전용, 모바일 반응형 없음
+
+이 킷은 모바일 브레이크포인트를 지원하지 않는다. `sm:`/`md:`/`lg:` 같은 반응형 prefix로
+레이아웃을 분기하지 말 것 — 화면이 좁아지면 레이아웃이 줄어드는 게 아니라 **콘텐츠 영역에만
+스크롤이 생긴다.**
+
+- 뷰포트는 `src/routes/__root.tsx`의 `<meta name="viewport" content="width=1280, ...">`로
+  고정돼 있다. `width=device-width`로 되돌리지 말 것 — 되돌리면 모바일 기기에서 실제 화면
+  너비 기준으로 미디어 쿼리가 다시 활성화되어 레이아웃이 깨진다.
+- 사이드바(`AppSidebar`)와 헤더(`SiteHeader`)는 항상 고정이다. `src/components/ui/sidebar.tsx`의
+  `isMobile`도 `false`로 하드코딩되어 있고(모바일 오프캔버스 Sheet 안 씀), `use-mobile.ts` 훅은
+  이 결정 때문에 삭제했다 — 다시 만들지 말 것.
+- **푸터(`SiteFooter`)는 고정이 아니라 콘텐츠 스크롤 흐름의 일부다** — 페이지를 처음 열면
+  화면 밖에 있고, 아래로 스크롤해야 보인다(일반 웹사이트 푸터처럼). `__root.tsx`에서
+  `{children}`을 감싼 콘텐츠 div에 `min-h-full`을 줘서, 콘텐츠가 짧아도 스크롤 컨테이너의
+  가시 영역만큼은 항상 채우게 만들고, `SiteFooter`는 그 바로 다음 형제로 둬서 그 아래로
+  밀려나게 한다. 이 `min-h-full`을 지우면 콘텐츠가 짧을 때 푸터가 스크롤 없이 바로 보여버린다
+  — 지우지 말 것. (참고: 시행착오 과정에서 "헤더/사이드바처럼 푸터도 항상 화면에 고정"과
+  "콘텐츠 바로 아래 자연스럽게 붙임" 둘 다 시도했지만 둘 다 어색하다는 피드백을 받았다.
+  지금 방식이 최종 결정이다.)
+- 가로 스크롤은 **`__root.tsx`의 콘텐츠 래퍼(`min-w-5xl`)에만** 있다. `body`나
+  `SidebarProvider`/`SidebarInset` 같은 상위 레이아웃 요소에 `overflow-x-auto`나 `min-width`를
+  직접 걸지 말 것 — 그러면 사이드바/헤더까지 같이 옆으로 밀려서 스크롤하면 화면 밖으로
+  사라진다(실제로 한 번 겪은 버그).
+- 새 페이지의 최상위 컨테이너는 이 최소 너비(1024px, `min-w-5xl`) 안에서 자연스럽게 보이도록
+  짤 것. `grid-cols-4`처럼 고정 컬럼 수를 그냥 써도 된다 — 반응형으로 줄어들 필요가 없다.
+- 푸터(`src/components/site-footer.tsx`)는 얇은 바가 아니라 **일반 웹사이트형 풀 푸터**다:
+  브랜드/설명/소셜 아이콘 + 링크 컬럼 3개(`src/config/footer.ts`의 `FOOTER_COLUMNS`,
+  `FOOTER_SOCIAL_LINKS`) + 구분선 + 저작권/버전 바(`src/config/site.ts`의
+  `APP_NAME`/`APP_VERSION`, `package.json`의 `version`과 같이 맞춰서 올릴 것). 링크 컬럼
+  내용은 실제 서비스로 바꿀 때 `footer.ts`의 label/href만 고치면 된다.
+- 링크가 내부 라우트(`/`로 시작)면 `FooterLinkItem`이 TanStack Router `Link`로,
+  외부 링크(`#`, `mailto:` 등)면 일반 `<a>`로 자동 분기한다. 새 링크를 추가할 때 이 구분을
+  건드릴 필요는 없다 — `href`만 올바르게 넣으면 된다.
+- 소셜 아이콘: lucide-react엔 GitHub/X(Twitter) 브랜드 아이콘이 없어서 `FolderGit2`(GitHub),
+  `AtSign`(X) 같은 일반 아이콘으로 대체했다. 실제 브랜드 아이콘이 필요하면 `simple-icons`
+  같은 별도 패키지를 추가로 고려할 것 — 지금은 lucide 하나로 통일하는 쪽을 택했다.
+- dev 모드에서는 우측 하단 TanStack Devtools 플로팅 버튼이 화면 일부를 가릴 수 있는데,
+  프로덕션 빌드에는 devtools가 빠지므로 실제 문제는 아니다.
+
+---
+
 ## 코드 스타일
 
 - TypeScript `strict` + `noUnusedLocals` / `noUnusedParameters` 활성화

@@ -65,8 +65,8 @@ function SidebarProvider({
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }) {
-  // This kit keeps the sidebar desktop-only (no off-canvas/mobile breakpoint
-  // behavior), so isMobile is hardcoded rather than driven by useIsMobile().
+  // This kit is desktop-only (fixed min-width + horizontal scroll instead of
+  // mobile breakpoints, see src/routes/__root.tsx), so isMobile is hardcoded.
   const isMobile = false
   const [openMobile, setOpenMobile] = React.useState(false)
 
