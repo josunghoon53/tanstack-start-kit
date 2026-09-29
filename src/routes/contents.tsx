@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
@@ -12,25 +13,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { CONTENT_STATUS_TONE } from '@/config/contents'
+import { contentsQueryOptions } from '@/server/contents'
 
-export const Route = createFileRoute('/contents')({ component: Contents })
-
-const STATUS_TONE = {
-  발행: 'success',
-  초안: 'neutral',
-} as const
-
-const CONTENTS = [
-  { title: '9월 신규 기능 안내', author: '김민지', status: '발행' as const, date: '2026-09-15' },
-  { title: '가을맞이 프로모션 소개', author: '이서준', status: '발행' as const, date: '2026-09-10' },
-  { title: '고객센터 FAQ 개편안', author: '박지훈', status: '초안' as const, date: '2026-09-22' },
-  { title: '10월 뉴스레터 초안', author: '최유나', status: '초안' as const, date: '2026-09-24' },
-]
+export const Route = createFileRoute('/contents')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(contentsQueryOptions()),
+  component: Contents,
+})
 
 function Contents() {
+  const { data: contents } = useSuspenseQuery(contentsQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
-      CONTENTS,
+      contents,
       (content, q) =>
         content.title.toLowerCase().includes(q) || content.author.toLowerCase().includes(q),
     )
@@ -54,7 +49,7 @@ function Contents() {
               <TableCell className="font-medium">{content.title}</TableCell>
               <TableCell>{content.author}</TableCell>
               <TableCell>
-                <StatusDot tone={STATUS_TONE[content.status]}>{content.status}</StatusDot>
+                <StatusDot tone={CONTENT_STATUS_TONE[content.status]}>{content.status}</StatusDot>
               </TableCell>
               <TableCell>{content.date}</TableCell>
               <TableCell>

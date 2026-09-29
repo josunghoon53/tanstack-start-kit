@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
@@ -12,25 +13,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { USER_STATUS_TONE } from '@/config/users'
+import { usersQueryOptions } from '@/server/users'
 
-export const Route = createFileRoute('/users')({ component: Users })
-
-const STATUS_TONE = {
-  활성: 'success',
-  비활성: 'neutral',
-} as const
-
-const USERS = [
-  { name: '김민지', email: 'minji.kim@example.com', role: '관리자', status: '활성' as const, joinedAt: '2026-01-14' },
-  { name: '이서준', email: 'seojun.lee@example.com', role: '편집자', status: '활성' as const, joinedAt: '2026-02-03' },
-  { name: '박지훈', email: 'jihoon.park@example.com', role: '뷰어', status: '비활성' as const, joinedAt: '2026-03-21' },
-  { name: '최유나', email: 'yuna.choi@example.com', role: '편집자', status: '활성' as const, joinedAt: '2026-05-09' },
-]
+export const Route = createFileRoute('/users')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(usersQueryOptions()),
+  component: Users,
+})
 
 function Users() {
+  const { data: users } = useSuspenseQuery(usersQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
-      USERS,
+      users,
       (user, q) => user.name.toLowerCase().includes(q) || user.email.toLowerCase().includes(q),
     )
 
@@ -58,7 +53,7 @@ function Users() {
               </TableCell>
               <TableCell>{user.role}</TableCell>
               <TableCell>
-                <StatusDot tone={STATUS_TONE[user.status]}>{user.status}</StatusDot>
+                <StatusDot tone={USER_STATUS_TONE[user.status]}>{user.status}</StatusDot>
               </TableCell>
               <TableCell>{user.joinedAt}</TableCell>
               <TableCell>

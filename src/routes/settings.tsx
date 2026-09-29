@@ -1,6 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 import { ColorThemePicker } from '@/components/color-theme-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -83,43 +86,43 @@ function SettingRow({
   )
 }
 
+const generalSchema = z.object({
+  siteName: z.string().trim().min(1, '사이트 이름을 입력해주세요.'),
+  notifyEmail: z.boolean(),
+  maintenanceMode: z.boolean(),
+})
+
+type GeneralValues = z.infer<typeof generalSchema>
+
 function GeneralSection() {
-  const [siteName, setSiteName] = useState('My Admin')
-  const [notifyEmail, setNotifyEmail] = useState(true)
-  const [maintenanceMode, setMaintenanceMode] = useState(false)
-  const [siteNameError, setSiteNameError] = useState('')
+  const { control, register, handleSubmit, formState } = useForm<GeneralValues>({
+    resolver: zodResolver(generalSchema),
+    defaultValues: { siteName: 'My Admin', notifyEmail: true, maintenanceMode: false },
+  })
 
-  function handleSave() {
-    const trimmed = siteName.trim()
-    if (!trimmed) {
-      setSiteNameError('사이트 이름을 입력해주세요.')
-      toast.error('사이트 이름을 입력해주세요.')
-      return
-    }
-
-    setSiteNameError('')
+  function onSubmit() {
     toast.success('일반 설정이 저장됐어요.')
   }
 
+  function onInvalid(errors: typeof formState.errors) {
+    toast.error(errors.siteName?.message ?? '입력값을 확인해주세요.')
+  }
+
   return (
-    <div className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit, onInvalid)}>
       <h2 className="pb-2 text-lg font-bold">일반</h2>
       <div className="rounded-xl bg-muted/50 px-4">
         <SettingRow
           htmlFor="site-name"
           label="사이트 이름"
-          description={siteNameError || '관리자 콘솔 상단에 표시돼요.'}
-          descriptionClassName={siteNameError ? 'text-destructive' : undefined}
+          description={formState.errors.siteName?.message ?? '관리자 콘솔 상단에 표시돼요.'}
+          descriptionClassName={formState.errors.siteName ? 'text-destructive' : undefined}
         >
           <Input
             id="site-name"
             className="w-56"
-            value={siteName}
-            onChange={(event) => {
-              setSiteName(event.target.value)
-              if (siteNameError) setSiteNameError('')
-            }}
-            aria-invalid={Boolean(siteNameError)}
+            aria-invalid={Boolean(formState.errors.siteName)}
+            {...register('siteName')}
           />
         </SettingRow>
         <SettingRow
@@ -127,10 +130,16 @@ function GeneralSection() {
           label="이메일 알림"
           description="새 주문/결제 발생 시 이메일로 알려드려요."
         >
-          <Switch
-            id="notify-email"
-            checked={notifyEmail}
-            onCheckedChange={setNotifyEmail}
+          <Controller
+            control={control}
+            name="notifyEmail"
+            render={({ field }) => (
+              <Switch
+                id="notify-email"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
           />
         </SettingRow>
         <SettingRow
@@ -139,19 +148,25 @@ function GeneralSection() {
           description="활성화하면 관리자 외 접근이 제한돼요."
           last
         >
-          <Switch
-            id="maintenance-mode"
-            checked={maintenanceMode}
-            onCheckedChange={setMaintenanceMode}
+          <Controller
+            control={control}
+            name="maintenanceMode"
+            render={({ field }) => (
+              <Switch
+                id="maintenance-mode"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            )}
           />
         </SettingRow>
       </div>
       <div className="pt-4">
-        <Button type="button" size="sm" onClick={handleSave}>
+        <Button type="submit" size="sm">
           저장
         </Button>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -174,74 +189,78 @@ function ThemeSection() {
   )
 }
 
+const securitySchema = z
+  .object({
+    currentPassword: z.string().min(1, '현재 비밀번호를 입력해주세요.'),
+    newPassword: z.string().min(8, '새 비밀번호는 8자 이상이어야 해요.'),
+    confirmPassword: z.string(),
+  })
+  .refine((values) => values.newPassword === values.confirmPassword, {
+    message: '새 비밀번호가 일치하지 않아요.',
+    path: ['confirmPassword'],
+  })
+
+type SecurityValues = z.infer<typeof securitySchema>
+
 function SecuritySection() {
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
+  const { register, handleSubmit, reset, formState } = useForm<SecurityValues>({
+    resolver: zodResolver(securitySchema),
+    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+  })
+  const { errors } = formState
 
-  function handleChangePassword() {
-    if (!currentPassword) {
-      setError('현재 비밀번호를 입력해주세요.')
-      toast.error('현재 비밀번호를 입력해주세요.')
-      return
-    }
-
-    if (newPassword.length < 8) {
-      setError('새 비밀번호는 8자 이상이어야 해요.')
-      toast.error('새 비밀번호는 8자 이상이어야 해요.')
-      return
-    }
-
-    if (newPassword !== confirmPassword) {
-      setError('새 비밀번호가 일치하지 않아요.')
-      toast.error('새 비밀번호가 일치하지 않아요.')
-      return
-    }
-
-    setError('')
-    setCurrentPassword('')
-    setNewPassword('')
-    setConfirmPassword('')
+  function onSubmit() {
+    reset()
     toast.success('비밀번호가 변경됐어요.')
   }
 
+  function onInvalid(invalidErrors: typeof errors) {
+    const message =
+      invalidErrors.currentPassword?.message ??
+      invalidErrors.newPassword?.message ??
+      invalidErrors.confirmPassword?.message
+    toast.error(message ?? '입력값을 확인해주세요.')
+  }
+
   return (
-    <div className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit, onInvalid)}>
       <h2 className="pb-2 text-lg font-bold">보안</h2>
       <div className="rounded-xl bg-muted/50 px-4">
         <SettingRow
           htmlFor="current-password"
           label="현재 비밀번호"
-          description="본인 확인을 위해 입력해주세요."
+          description={errors.currentPassword?.message ?? '본인 확인을 위해 입력해주세요.'}
+          descriptionClassName={errors.currentPassword ? 'text-destructive' : undefined}
         >
           <Input
             id="current-password"
             type="password"
             autoComplete="current-password"
             className="w-56"
-            value={currentPassword}
-            onChange={(event) => setCurrentPassword(event.target.value)}
+            aria-invalid={Boolean(errors.currentPassword)}
+            {...register('currentPassword')}
           />
         </SettingRow>
         <SettingRow
           htmlFor="new-password"
           label="새 비밀번호"
-          description="8자 이상으로 설정해주세요."
+          description={errors.newPassword?.message ?? '8자 이상으로 설정해주세요.'}
+          descriptionClassName={errors.newPassword ? 'text-destructive' : undefined}
         >
           <Input
             id="new-password"
             type="password"
             autoComplete="new-password"
             className="w-56"
-            value={newPassword}
-            onChange={(event) => setNewPassword(event.target.value)}
+            aria-invalid={Boolean(errors.newPassword)}
+            {...register('newPassword')}
           />
         </SettingRow>
         <SettingRow
           htmlFor="confirm-password"
           label="새 비밀번호 확인"
-          description="같은 비밀번호를 한 번 더 입력해주세요."
+          description={errors.confirmPassword?.message ?? '같은 비밀번호를 한 번 더 입력해주세요.'}
+          descriptionClassName={errors.confirmPassword ? 'text-destructive' : undefined}
           last
         >
           <Input
@@ -249,17 +268,16 @@ function SecuritySection() {
             type="password"
             autoComplete="new-password"
             className="w-56"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            {...register('confirmPassword')}
           />
         </SettingRow>
       </div>
-      {error && <p className="pt-2 text-sm text-destructive">{error}</p>}
       <div className="pt-4">
-        <Button type="button" size="sm" onClick={handleChangePassword}>
+        <Button type="submit" size="sm">
           비밀번호 변경
         </Button>
       </div>
-    </div>
+    </form>
   )
 }

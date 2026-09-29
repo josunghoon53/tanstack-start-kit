@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
@@ -12,25 +13,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { PRODUCT_STATUS_TONE } from '@/config/products'
+import { productsQueryOptions } from '@/server/products'
 
-export const Route = createFileRoute('/products')({ component: Products })
-
-const STATUS_TONE = {
-  판매중: 'success',
-  품절: 'danger',
-} as const
-
-const PRODUCTS = [
-  { name: '무선 이어폰 Pro', category: '전자기기', stock: 128, price: '89,000원', status: '판매중' as const },
-  { name: '보온 텀블러 500ml', category: '리빙', stock: 0, price: '18,000원', status: '품절' as const },
-  { name: '접이식 노트북 스탠드', category: '전자기기', stock: 54, price: '32,000원', status: '판매중' as const },
-  { name: '유기농 핸드크림', category: '뷰티', stock: 12, price: '9,900원', status: '판매중' as const },
-]
+export const Route = createFileRoute('/products')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
+  component: Products,
+})
 
 function Products() {
+  const { data: products } = useSuspenseQuery(productsQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
-      PRODUCTS,
+      products,
       (product, q) =>
         product.name.toLowerCase().includes(q) || product.category.toLowerCase().includes(q),
     )
@@ -57,7 +52,7 @@ function Products() {
               <TableCell>{product.stock}</TableCell>
               <TableCell>{product.price}</TableCell>
               <TableCell>
-                <StatusDot tone={STATUS_TONE[product.status]}>{product.status}</StatusDot>
+                <StatusDot tone={PRODUCT_STATUS_TONE[product.status]}>{product.status}</StatusDot>
               </TableCell>
               <TableCell>
                 <RowActions label={product.name} />

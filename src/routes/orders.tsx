@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
@@ -12,14 +13,19 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
-import { ORDER_STATUS_TONE, ORDERS } from '@/config/orders'
+import { ORDER_STATUS_TONE } from '@/config/orders'
+import { ordersQueryOptions } from '@/server/orders'
 
-export const Route = createFileRoute('/orders')({ component: Orders })
+export const Route = createFileRoute('/orders')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(ordersQueryOptions()),
+  component: Orders,
+})
 
 function Orders() {
+  const { data: orders } = useSuspenseQuery(ordersQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
-      ORDERS,
+      orders,
       (order, q) => order.id.toLowerCase().includes(q) || order.customer.toLowerCase().includes(q),
     )
 

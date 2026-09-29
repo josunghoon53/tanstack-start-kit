@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Bell } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -9,11 +10,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { NOTIFICATION_CATEGORIES, NOTIFICATIONS } from '@/config/notifications'
+import { NOTIFICATION_CATEGORIES, NOTIFICATION_ICONS } from '@/config/notifications'
+import { notificationsQueryOptions } from '@/server/notifications'
 
 export function NotificationsMenu() {
+  const { data: notifications } = useSuspenseQuery(notificationsQueryOptions())
   const [category, setCategory] = useState<string | null>(null)
-  const items = category ? NOTIFICATIONS.filter((item) => item.category === category) : NOTIFICATIONS
+  const items = category
+    ? notifications.filter((item) => item.category === category)
+    : notifications
 
   return (
     <DropdownMenu>
@@ -26,7 +31,7 @@ export function NotificationsMenu() {
           <span className="sr-only">알림</span>
           <Bell className="size-6" />
           <span className="absolute -top-1 -right-1 flex size-4.5 min-w-4.5 items-center justify-center rounded-full bg-destructive px-0.5 text-[10px] leading-none font-bold text-white ring-2 ring-background">
-            {NOTIFICATIONS.length}
+            {notifications.length}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -68,7 +73,7 @@ export function NotificationsMenu() {
           </p>
         )}
         {items.map((item, index) => {
-          const Icon = item.icon
+          const Icon = NOTIFICATION_ICONS[item.iconKey]
           return (
             <div key={index} className="flex items-start gap-3 px-2 py-2">
               <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
