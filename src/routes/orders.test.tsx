@@ -154,4 +154,37 @@ describe('Orders route', () => {
 
     expect(screen.getAllByText('김민지')).toHaveLength(1)
   })
+
+  it('filters rows by status via the status select, combined with search', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(
+      screen.getByRole('combobox', { name: t.orders.columns.status }),
+    )
+    await user.click(await screen.findByRole('option', { name: '완료' }))
+
+    expect(screen.queryByText('ORD-2001')).not.toBeInTheDocument()
+    expect(screen.getByText('ORD-2002')).toBeInTheDocument()
+    expect(screen.queryByText('ORD-2003')).not.toBeInTheDocument()
+
+    // 검색어가 비어있어도 상태 필터가 계속 적용돼야 한다 (usePaginatedSearch가
+    // 빈 검색어일 때 matchesQuery를 건너뛰지 않아야 하는 회귀 지점).
+    const search = screen.getByPlaceholderText(t.orders.searchPlaceholder)
+    await user.type(search, '이서준')
+    await user.clear(search)
+
+    expect(screen.queryByText('ORD-2001')).not.toBeInTheDocument()
+    expect(screen.getByText('ORD-2002')).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('combobox', { name: t.orders.columns.status }),
+    )
+    await user.click(await screen.findByRole('option', { name: t.common.all }))
+
+    expect(screen.getByText('ORD-2001')).toBeInTheDocument()
+    expect(screen.getByText('ORD-2003')).toBeInTheDocument()
+  })
 })

@@ -1,12 +1,17 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
-import { Fragment } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
+import { TableMultiSelectFilter } from '@/components/table-multi-select-filter'
 import { TablePagination } from '@/components/table-pagination'
 import { TableRowDetail } from '@/components/table-row-detail'
 import { TableSearchInput } from '@/components/table-search-input'
+import {
+  TABLE_FILTER_ALL,
+  TableSelectFilter,
+} from '@/components/table-select-filter'
 import {
   Table,
   TableBody,
@@ -20,8 +25,11 @@ import { usePaginatedSearch } from '@/hooks/use-paginated-search'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { PRODUCT_STATUS_TONE } from '@/config/products'
+import type { ProductStatus } from '@/config/products'
 import { productsQueryOptions } from '@/server/products'
 import { useTranslation } from '@/i18n/use-translation'
+
+const PRODUCT_STATUSES: Array<ProductStatus> = ['판매중', '품절']
 
 export const Route = createFileRoute('/products')({
   loader: ({ context }) =>
@@ -32,23 +40,56 @@ export const Route = createFileRoute('/products')({
 function Products() {
   const t = useTranslation()
   const { data: products } = useSuspenseQuery(productsQueryOptions())
+  const categories = useMemo(
+    () =>
+      Array.from(new Set(products.map((product) => product.category))).sort(),
+    [products],
+  )
+  const [categoryFilter, setCategoryFilter] = useState<Array<string>>([])
+  const [statusFilter, setStatusFilter] = useState(TABLE_FILTER_ALL)
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
-    usePaginatedSearch(
-      products,
-      (product, q) =>
+    usePaginatedSearch(products, (product, q) => {
+      const matchesText =
         product.name.toLowerCase().includes(q) ||
-        product.category.toLowerCase().includes(q),
-    )
+        product.category.toLowerCase().includes(q)
+      const matchesCategory =
+        categoryFilter.length === 0 || categoryFilter.includes(product.category)
+      const matchesStatus =
+        statusFilter === TABLE_FILTER_ALL || product.status === statusFilter
+      return matchesText && matchesCategory && matchesStatus
+    })
   const { isOpen, setOpen } = useAccordionGroup()
 
   return (
     <Card className="flex-1">
       <CardContent className="flex flex-col gap-3">
-        <TableSearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder={t.products.searchPlaceholder}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <TableSearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={t.products.searchPlaceholder}
+          />
+          <TableMultiSelectFilter
+            label={t.products.columns.category}
+            options={categories.map((category) => ({
+              label: category,
+              value: category,
+            }))}
+            selected={categoryFilter}
+            onChange={setCategoryFilter}
+          />
+          <TableSelectFilter
+            ariaLabel={t.products.columns.status}
+            value={statusFilter}
+            onChange={setStatusFilter}
+            allLabel={t.common.all}
+            options={PRODUCT_STATUSES.map((status) => ({
+              label: status,
+              value: status,
+            }))}
+            className="w-32"
+          />
+        </div>
         <Table className="border-y">
           <TableHeader>
             <TableRow>

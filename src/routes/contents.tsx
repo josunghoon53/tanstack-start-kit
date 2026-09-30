@@ -1,12 +1,18 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
+import type { DateRange } from 'react-day-picker'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
+import { TableDateRangeFilter } from '@/components/table-date-range-filter'
 import { TablePagination } from '@/components/table-pagination'
 import { TableRowDetail } from '@/components/table-row-detail'
 import { TableSearchInput } from '@/components/table-search-input'
+import {
+  TABLE_FILTER_ALL,
+  TableSelectFilter,
+} from '@/components/table-select-filter'
 import {
   Table,
   TableBody,
@@ -18,10 +24,14 @@ import {
 import { useAccordionGroup } from '@/hooks/use-accordion-group'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
 import { Card, CardContent } from '@/components/ui/card'
+import { isWithinDateRange } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import { CONTENT_STATUS_TONE } from '@/config/contents'
+import type { ContentStatus } from '@/config/contents'
 import { contentsQueryOptions } from '@/server/contents'
 import { useTranslation } from '@/i18n/use-translation'
+
+const CONTENT_STATUSES: Array<ContentStatus> = ['발행', '초안']
 
 export const Route = createFileRoute('/contents')({
   loader: ({ context }) =>
@@ -32,23 +42,46 @@ export const Route = createFileRoute('/contents')({
 function Contents() {
   const t = useTranslation()
   const { data: contents } = useSuspenseQuery(contentsQueryOptions())
+  const [statusFilter, setStatusFilter] = useState(TABLE_FILTER_ALL)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
-    usePaginatedSearch(
-      contents,
-      (content, q) =>
+    usePaginatedSearch(contents, (content, q) => {
+      const matchesText =
         content.title.toLowerCase().includes(q) ||
-        content.author.toLowerCase().includes(q),
-    )
+        content.author.toLowerCase().includes(q)
+      const matchesStatus =
+        statusFilter === TABLE_FILTER_ALL || content.status === statusFilter
+      const matchesDate = isWithinDateRange(content.date, dateRange)
+      return matchesText && matchesStatus && matchesDate
+    })
   const { isOpen, setOpen } = useAccordionGroup()
 
   return (
     <Card className="flex-1">
       <CardContent className="flex flex-col gap-3">
-        <TableSearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder={t.contents.searchPlaceholder}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <TableSearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={t.contents.searchPlaceholder}
+          />
+          <TableSelectFilter
+            ariaLabel={t.contents.columns.status}
+            value={statusFilter}
+            onChange={setStatusFilter}
+            allLabel={t.common.all}
+            options={CONTENT_STATUSES.map((status) => ({
+              label: status,
+              value: status,
+            }))}
+            className="w-32"
+          />
+          <TableDateRangeFilter
+            value={dateRange}
+            onChange={setDateRange}
+            placeholder={t.common.dateRangePlaceholder}
+          />
+        </div>
         <Table className="border-y">
           <TableHeader>
             <TableRow>

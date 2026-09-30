@@ -219,11 +219,36 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 
 **검색 / 페이지네이션**
 `src/hooks/use-paginated-search.ts` + `table-search-input.tsx` + `table-pagination.tsx`
-orders / users / contents에서 재사용 중. 완전 클라이언트 사이드, URL 쿼리 동기화 없음.
+5개 리스트 페이지 전부에서 재사용 중. 완전 클라이언트 사이드, URL 쿼리 동기화 없음.
+`usePaginatedSearch`의 `matchesQuery(item, query)`는 검색어가 빈 문자열이어도 항상
+호출된다(건너뛰지 않는다) — 그래야 아래 테이블 필터처럼 검색어와 무관한 조건을
+`matchesQuery` 클로저 안에 같이 접어넣었을 때도, 검색창이 비어있는 상태에서 필터만
+걸어도 정상 동작한다. 텍스트 전용으로만 쓰는 호출부는 `''.includes('')`가 항상
+`true`라 동작이 그대로다.
 
-**행(row) 액션 모달**
+**테이블 필터**
+`src/components/table-select-filter.tsx`(단일 선택) / `table-multi-select-filter.tsx`
+(다중 선택) / `table-date-range-filter.tsx`(날짜 범위, `Popover`+`Calendar`) + `src/lib/date.ts`
+(문자열 날짜 비교 헬퍼). 검색창과 나란히 두고, 상태는 각 라우트 컴포넌트에서
+`useState`로 들고 있다가 `usePaginatedSearch`의 `matchesQuery` 클로저 안에서
+`matchesText && matchesStatus && ...` 식으로 그냥 더 합치면 된다 — 훅 자체를 고칠 필요는
+없다(위 항목 참고). 페이지가 필터 때문에 줄어들 때 별도로 `setPage(1)`을 부를 필요도
+없다 — 훅이 이미 `Math.min(page, totalPages)`로 현재 페이지를 자동으로 클램프한다.
+날짜는 이 킷의 목데이터처럼 `'YYYY-MM-DD'` 문자열로 저장돼 있다는 전제로,
+`isWithinDateRange(dateString, range)`가 `Date` 파싱 없이 문자열 비교로 처리한다
+(`orders.tsx`/`contents.tsx` 참고). 단일/다중 선택 예시는 `products.tsx`(카테고리
+다중선택 + 상태 단일선택), `users.tsx`(역할 다중선택 + 상태 단일선택)에도 있다.
+
+**행(row) 액션 모달 / 상세 보기**
 `src/components/row-actions.tsx`
-수정은 `Dialog`, 삭제 확인은 `AlertDialog`로 한 컴포넌트 안에서 구성하는 게 표준 패턴.
+수정은 `Dialog`, 삭제 확인은 `AlertDialog`, "보기"는 `Sheet`로 한 컴포넌트 안에서
+구성하는 게 표준 패턴. `details?: Array<{ label, value }>`를 넘기면 Sheet 안에 그
+목록을 보여준다. 같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
+테이블 행을 클릭했을 때 인라인 아코디언으로도 똑같이 펼쳐 보여줄 수 있다 — 한 번
+필드를 정의해서 Sheet와 인라인 확장 양쪽에 재사용하는 게 패턴이다(`orders.tsx` 등 참고).
+행 아코디언은 `useAccordionGroup`(한 번에 하나만 펼쳐짐)으로 열림 상태를 관리하고,
+행 안의 `RowActions` 셀에는 `onClick={(e) => e.stopPropagation()}`을 꼭 걸어야
+드롭다운 클릭이 행 토글을 같이 발동시키지 않는다.
 
 **토스트**
 `sonner`. `Toaster`는 `__root.tsx`에 전역 1회 마운트.

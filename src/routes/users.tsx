@@ -1,12 +1,17 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
-import { Fragment } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
+import { TableMultiSelectFilter } from '@/components/table-multi-select-filter'
 import { TablePagination } from '@/components/table-pagination'
 import { TableRowDetail } from '@/components/table-row-detail'
 import { TableSearchInput } from '@/components/table-search-input'
+import {
+  TABLE_FILTER_ALL,
+  TableSelectFilter,
+} from '@/components/table-select-filter'
 import {
   Table,
   TableBody,
@@ -20,8 +25,11 @@ import { usePaginatedSearch } from '@/hooks/use-paginated-search'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { USER_STATUS_TONE } from '@/config/users'
+import type { UserStatus } from '@/config/users'
 import { usersQueryOptions } from '@/server/users'
 import { useTranslation } from '@/i18n/use-translation'
+
+const USER_STATUSES: Array<UserStatus> = ['활성', '비활성']
 
 export const Route = createFileRoute('/users')({
   loader: ({ context }) =>
@@ -32,23 +40,52 @@ export const Route = createFileRoute('/users')({
 function Users() {
   const t = useTranslation()
   const { data: users } = useSuspenseQuery(usersQueryOptions())
+  const roles = useMemo(
+    () => Array.from(new Set(users.map((user) => user.role))).sort(),
+    [users],
+  )
+  const [roleFilter, setRoleFilter] = useState<Array<string>>([])
+  const [statusFilter, setStatusFilter] = useState(TABLE_FILTER_ALL)
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
-    usePaginatedSearch(
-      users,
-      (user, q) =>
+    usePaginatedSearch(users, (user, q) => {
+      const matchesText =
         user.name.toLowerCase().includes(q) ||
-        user.email.toLowerCase().includes(q),
-    )
+        user.email.toLowerCase().includes(q)
+      const matchesRole =
+        roleFilter.length === 0 || roleFilter.includes(user.role)
+      const matchesStatus =
+        statusFilter === TABLE_FILTER_ALL || user.status === statusFilter
+      return matchesText && matchesRole && matchesStatus
+    })
   const { isOpen, setOpen } = useAccordionGroup()
 
   return (
     <Card className="flex-1">
       <CardContent className="flex flex-col gap-3">
-        <TableSearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder={t.users.searchPlaceholder}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <TableSearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={t.users.searchPlaceholder}
+          />
+          <TableMultiSelectFilter
+            label={t.users.columns.role}
+            options={roles.map((role) => ({ label: role, value: role }))}
+            selected={roleFilter}
+            onChange={setRoleFilter}
+          />
+          <TableSelectFilter
+            ariaLabel={t.users.columns.status}
+            value={statusFilter}
+            onChange={setStatusFilter}
+            allLabel={t.common.all}
+            options={USER_STATUSES.map((status) => ({
+              label: status,
+              value: status,
+            }))}
+            className="w-32"
+          />
+        </div>
         <Table className="border-y">
           <TableHeader>
             <TableRow>

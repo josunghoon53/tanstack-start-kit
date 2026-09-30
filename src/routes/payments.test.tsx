@@ -126,6 +126,22 @@ describe('Payments route', () => {
     expect(await screen.findByText(t.common.noResults)).toBeInTheDocument()
   })
 
+  it('filters rows by status via the status select', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Payments />)
+
+    await screen.findByText('ORD-3001')
+
+    await user.click(
+      screen.getByRole('combobox', { name: t.payments.columns.status }),
+    )
+    await user.click(await screen.findByRole('option', { name: '결제취소' }))
+
+    expect(screen.queryByText('ORD-3001')).not.toBeInTheDocument()
+    expect(screen.getByText('ORD-3002')).toBeInTheDocument()
+    expect(screen.queryByText('ORD-3003')).not.toBeInTheDocument()
+  })
+
   it('enables the cancel button only for completed payments', async () => {
     renderWithQueryClient(<Payments />)
 

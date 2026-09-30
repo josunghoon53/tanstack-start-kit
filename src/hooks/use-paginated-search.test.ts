@@ -121,6 +121,30 @@ describe('usePaginatedSearch', () => {
     expect(result.current.page).toBe(2)
   })
 
+  it('still applies matchesQuery even when the search text is empty (for extra filters folded into the closure)', () => {
+    const data = makeData(10)
+    let onlyEvenIds = false
+    const { result, rerender } = renderHook(
+      ({ onlyEven }: { onlyEven: boolean }) =>
+        usePaginatedSearch(
+          data,
+          (item, q) =>
+            item.name.toLowerCase().includes(q) &&
+            (!onlyEven || item.id % 2 === 0),
+          10,
+        ),
+      { initialProps: { onlyEven: onlyEvenIds } },
+    )
+
+    // 검색어는 비어있는 채로, 외부 상태(필터)만 켜본다.
+    expect(result.current.totalCount).toBe(10)
+
+    onlyEvenIds = true
+    rerender({ onlyEven: onlyEvenIds })
+
+    expect(result.current.totalCount).toBe(5)
+  })
+
   it('totalCount reflects filtered length, not raw data length', () => {
     const data = makeData(30)
     const { result } = renderHook(() =>

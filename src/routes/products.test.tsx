@@ -105,4 +105,41 @@ describe('Products route', () => {
 
     expect(await screen.findByText(t.common.noResults)).toBeInTheDocument()
   })
+
+  it('filters rows by one or more categories via the multi-select filter', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Products />)
+
+    await screen.findByText('무선 마우스')
+
+    await user.click(
+      screen.getByRole('button', { name: t.products.columns.category }),
+    )
+    await user.click(screen.getByRole('menuitemcheckbox', { name: '전자기기' }))
+
+    expect(screen.getByText('무선 마우스')).toBeInTheDocument()
+    expect(screen.queryByText('캠핑 의자')).not.toBeInTheDocument()
+    expect(screen.queryByText('핸드드립 세트')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('menuitemcheckbox', { name: '리빙' }))
+
+    expect(screen.getByText('무선 마우스')).toBeInTheDocument()
+    expect(screen.getByText('핸드드립 세트')).toBeInTheDocument()
+    expect(screen.queryByText('캠핑 의자')).not.toBeInTheDocument()
+  })
+
+  it('filters rows by status via the status select', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Products />)
+
+    await screen.findByText('무선 마우스')
+
+    await user.click(
+      screen.getByRole('combobox', { name: t.products.columns.status }),
+    )
+    await user.click(await screen.findByRole('option', { name: '품절' }))
+
+    expect(screen.queryByText('무선 마우스')).not.toBeInTheDocument()
+    expect(screen.getByText('캠핑 의자')).toBeInTheDocument()
+  })
 })
