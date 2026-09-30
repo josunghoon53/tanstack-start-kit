@@ -1,8 +1,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { ChevronRight } from 'lucide-react'
+import { Fragment } from 'react'
 import { RowActions } from '@/components/row-actions'
 import { StatusDot } from '@/components/status-dot'
 import { TablePagination } from '@/components/table-pagination'
+import { TableRowDetail } from '@/components/table-row-detail'
 import { TableSearchInput } from '@/components/table-search-input'
 import {
   Table,
@@ -12,8 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useAccordionGroup } from '@/hooks/use-accordion-group'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
 import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { PRODUCT_STATUS_TONE } from '@/config/products'
 import { productsQueryOptions } from '@/server/products'
 import { useTranslation } from '@/i18n/use-translation'
@@ -34,6 +39,7 @@ function Products() {
         product.name.toLowerCase().includes(q) ||
         product.category.toLowerCase().includes(q),
     )
+  const { isOpen, setOpen } = useAccordionGroup()
 
   return (
     <Card className="flex-1">
@@ -46,6 +52,7 @@ function Products() {
         <Table className="border-y">
           <TableHeader>
             <TableRow>
+              <TableHead className="w-8" />
               <TableHead>{t.products.columns.name}</TableHead>
               <TableHead>{t.products.columns.category}</TableHead>
               <TableHead>{t.products.columns.stock}</TableHead>
@@ -55,26 +62,60 @@ function Products() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageItems.map((product) => (
-              <TableRow key={product.name}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>
-                  <StatusDot tone={PRODUCT_STATUS_TONE[product.status]}>
-                    {product.status}
-                  </StatusDot>
-                </TableCell>
-                <TableCell>
-                  <RowActions label={product.name} />
-                </TableCell>
-              </TableRow>
-            ))}
+            {pageItems.map((product) => {
+              const details = [
+                {
+                  label: t.products.columns.category,
+                  value: product.category,
+                },
+                { label: t.products.columns.stock, value: product.stock },
+                { label: t.products.columns.price, value: product.price },
+                { label: t.products.columns.status, value: product.status },
+              ]
+              const open = isOpen(product.name)
+
+              return (
+                <Fragment key={product.name}>
+                  <TableRow
+                    className="cursor-pointer"
+                    onClick={() => setOpen(product.name, !open)}
+                  >
+                    <TableCell>
+                      <ChevronRight
+                        className={cn(
+                          'size-4 text-muted-foreground transition-transform',
+                          open && 'rotate-90',
+                        )}
+                      />
+                      <span className="sr-only">
+                        {open
+                          ? t.common.collapseRow(product.name)
+                          : t.common.expandRow(product.name)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {product.name}
+                    </TableCell>
+                    <TableCell>{product.category}</TableCell>
+                    <TableCell>{product.stock}</TableCell>
+                    <TableCell>{product.price}</TableCell>
+                    <TableCell>
+                      <StatusDot tone={PRODUCT_STATUS_TONE[product.status]}>
+                        {product.status}
+                      </StatusDot>
+                    </TableCell>
+                    <TableCell onClick={(event) => event.stopPropagation()}>
+                      <RowActions label={product.name} details={details} />
+                    </TableCell>
+                  </TableRow>
+                  {open && <TableRowDetail colSpan={7} details={details} />}
+                </Fragment>
+              )
+            })}
             {pageItems.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="py-10 text-center text-muted-foreground"
                 >
                   {t.common.noResults}

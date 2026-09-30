@@ -31,10 +31,31 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { useTranslation } from '@/i18n/use-translation'
 
-export function RowActions({ label }: { label: string }) {
+export interface RowDetail {
+  label: string
+  value: React.ReactNode
+}
+
+export function RowActions({
+  label,
+  details,
+}: {
+  label: string
+  details?: Array<RowDetail>
+}) {
   const t = useTranslation()
+  const [viewOpen, setViewOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [editValue, setEditValue] = useState(label)
@@ -59,7 +80,7 @@ export function RowActions({ label }: { label: string }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{t.rowActions.actionsLabel}</DropdownMenuLabel>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setViewOpen(true)}>
             <Eye />
             {t.common.view}
           </DropdownMenuItem>
@@ -82,6 +103,34 @@ export function RowActions({ label }: { label: string }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Sheet open={viewOpen} onOpenChange={setViewOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>{label}</SheetTitle>
+            <SheetDescription>
+              {t.rowActions.viewSheetDescription}
+            </SheetDescription>
+          </SheetHeader>
+          {details && details.length > 0 && (
+            <div className="flex flex-col gap-4 px-4">
+              {details.map((detail) => (
+                <div key={detail.label} className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    {detail.label}
+                  </span>
+                  <span className="text-sm font-medium">{detail.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button variant="outline">{t.common.close}</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>

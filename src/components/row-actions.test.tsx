@@ -26,6 +26,47 @@ describe('RowActions', () => {
     expect(screen.getByRole('menuitem', { name: '삭제' })).toBeInTheDocument()
   })
 
+  it('opens a view sheet with the given details and closes it', async () => {
+    const user = userEvent.setup()
+    render(
+      <RowActions
+        label="상품 A"
+        details={[
+          { label: '카테고리', value: '전자기기' },
+          { label: '재고', value: 12 },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /상품 A 작업 열기/ }))
+    await user.click(screen.getByRole('menuitem', { name: '보기' }))
+
+    expect(
+      await screen.findByRole('heading', { name: '상품 A' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('카테고리')).toBeInTheDocument()
+    expect(screen.getByText('전자기기')).toBeInTheDocument()
+    expect(screen.getByText('재고')).toBeInTheDocument()
+    expect(screen.getByText('12')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: '닫기' }))
+
+    expect(screen.queryByText('전자기기')).not.toBeInTheDocument()
+  })
+
+  it('renders the view sheet without a details list when none is given', async () => {
+    const user = userEvent.setup()
+    render(<RowActions label="상품 A" />)
+
+    await user.click(screen.getByRole('button', { name: /상품 A 작업 열기/ }))
+    await user.click(screen.getByRole('menuitem', { name: '보기' }))
+
+    expect(
+      await screen.findByRole('heading', { name: '상품 A' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('간단한 정보를 확인하세요.')).toBeInTheDocument()
+  })
+
   it('edits and saves via the dialog, toasting success and closing', async () => {
     const user = userEvent.setup()
     render(<RowActions label="상품 A" />)

@@ -105,4 +105,53 @@ describe('Orders route', () => {
 
     expect(await screen.findByText(t.common.noResults)).toBeInTheDocument()
   })
+
+  it('expands a row on click to show a duplicate detail panel, and collapses it again', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    // 컬럼 자체에 고객명이 항상 보이므로, 펼쳤을 때 상세 패널에 한 번 더
+    // 렌더링돼서 총 2번(행 셀 + 상세 패널)이 되는지로 검증한다.
+    expect(screen.getAllByText('김민지')).toHaveLength(1)
+
+    await user.click(screen.getByText('ORD-2001'))
+
+    expect(screen.getAllByText('김민지')).toHaveLength(2)
+    expect(screen.getAllByText('12,000원')).toHaveLength(2)
+
+    await user.click(screen.getByText('ORD-2001'))
+
+    expect(screen.getAllByText('김민지')).toHaveLength(1)
+  })
+
+  it('only keeps one row expanded at a time (accordion)', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(screen.getByText('ORD-2001'))
+    expect(screen.getAllByText('김민지')).toHaveLength(2)
+    expect(screen.getAllByText('이서준')).toHaveLength(1)
+
+    await user.click(screen.getByText('ORD-2002'))
+    expect(screen.getAllByText('김민지')).toHaveLength(1)
+    expect(screen.getAllByText('이서준')).toHaveLength(2)
+  })
+
+  it('does not toggle the row when clicking the row actions menu', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    const [firstRowActions] = screen.getAllByRole('button', {
+      name: /작업 열기/,
+    })
+    await user.click(firstRowActions)
+
+    expect(screen.getAllByText('김민지')).toHaveLength(1)
+  })
 })
