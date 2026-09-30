@@ -1,12 +1,12 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Pretendard', ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -26,7 +26,7 @@ body {
 
 /* Tailwind v4's preflight no longer sets cursor: pointer on buttons. */
 button:not(:disabled),
-[role="button"]:not([aria-disabled="true"]) {
+[role='button']:not([aria-disabled='true']) {
   cursor: pointer;
 }
 
@@ -73,15 +73,15 @@ button:not(:disabled),
   }
 }
 
-[data-slot="collapsible-content"] {
+[data-slot='collapsible-content'] {
   overflow: hidden;
 }
 
-[data-slot="collapsible-content"][data-state="open"] {
+[data-slot='collapsible-content'][data-state='open'] {
   animation: collapsible-down 200ms ease-out;
 }
 
-[data-slot="collapsible-content"][data-state="closed"] {
+[data-slot='collapsible-content'][data-state='closed'] {
   animation: collapsible-up 200ms ease-out;
 }
 
@@ -162,35 +162,35 @@ button:not(:disabled),
 }
 
 /* 테마 색상 프리셋: settings 페이지에서 선택하면 data-color가 <html>에 설정됨 */
-:root[data-color="green"] {
+:root[data-color='green'] {
   --primary: oklch(0.45 0.08 155);
   --ring: oklch(0.5 0.09 155);
   --sidebar-primary: oklch(0.45 0.08 155);
   --sidebar-ring: oklch(0.5 0.09 155);
 }
 
-:root[data-color="purple"] {
+:root[data-color='purple'] {
   --primary: oklch(0.5 0.15 300);
   --ring: oklch(0.58 0.16 300);
   --sidebar-primary: oklch(0.5 0.15 300);
   --sidebar-ring: oklch(0.58 0.16 300);
 }
 
-:root[data-color="rose"] {
+:root[data-color='rose'] {
   --primary: oklch(0.5 0.15 15);
   --ring: oklch(0.58 0.16 15);
   --sidebar-primary: oklch(0.5 0.15 15);
   --sidebar-ring: oklch(0.58 0.16 15);
 }
 
-:root[data-color="orange"] {
+:root[data-color='orange'] {
   --primary: oklch(0.58 0.15 60);
   --ring: oklch(0.62 0.16 60);
   --sidebar-primary: oklch(0.58 0.15 60);
   --sidebar-ring: oklch(0.62 0.16 60);
 }
 
-:root[data-color="slate"] {
+:root[data-color='slate'] {
   --primary: oklch(0.35 0 0);
   --ring: oklch(0.55 0 0);
   --sidebar-primary: oklch(0.35 0 0);
@@ -231,35 +231,35 @@ button:not(:disabled),
   --sidebar-ring: oklch(0.5 0.16 260);
 }
 
-.dark[data-color="green"] {
+.dark[data-color='green'] {
   --primary: oklch(0.58 0.08 155);
   --ring: oklch(0.46 0.09 155);
   --sidebar-primary: oklch(0.58 0.08 155);
   --sidebar-ring: oklch(0.46 0.09 155);
 }
 
-.dark[data-color="purple"] {
+.dark[data-color='purple'] {
   --primary: oklch(0.65 0.15 300);
   --ring: oklch(0.5 0.16 300);
   --sidebar-primary: oklch(0.65 0.15 300);
   --sidebar-ring: oklch(0.5 0.16 300);
 }
 
-.dark[data-color="rose"] {
+.dark[data-color='rose'] {
   --primary: oklch(0.65 0.15 15);
   --ring: oklch(0.5 0.16 15);
   --sidebar-primary: oklch(0.65 0.15 15);
   --sidebar-ring: oklch(0.5 0.16 15);
 }
 
-.dark[data-color="orange"] {
+.dark[data-color='orange'] {
   --primary: oklch(0.68 0.15 60);
   --ring: oklch(0.53 0.16 60);
   --sidebar-primary: oklch(0.68 0.15 60);
   --sidebar-ring: oklch(0.53 0.16 60);
 }
 
-.dark[data-color="slate"] {
+.dark[data-color='slate'] {
   --primary: oklch(0.75 0 0);
   --ring: oklch(0.55 0 0);
   --sidebar-primary: oklch(0.75 0 0);
@@ -271,15 +271,27 @@ button:not(:disabled),
 /* 콘텐츠 배경: 화면 전체에 은은하게 깔리는 브랜드 컬러 + 보일 듯 말 듯한 격자.
    레이어는 위에서부터 [전체 컬러 워시] → [격자를 아래로 페이드시키는 덮개] → [격자 가로/세로선].
    컬러 워시가 맨 위라 페이드된 영역까지 고르게 물든다.
-   색은 전부 테마 변수(--primary/--muted/--border)라 다크모드·색상 프리셋을 자동으로 따라온다. */
+   색은 전부 테마 변수(--primary/--muted/--border)라 다크모드·색상 프리셋을 자동으로 따라온다.
+   이 규칙은 아래 이미지 오버라이드가 없는 조합(현재는 라이트 모드 기본 블루 프리셋)의
+   폴백으로도 쓰인다 — 새 색상 프리셋을 추가했는데 매칭되는 이미지가 아직 없을 때도
+   여기로 자연스럽게 떨어진다. */
 .bg-grid-fade {
   --grid-line: color-mix(in oklab, var(--border) 45%, transparent);
   --wash-strong: color-mix(in oklab, var(--primary) 9%, transparent);
   --wash-soft: color-mix(in oklab, var(--primary) 4%, transparent);
   background-color: var(--muted);
   background-image:
-    linear-gradient(135deg, var(--wash-strong), var(--wash-soft) 50%, var(--wash-strong)),
-    radial-gradient(ellipse 110% 100% at 50% 0%, transparent 35%, var(--muted) 95%),
+    linear-gradient(
+      135deg,
+      var(--wash-strong),
+      var(--wash-soft) 50%,
+      var(--wash-strong)
+    ),
+    radial-gradient(
+      ellipse 110% 100% at 50% 0%,
+      transparent 35%,
+      var(--muted) 95%
+    ),
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size:
@@ -287,6 +299,83 @@ button:not(:disabled),
     100% 100%,
     32px 32px,
     32px 32px;
+}
+
+/* 디자인팀이 만든 색상별 오버레이 이미지. 프리셋(data-color)×테마(.dark) 조합마다
+   1장씩 매칭한다 — 라이트 모드 기본 블루(프리셋 미지정)만 아직 이미지가 없어서 위의
+   CSS 패턴 폴백을 그대로 쓴다. background-size/position/repeat을 매 규칙에 같이 써야
+   한다 — 위 폴백 규칙의 background-size는 격자 레이어별로 다른 값 목록(100% 100%,
+   32px 32px, ...)이라, 이미지 단일 레이어용 `cover`를 별도 공용 규칙으로 빼면 그
+   레이어별 사이징까지 덮어써서 블루 폴백의 격자 무늬가 깨진다.
+
+   다크 모드 이미지는 원본이 라이트보다 대비가 훨씬 강해서(밝은 코너 장식이 거의
+   흰색에 가까움) 그대로 쓰면 카드보다 배경이 튀어 보인다. --background를 살짝 섞은
+   반투명 워시 레이어를 이미지 위에 얹어 톤을 죽인다. */
+.dark .bg-grid-fade {
+  --overlay-tint: color-mix(in oklab, var(--background) 55%, transparent);
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-blue-dark.webp');
+  background-size:
+    100% 100%,
+    cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+:root[data-color='green'] .bg-grid-fade {
+  background-image: url('/backgrounds/bg-green-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dark[data-color='green'] .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-green-dark.webp');
+}
+:root[data-color='purple'] .bg-grid-fade {
+  background-image: url('/backgrounds/bg-purple-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dark[data-color='purple'] .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-purple-dark.webp');
+}
+:root[data-color='rose'] .bg-grid-fade {
+  background-image: url('/backgrounds/bg-rose-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dark[data-color='rose'] .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-rose-dark.webp');
+}
+:root[data-color='orange'] .bg-grid-fade {
+  background-image: url('/backgrounds/bg-orange-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dark[data-color='orange'] .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-orange-dark.webp');
+}
+:root[data-color='slate'] .bg-grid-fade {
+  background-image: url('/backgrounds/bg-slate-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.dark[data-color='slate'] .bg-grid-fade {
+  background-image:
+    linear-gradient(var(--overlay-tint), var(--overlay-tint)),
+    url('/backgrounds/bg-slate-dark.webp');
 }
 
 @layer base {
