@@ -39,11 +39,16 @@ pnpm build && pnpm preview                # 프로덕션 빌드 확인
 pnpm lint                                 # eslint (@tanstack/eslint-config)
 pnpm format                               # prettier --write . && eslint --fix
 pnpm check                                # prettier --check .
+pnpm test                                 # vitest run (유닛/컴포넌트 테스트, 1회 실행)
+pnpm test:watch                           # vitest (watch 모드)
 pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 ```
 
-테스트 러너 없음 (vitest / playwright 미설치).
-테스트 추가를 요청받으면 먼저 어떤 러너를 쓸지 확인할 것.
+**테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)만 있다. `vitest.config.ts`는
+`vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
+전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
+(예: `src/i18n/messages.test.ts`). Playwright 같은 E2E 러너는 아직 없다 — 필요해지면 먼저
+어떤 플로우를 커버할지 확인할 것.
 
 ---
 
