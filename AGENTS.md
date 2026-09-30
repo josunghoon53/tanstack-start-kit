@@ -44,11 +44,33 @@ pnpm test:watch                           # vitest (watch 모드)
 pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 ```
 
-**테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)만 있다. `vitest.config.ts`는
+**테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
+컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
+config 데이터 정합성)를 커버해뒀다 — 38개 테스트 파일, 130개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
-(예: `src/i18n/messages.test.ts`). Playwright 같은 E2E 러너는 아직 없다 — 필요해지면 먼저
-어떤 플로우를 커버할지 확인할 것.
+(예: `src/i18n/messages.test.ts`).
+
+- **테스트 하네스** (`src/test/`): `render.tsx`가 `renderWithQueryClient(ui)`(React Query만
+  필요한 컴포넌트용)와 `renderWithRouter(ui, { initialPath?, extraPaths? })`(`<Link>`/
+  `useRouterState`/`useRouter`가 필요한 컴포넌트용 — 실제 앱의 `routeTree.gen.ts`가 아니라
+  인증·로더 없는 최소 라우터를 새로 구성한다)를 제공한다. `query-client.ts`는 재시도/캐시를
+  끈 테스트 전용 `QueryClient`를 만든다.
+- **서버 함수는 항상 목(mock)한다**: `createServerFn`으로 만든 함수(`loginFn`, `logoutFn`,
+  `get*Fn` 등)는 내부적으로 `useSession()`(`@tanstack/react-start/server`)을 통해 실제 요청
+  컨텍스트를 요구해서, vitest 안에서 그대로 호출하면 던진다. 서버 데이터를 쓰는 컴포넌트를
+  테스트할 때는 반드시 `vi.mock('@/server/<domain>', () => ({ xxxQueryOptions: () => ({...}) }))`
+  처럼 해당 서버 모듈 전체를 목하고 시작할 것 — `src/routes/orders.test.tsx` 등 참고.
+- **Sidebar 컨텍스트**: `SidebarMenuButton`/`SidebarTrigger` 등은 `<SidebarProvider>`
+  (`@/components/ui/sidebar`) 밖에서 렌더링하면 "useSidebar must be used within a
+  SidebarProvider" 에러를 던진다. 사이드바 관련 컴포넌트를 테스트할 때 빠뜨리지 말 것.
+- **로케일은 전역 싱글톤**: `useLocaleStore`는 테스트 파일 간에도 공유되는 모듈 스코프
+  상태다. 한국어 문자열을 검증하는 테스트는 `beforeEach`에서
+  `useLocaleStore.setState({ locale: 'ko' })`로 리셋해둘 것.
+- 이 킷은 실제 DB·외부 인증이 없는 데모 상태라, `server/*.ts`(createServerFn 핸들러 자체)와
+  세션/미들웨어는 단위 테스트 범위 밖이다 — 실제 서버 요청 컨텍스트가 있어야 의미 있게
+  검증되므로, 필요해지면 Playwright 같은 E2E 러너로 다뤄야 한다. Playwright는 아직 없다 —
+  필요해지면 먼저 어떤 플로우를 커버할지 확인할 것.
 
 ---
 
