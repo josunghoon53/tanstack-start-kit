@@ -1,9 +1,20 @@
 import { describe, expect, it, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { toast } from 'sonner'
+import { downloadCsv, toCsv } from '@/lib/csv'
 import { renderWithQueryClient } from '@/test/render'
 import { messages } from '@/i18n/messages'
 import type { OrderItem } from '@/config/orders'
+
+vi.mock('sonner', () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
+
+vi.mock('@/lib/csv', () => ({
+  toCsv: vi.fn(() => 'mock-csv'),
+  downloadCsv: vi.fn(),
+}))
 
 const MOCK_ORDERS: Array<OrderItem> = [
   {
@@ -186,5 +197,118 @@ describe('Orders route', () => {
 
     expect(screen.getByText('ORD-2001')).toBeInTheDocument()
     expect(screen.getByText('ORD-2003')).toBeInTheDocument()
+  })
+
+  it('sorts rows by column when a sortable header is clicked, toggling asc/desc', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    const idHeader = screen.getByRole('button', { name: t.orders.columns.id })
+
+    await user.click(idHeader)
+    expect(
+      screen.getAllByText(/^ORD-\d{4}$/).map((el) => el.textContent),
+    ).toEqual(['ORD-2001', 'ORD-2002', 'ORD-2003'])
+
+    await user.click(idHeader)
+    expect(
+      screen.getAllByText(/^ORD-\d{4}$/).map((el) => el.textContent),
+    ).toEqual(['ORD-2003', 'ORD-2002', 'ORD-2001'])
+  })
+
+  it('selects a row via its checkbox, shows the bulk actions bar, and clears it', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-2001') }),
+    )
+
+    expect(screen.getByText(t.common.selectedCount(1))).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: t.common.clearSelection }),
+    )
+
+    expect(
+      screen.queryByText(t.common.selectedCount(1)),
+    ).not.toBeInTheDocument()
+  })
+
+  it('selects every row on the page via the header checkbox', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectAllRows }),
+    )
+
+    expect(
+      screen.getByText(t.common.selectedCount(MOCK_ORDERS.length)),
+    ).toBeInTheDocument()
+  })
+
+  it('confirms bulk delete, toasts success with the count, and clears the selection', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-2001') }),
+    )
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-2002') }),
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: t.common.deleteSelected }),
+    )
+
+    expect(
+      await screen.findByText(t.common.deleteSelectedTitle(2)),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: t.common.delete }))
+
+    expect(toast.success).toHaveBeenCalledWith(t.common.deleteSelectedToast(2))
+    expect(
+      screen.queryByText(t.common.selectedCount(2)),
+    ).not.toBeInTheDocument()
+  })
+
+  it('exports all filtered rows as CSV via the toolbar export button', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(screen.getByRole('button', { name: t.common.exportCsv }))
+
+    expect(toCsv).toHaveBeenCalledWith(MOCK_ORDERS, expect.any(Array))
+    expect(downloadCsv).toHaveBeenCalledWith('orders.csv', 'mock-csv')
+  })
+
+  it('exports only the selected rows via the bulk actions export button', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Orders />)
+
+    await screen.findByText('ORD-2001')
+
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-2002') }),
+    )
+
+    // 하나라도 선택되면 툴바의 기본 내보내기 버튼은 사라지고, 선택 항목용
+    // 내보내기 버튼 하나만 남는다.
+    await user.click(screen.getByRole('button', { name: t.common.exportCsv }))
+
+    expect(toCsv).toHaveBeenCalledWith([MOCK_ORDERS[1]], expect.any(Array))
   })
 })

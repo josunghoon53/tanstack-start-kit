@@ -36,6 +36,10 @@ export function usePaginatedSearch<T>(
     setPage,
     totalPages,
     pageItems,
+    // 현재 페이지에 보이는 조각(pageItems)과 달리, 필터링된 전체 결과 — CSV 내보내기처럼
+    // "지금 화면에 보이는 한 페이지"가 아니라 "지금 검색/필터 조건에 맞는 전부"가
+    // 필요한 곳에서 쓴다.
+    filteredItems: filtered,
     totalCount: filtered.length,
   }
 }

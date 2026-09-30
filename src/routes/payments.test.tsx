@@ -2,9 +2,15 @@ import { describe, expect, it, vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
+import { downloadCsv, toCsv } from '@/lib/csv'
 import { renderWithQueryClient } from '@/test/render'
 import { messages } from '@/i18n/messages'
 import type { PaymentItem } from '@/config/payments'
+
+vi.mock('@/lib/csv', () => ({
+  toCsv: vi.fn(() => 'mock-csv'),
+  downloadCsv: vi.fn(),
+}))
 
 const MOCK_PAYMENTS: Array<PaymentItem> = [
   {
@@ -179,5 +185,68 @@ describe('Payments route', () => {
     expect(toast.success).toHaveBeenCalledWith(
       t.payments.cancelAction.successToast(MOCK_PAYMENTS[0].orderName),
     )
+  })
+
+  it('sorts rows by a sortable column header', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Payments />)
+
+    await screen.findByText('ORD-3001')
+
+    await user.click(
+      screen.getByRole('button', { name: t.payments.columns.orderNo }),
+    )
+
+    expect(
+      screen.getAllByText(/^ORD-\d{4}$/).map((el) => el.textContent),
+    ).toEqual(['ORD-3001', 'ORD-3002', 'ORD-3003'])
+  })
+
+  it('selects rows via checkboxes, bulk-deletes them, and does not affect the per-row cancel dialog', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Payments />)
+
+    await screen.findByText('ORD-3001')
+
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-3001') }),
+    )
+    await user.click(
+      screen.getByRole('checkbox', { name: t.common.selectRow('ORD-3002') }),
+    )
+    expect(screen.getByText(t.common.selectedCount(2))).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: t.common.deleteSelected }),
+    )
+    expect(
+      await screen.findByText(t.common.deleteSelectedTitle(2)),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: t.common.delete }))
+
+    expect(toast.success).toHaveBeenCalledWith(t.common.deleteSelectedToast(2))
+    expect(
+      screen.queryByText(t.common.selectedCount(2)),
+    ).not.toBeInTheDocument()
+
+    // 벌크 삭제 확인 다이얼로그가 결제 취소용 AlertDialog와 상태를 공유하지
+    // 않아야 한다 — 취소 버튼들은 여전히 정상 동작해야 한다.
+    const cancelButtons = screen.getAllByRole('button', {
+      name: t.payments.cancelAction.button,
+    })
+    expect(cancelButtons[0]).toBeEnabled()
+  })
+
+  it('exports all filtered rows as CSV via the toolbar export button', async () => {
+    const user = userEvent.setup()
+    renderWithQueryClient(<Payments />)
+
+    await screen.findByText('ORD-3001')
+
+    await user.click(screen.getByRole('button', { name: t.common.exportCsv }))
+
+    expect(toCsv).toHaveBeenCalledWith(MOCK_PAYMENTS, expect.any(Array))
+    expect(downloadCsv).toHaveBeenCalledWith('payments.csv', 'mock-csv')
   })
 })

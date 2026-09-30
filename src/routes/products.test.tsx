@@ -112,9 +112,12 @@ describe('Products route', () => {
 
     await screen.findByText('무선 마우스')
 
-    await user.click(
-      screen.getByRole('button', { name: t.products.columns.category }),
-    )
+    // "카테고리"라는 이름의 버튼이 둘 있다(다중선택 필터 트리거 + 정렬 헤더) —
+    // 필터 트리거가 테이블보다 먼저 렌더링되므로 첫 번째 것을 고른다.
+    const [categoryFilterTrigger] = screen.getAllByRole('button', {
+      name: t.products.columns.category,
+    })
+    await user.click(categoryFilterTrigger)
     await user.click(screen.getByRole('menuitemcheckbox', { name: '전자기기' }))
 
     expect(screen.getByText('무선 마우스')).toBeInTheDocument()

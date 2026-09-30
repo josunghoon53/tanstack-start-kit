@@ -160,4 +160,22 @@ describe('usePaginatedSearch', () => {
     expect(result.current.totalCount).toBe(11)
     expect(result.current.totalCount).not.toBe(data.length)
   })
+
+  it('filteredItems exposes the full filtered set, not just the current page slice', () => {
+    const data = makeData(25)
+    const { result } = renderHook(() =>
+      usePaginatedSearch(data, matchesQuery, 10),
+    )
+
+    expect(result.current.filteredItems).toHaveLength(25)
+    expect(result.current.pageItems).toHaveLength(10)
+
+    act(() => {
+      result.current.setQuery('item-1')
+    })
+
+    // item-1, item-10..19 match "item-1" -> 11 items, but only page 1 (10) shows
+    expect(result.current.filteredItems).toHaveLength(11)
+    expect(result.current.pageItems).toHaveLength(10)
+  })
 })

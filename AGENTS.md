@@ -250,6 +250,28 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 행 안의 `RowActions` 셀에는 `onClick={(e) => e.stopPropagation()}`을 꼭 걸어야
 드롭다운 클릭이 행 토글을 같이 발동시키지 않는다.
 
+**컬럼 정렬**
+`src/hooks/use-sort.ts`(헤더 클릭 상태: asc → desc → 정렬 해제 순환) + `src/lib/sort.ts`의
+`sortItems(data, getValue, direction)` + `src/components/sortable-table-head.tsx`(클릭 가능한
+헤더, 방향에 따라 화살표 아이콘 표시). `getValue`는 원본 필드를 그대로 쓰는 컬럼뿐 아니라
+`"128,000원"`처럼 포맷된 문자열에서 숫자만 뽑아 비교해야 하는 컬럼(금액 등)도 같은 방식으로
+다룰 수 있게 함수로 받는다 — 컬럼별 `getValue` 맵을 만들어두고 `sortKey`로 찾아 쓰는 게
+패턴이다(`orders.tsx`의 `ORDER_SORT_VALUES` 참고). 정렬은 검색/필터보다 먼저 적용한다 —
+`sortItems`로 정렬한 배열을 `usePaginatedSearch`에 넘기면, 검색·필터·페이지네이션이 그
+순서를 그대로 유지한 채로 동작한다.
+
+**체크박스 다중선택 + 일괄 작업 + CSV 내보내기**
+`src/hooks/use-row-selection.ts`(선택 상태는 id 문자열 `Set`으로 관리 — 페이지를 넘겨도
+유지된다), `src/components/table-bulk-actions-bar.tsx`(하나 이상 선택됐을 때만 나타나는
+액션 줄. 별도 박스로 감싸지 않고 툴바 오른쪽 위, 평소 CSV 내보내기 버튼이 있던 자리에
+`{selection.count === 0 ? 기본 내보내기 버튼 : <TableBulkActionsBar>...}`로 자리를
+바꿔 끼운다 — `orders.tsx` 참고), `src/lib/csv.ts`(`toCsv` + `downloadCsv`, UTF-8 BOM을
+붙여서 엑셀에서 한글이 안 깨지게 한다). 툴바의 기본 내보내기 버튼은
+`usePaginatedSearch`가 반환하는 `filteredItems`(현재 페이지가 아니라 검색/필터링된
+전체 결과)를 내보내고, 선택 후 나타나는 내보내기 버튼은 `pageItems.filter(selection.isSelected)`
+로 선택된 것만 내보낸다. 일괄 삭제는 다른 행 액션과 마찬가지로 실제로 데이터를 지우지
+않고 `toast.success` + `selection.clear()`만 한다(데모 데이터라 서버 상태가 없다).
+
 **토스트**
 `sonner`. `Toaster`는 `__root.tsx`에 전역 1회 마운트.
 `toast.success` / `toast.error`만 사용.
