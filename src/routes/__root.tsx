@@ -40,6 +40,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     },
     loader: ({ context }) =>
       context.queryClient.ensureQueryData(notificationsQueryOptions()),
+    // 루트가 대기 화면으로 바뀌면 사이드바/헤더까지 사라진다. 페이지 대기 화면은 자식 라우트만 쓴다.
+    pendingMs: Infinity,
     head: () => ({
       meta: [
         {
@@ -89,7 +91,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <SidebarInset className="overflow-hidden">
               <SiteHeader />
               <div className="bg-grid-fade flex min-h-0 flex-1 flex-col overflow-auto">
-                <div className="flex min-h-full min-w-5xl flex-col gap-4 p-4">
+                <div className="flex min-h-full min-w-5xl shrink-0 flex-col gap-4 p-4">
                   {children}
                 </div>
                 <SiteFooter />

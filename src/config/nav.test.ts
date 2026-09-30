@@ -14,6 +14,17 @@ describe('getNavItems', () => {
     expect(items[0]).toMatchObject({ label: 'Dashboard', href: '/' })
   })
 
+  it('links the LLM runner menu to /llm-runner in both locales', () => {
+    for (const [locale, label] of [
+      ['ko', 'AI 플레이그라운드'],
+      ['en', 'AI Playground'],
+    ] as const) {
+      expect(getNavItems(locale)).toContainEqual(
+        expect.objectContaining({ type: 'link', label, href: '/llm-runner' }),
+      )
+    }
+  })
+
   it('keeps the same hrefs/structure across locales', () => {
     const koHrefs = getNavItems('ko').map((item) =>
       item.type === 'link'

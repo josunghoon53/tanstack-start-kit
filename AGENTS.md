@@ -27,6 +27,7 @@ TanStack Start 기반의 **최소 어드민 셸 킷**입니다.
 | 서버 상태 | `@tanstack/react-query` | 리스트 5개 + 대시보드 + 헤더 알림까지 전부 적용됨 |
 | 전역 클라이언트 상태 | `zustand` | 로케일(`ko`/`en`) 하나만 이걸로 관리 — 그 외 UI 상태는 로컬 `useState`로 충분 |
 | 다국어 | 자체 딕셔너리(`src/i18n/`) | `ko`/`en` 지원, 사이드바 언어 토글로 전환 |
+| LLM 연동 | `llm-runner` | Claude/Codex 구독 세션·API 키를 같은 인터페이스로 호출. `/llm-runner` 플레이그라운드와 설정 > "AI 연동" 탭에서 사용 — 아래 "AI 연동" 섹션 참고 |
 | ORM / DB | 없음 | 아직 없음 |
 
 ---
@@ -46,7 +47,7 @@ pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 
 **테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
 컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
-config 데이터 정합성)를 커버해뒀다 — 38개 테스트 파일, 130개 테스트. `vitest.config.ts`는
+config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 53개 테스트 파일, 219개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
 (예: `src/i18n/messages.test.ts`).
@@ -78,6 +79,10 @@ config 데이터 정합성)를 커버해뒀다 — 38개 테스트 파일, 130�
 
 - 파일 기반 라우팅. 새 페이지는 `src/routes/<name>.tsx`에 `createFileRoute`로 추가.
 - `routeTree.gen.ts`는 자동 생성 파일 — 직접 손대지 말 것.
+- 테스트 파일(`*.test.tsx`)을 `src/routes/`에 라우트 옆에 두는 관례라서, `tsr.config.json`의
+  `routeFileIgnorePattern`(`\.test\.`)으로 라우트 생성기가 무시하게 해뒀다. 이걸 지우면 생성기가 파일마다
+  "does not export a Route" 경고를 내는데, dev 서버에서 그 경고가 콘솔 전달을 타고 재귀적으로 로그에
+  쌓여 로그 파일이 수 GB까지 폭주한 적이 있다. 지우지 말 것.
 - `__root.tsx`가 전체 레이아웃(사이드바 + 헤더)을 정의하고, `beforeLoad`에서
   `getCurrentUserFn()`으로 인증 가드를 건다. `login.tsx`만 이 셸 밖에서 렌더링됨.
 
@@ -141,6 +146,13 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
    `src/router.tsx`의 `setupRouterSsrQueryIntegration`을 통해 클라이언트로 자동 전달되므로
    별도로 loader 데이터를 `initialData`에 수동으로 넘길 필요는 없다.
 
+> **느린 데이터는 loader에 걸지 않는다.** loader의 `ensureQueryData`는 끝날 때까지 페이지 전환을 막는다.
+> 인메모리 배열처럼 빠르면 문제없지만, 실제 DB/외부 API/CLI 호출처럼 느려질 수 있는 데이터는 loader
+> prefetch를 빼고 컴포넌트에서 `useQuery`로 읽어 화면 안에서 로딩 표시를 한다(`llm-runner.tsx`,
+> `settings.tsx`의 AI 연동 탭). 그래도 loader를 쓰는 라우트가 느려질 때를 대비해 `router.tsx`에
+> `defaultPendingComponent`(`PageLoading`, 200ms 뒤 표시)가 걸려 있다. 루트 라우트는 사이드바/헤더까지
+> 대기 화면으로 바뀌지 않게 `pendingMs: Infinity`다 — 지우지 말 것.
+
 > **주의**: 서버-쿼리 통합 패키지는 `@tanstack/react-router-ssr-query`
 > (+ `@tanstack/react-router` ≥1.170.33 필요)만 쓴다. 예전에 같은 역할을 하던
 > `@tanstack/react-router-with-query`는 **deprecated**이고, 스트림이 끝날 때
@@ -167,6 +179,71 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 > selector 없이 훅을 호출하면 스토어 전체를 구독하게 되어 불필요한 리렌더가 생긴다. 여러
 > 필드를 한 번에 꺼낼 때(`(s) => ({ a: s.a, b: s.b })`)는 매번 새 객체가 생겨 얕은 비교로도
 > 항상 "다름"으로 판정되니, `useShallow`(zustand/react/shallow) 같은 얕은 비교 유틸을 같이 쓸 것.
+
+---
+
+## AI 연동 — `llm-runner` (설정 > AI 연동 탭 + `/llm-runner` 플레이그라운드)
+
+사이드바의 "AI 플레이그라운드" 메뉴(`/llm-runner`)는 `llm-runner`(npm)로 Claude/Codex **구독 세션** 또는 **API 키**를
+같은 방식으로 호출해 보는 플레이그라운드다.
+**연결(로그인·API 키 안내·사용량 확인)은 `settings.tsx`의 "AI 연동" 탭(`AiSection`)에서 한다** — provider 4종의
+연결 상태를 보여주고, 구독 provider는 `LlmPlanUsage`(계정·로그인/로그아웃·플랜 잔량) 패널을 행 아래에 펼친다.
+연결 여부의 기준은 상태 조회가 아니라 계정 조회(`llmAccountQueryOptions`) 결과다. 데이터 패턴(config → server → route)은 위 "데이터"
+섹션과 같고, 파일은 `src/config/llm-runner.ts` + `src/server/llm-runner.ts` +
+`src/routes/llm-runner.tsx` + `src/components/llm-plan-usage.tsx`(구독 사용량 패널)이다.
+
+- **`llm-runner`는 Node 전용이다 — 서버 함수 안에서만 import한다.** 그것도 모듈 최상단이 아니라
+  핸들러 안에서 `await import('llm-runner')`로 가져온다. 최상단에서 `createAiRunner()`를 부르거나
+  import하면 CLI 설치 검사가 돌아 CLI 없는 빌드 환경에서 깨질 수 있다. 클라이언트 코드
+  (라우트, config, 컴포넌트)에서는 import하지 말 것 — 모델 이름 목록도 `llm-runner`의 상수를
+  쓰지 않고 `config/llm-runner.ts`에 문자열로 둬서 클라이언트 번들에 끌어오지 않는다.
+- **구독 provider(`claude-subscription`/`openai-subscription`)는 로컬 로그인 세션을 쓴다.**
+  로컬 개발용이고 배포 서버에서는 동작하지 않을 수 있다. 화면에도 이 안내가 붙어 있다.
+- **구독 계정은 머신 기본 로그인이 아니라 이 앱 전용 프로필(`~/.llm-runner/claude`,
+  `~/.llm-runner/codex`)을 쓴다**(llm-runner 0.9.0의 `claudeConfigDir`/`codexHome`). 그래서 앱에서
+  계정을 바꿔도 Claude Code/Codex CLI의 기본 로그인은 그대로다. 실행·사용량·계정 조회는 모두
+  `getProfileOptions()`가 만든 프로필을 넘겨야 같은 계정을 본다 — 새 서버 함수를 추가할 때 빠뜨리지
+  말 것. 프로필 폴더는 자격 증명이 저장되는 곳이라 프로젝트 안이 아니라 홈 아래에 두고 `0700`으로 만든다.
+  **`claudeLogout()`/`codexLogout()`은 프로필을 생략하면 머신 기본 계정이 로그아웃돼 다른 터미널
+  세션까지 끊기므로, 프로필 없이 호출하지 말 것**(`logoutLlmFn`은 항상 프로필을 넘긴다).
+- **앱 안 로그인 흐름**(`LlmAccountControls`): `startLlmLoginFn`이 CLI 로그인을 시작해 `authUrl`을
+  돌려주고 → 화면이 새 탭으로 열고(Claude는 브라우저에서 받은 코드를 붙여넣어 `submitLlmLoginCodeFn`,
+  Codex는 승인만) → `getLlmLoginStateFn`을 2초마다 폴링해 성공하면 `['llm-runner']` 쿼리를 무효화한다.
+  진행 중인 로그인 핸들은 서버 프로세스 메모리(`loginSessions`)에 두는 로컬 개발용 단일 프로세스
+  전제라 서버가 재시작되면 사라진다. 화면에는 성공/실패 상태만 내려가고, 실패 사유는 서버 로그에
+  메시지만 남긴다(URL·코드·토큰은 남기지 않는다). 프로필에 로그인이 안 된 구독 provider는 선택은
+  되지만(`needsLogin`) 실행 버튼이 막힌다.
+- **API 키는 `.env`(gitignore 대상)에만 둔다** — `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`. 코드에
+  하드코딩 금지, 클라이언트로도 내려보내지 않고 "설정됐는지"만 boolean으로 판단한다. Vite는
+  `.env`를 `VITE_` 접두사만 클라이언트용으로 로드하고 서버 `process.env`에는 넣어주지 않으므로,
+  `vite.config.ts`에서 `loadEnv(mode, cwd, '')`로 접두사 없이 로드해 `process.env`에 합쳐둔다
+  (셸에 이미 있는 값은 덮어쓰지 않는다). **이 로딩은 dev 서버 전용이다** — 프로덕션 실행은
+  `node --env-file=.env`나 배포 환경 변수로 넣을 것. `.env`를 고치면 dev 서버를 재시작해야 한다.
+- **이미지 생성**(`generateLlmImageFn`)은 `llm-runner/experimental`의 `generateCodexImage()`(0.10.0+)를
+  쓴다 — **Codex 구독 전용**이라 플레이그라운드에서 `openai-subscription`을 고르면 "이미지 생성" 버튼이 나온다
+  (`hasImageGeneration`). 텍스트와 **다른 사용량 한도**를 쓰고, 한 번에 1분 넘게 걸리며 여러 장이 나올 수
+  있다. 한도 초과는 던지지 않고 `failure`로 오니 먼저 확인할 것. 이미지는 `Buffer`라서 서버 함수가 PNG를
+  base64 data URL로 바꿔 내려보낸다(직렬화). 읽기 전용 샌드박스를 그대로 쓰고 앱 전용 프로필(`codexHome`)을 넘긴다.
+- **`runLlmFn`은 비용이 나가는 호출이라 `context.user`가 없으면 던진다.** `authMiddleware`는
+  사용자를 context에 실어줄 뿐 막지는 않으므로, 비용·부작용이 있는 서버 함수는 직접 확인할 것.
+  이 킷엔 역할(RBAC)이 없어서 로그인한 누구나 실행할 수 있다.
+- **구독 사용량 퍼센트**(`getLlmPlanUsageFn`)는 `llm-runner/experimental`의 `getClaudePlanUsage()`/
+  `getCodexPlanUsage()`를 쓴다(토큰을 쓰지 않는 조회). 둘 다 SDK/CLI의 **실험적 API** 기반이라
+  예고 없이 바뀔 수 있다 — 서버 함수는 실패하면 던지지 않고 `{ available: false }`로 폴백하고,
+  화면은 "사용량을 확인할 수 없어요"로 처리한다. API 키 provider는 플랜 한도 개념이 없어서
+  호출별 토큰/비용(`usage`)만 보여준다. 응답의 날짜는 `Date`가 아니라 ISO 문자열로 내려보낸다.
+- **웹 검색 스위치**는 `runner.run({ enableWebSearch })`로 연결돼 있다. **구독 provider 전용**이고
+  API 키 provider는 llm-runner가 무시하므로 화면에서는 비활성화하고 서버도 같은 규칙으로
+  걸러서 넘긴다. 기본은 모든 도구가 잠겨 있고 이 옵션은 웹 검색만 연다. 웹 검색 실행은 1~3분까지
+  걸릴 수 있어서 실행 중 안내 문구를 띄운다.
+- **어느 계정의 사용량인지**(`getLlmAccountFn`)는 `getClaudeAccountInfo()`/`getCodexAccountInfo()`
+  (0.7.0+)로 읽어 패널 상단에 이메일·조직을 표시한다. Claude와 Codex가 서로 다른 계정으로
+  로그인돼 있을 수 있어서 잘못된 구독을 쓰는 실수를 막는 용도다. **이메일은 개인정보라
+  로그인 사용자에게만 내려주고**(`context.user` 없으면 `{ available: false }`), 로그에 남기지
+  않는다. 이 함수들은 토큰·키를 읽지 않는다.
+- **테스트는 `@/server/llm-runner` 전체를 목한다** — `runLlmFn`, `llmStatusQueryOptions`,
+  `llmPlanUsageQueryOptions`를 돌려주는 `vi.mock`으로 시작할 것(`src/routes/llm-runner.test.tsx`
+  참고). 서버 함수 핸들러 자체는 다른 `server/*.ts`와 마찬가지로 단위 테스트 범위 밖이다.
 
 ---
 
@@ -300,7 +377,9 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
   화면 밖에 있고, 아래로 스크롤해야 보인다(일반 웹사이트 푸터처럼). `__root.tsx`에서
   `{children}`을 감싼 콘텐츠 div에 `min-h-full`을 줘서, 콘텐츠가 짧아도 스크롤 컨테이너의
   가시 영역만큼은 항상 채우게 만들고, `SiteFooter`는 그 바로 다음 형제로 둬서 그 아래로
-  밀려나게 한다. 이 `min-h-full`을 지우면 콘텐츠가 짧을 때 푸터가 스크롤 없이 바로 보여버린다
+  밀려나게 한다. 같은 래퍼의 `shrink-0`도 지우지 말 것 — 래퍼는 스크롤 컨테이너(flex-col)의 아이템이라 이게 없으면 콘텐츠가
+  화면보다 길 때 `min-h-full` 높이로 줄어들어 카드가 넘쳐서 푸터와 겹친다(설정 > AI 연동 탭에서 겪음).
+  이 `min-h-full`을 지우면 콘텐츠가 짧을 때 푸터가 스크롤 없이 바로 보여버린다
   — 지우지 말 것. (참고: 시행착오 과정에서 "헤더/사이드바처럼 푸터도 항상 화면에 고정"과
   "콘텐츠 바로 아래 자연스럽게 붙임" 둘 다 시도했지만 둘 다 어색하다는 피드백을 받았다.
   지금 방식이 최종 결정이다.)

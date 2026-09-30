@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import {
   BarChart3,
   Boxes,
+  Bot,
   CalendarClock,
   ClipboardList,
   CreditCard,
@@ -242,6 +243,12 @@ export function getNavItems(locale: Locale): Array<NavItem> {
           ],
         },
       ],
+    },
+    {
+      type: 'link',
+      label: t.llmRunner,
+      href: '/llm-runner',
+      icon: Bot,
     },
     { type: 'link', label: t.settings, href: '/settings', icon: Settings },
   ]

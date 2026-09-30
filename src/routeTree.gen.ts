@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as ContentsRouteImport } from './routes/contents'
+import { Route as LlmRunnerRouteImport } from './routes/llm-runner'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PaymentsRouteImport } from './routes/payments'
@@ -32,6 +33,11 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
 const ContentsRoute = ContentsRouteImport.update({
   id: '/contents',
   path: '/contents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmRunnerRoute = LlmRunnerRouteImport.update({
+  id: '/llm-runner',
+  path: '/llm-runner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
+  '/llm-runner': typeof LlmRunnerRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
+  '/llm-runner': typeof LlmRunnerRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/contents': typeof ContentsRoute
+  '/llm-runner': typeof LlmRunnerRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
+    | '/llm-runner'
     | '/login'
     | '/orders'
     | '/payments'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
+    | '/llm-runner'
     | '/login'
     | '/orders'
     | '/payments'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/contents'
+    | '/llm-runner'
     | '/login'
     | '/orders'
     | '/payments'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   ContentsRoute: typeof ContentsRoute
+  LlmRunnerRoute: typeof LlmRunnerRoute
   LoginRoute: typeof LoginRoute
   OrdersRoute: typeof OrdersRoute
   PaymentsRoute: typeof PaymentsRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/contents'
       fullPath: '/contents'
       preLoaderRoute: typeof ContentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llm-runner': {
+      id: '/llm-runner'
+      path: '/llm-runner'
+      fullPath: '/llm-runner'
+      preLoaderRoute: typeof LlmRunnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   ContentsRoute: ContentsRoute,
+  LlmRunnerRoute: LlmRunnerRoute,
   LoginRoute: LoginRoute,
   OrdersRoute: OrdersRoute,
   PaymentsRoute: PaymentsRoute,

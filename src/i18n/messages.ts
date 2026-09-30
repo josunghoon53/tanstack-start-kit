@@ -63,6 +63,7 @@ export const messages = {
         reports: '리포트',
       },
       settings: '설정',
+      llmRunner: 'AI 플레이그라운드',
     },
     navHeader: {
       brand: 'Admin',
@@ -105,6 +106,7 @@ export const messages = {
       copyrightSuffix: 'All rights reserved.',
     },
     common: {
+      pageLoading: '페이지를 불러오는 중…',
       cancel: '취소',
       close: '닫기',
       save: '저장',
@@ -206,6 +208,28 @@ export const messages = {
         general: '일반',
         theme: '테마',
         security: '보안',
+        ai: 'AI 연동',
+      },
+      ai: {
+        heading: 'AI 연동',
+        description:
+          'Claude·OpenAI 계정이나 API 키를 연결해 두면 이 앱 어디서든 AI를 쓸 수 있어요.',
+        subscriptionNoticeProfile:
+          '구독 계정은 이 앱 전용으로 로그인해요. Claude Code/Codex CLI의 기본 로그인은 바뀌지 않아요.',
+        subscriptionNoticeLocal:
+          '로컬 개발용이라 배포 서버에서는 동작하지 않을 수 있어요.',
+        loading: '연동 상태를 불러오는 중…',
+        loadFailed: '연동 상태를 불러오지 못했어요.',
+        connected: '연결됨',
+        connectedAs: (email: string) => `연결됨 · ${email}`,
+        needsLogin: '아직 로그인하지 않았어요. 오른쪽에서 로그인해 주세요.',
+        cliMissing: (command: string) => `CLI 설치가 필요해요: ${command}`,
+        apiKeySet: 'API 키가 설정돼 있어요.',
+        apiKeyMissing: (env: string) =>
+          `서버 환경 변수 ${env}를 설정해 주세요. (로컬 개발은 .env에 넣고 서버를 재시작해요)`,
+        showUsage: '사용량 보기',
+        hideUsage: '사용량 접기',
+        tryIt: '플레이그라운드에서 사용해 보기',
       },
       general: {
         heading: '일반',
@@ -284,6 +308,105 @@ export const messages = {
       all: '전체',
       empty: '해당 카테고리의 알림이 없어요.',
     },
+    llmRunner: {
+      heading: 'AI 플레이그라운드',
+      description:
+        'llm-runner로 Claude/Codex 구독 세션 또는 API 키를 같은 방식으로 호출해 볼 수 있어요.',
+      providerLabel: 'Provider',
+      modelLabel: '모델',
+      modelDefault: '기본값',
+      systemLabel: '시스템 프롬프트 (선택)',
+      systemPlaceholder: '예: 너는 간결하게 답하는 어시스턴트야.',
+      promptLabel: '프롬프트',
+      promptPlaceholder: '실행할 프롬프트를 입력하세요.',
+      promptRequired: '프롬프트를 입력해 주세요.',
+      promptTooLong: (max: number) => `프롬프트는 ${max}자 이하여야 해요.`,
+      run: '실행',
+      running: '실행 중…',
+      webSearchLabel: '웹 검색',
+      webSearchDescription: '켜면 응답을 만들 때 웹 검색을 사용해요.',
+      webSearchApiUnsupported: 'API 키 provider는 웹 검색을 지원하지 않아요.',
+      webSearchSlow:
+        '웹 검색을 쓰면 1~3분까지 걸릴 수 있어요. 잠시만 기다려 주세요.',
+      unavailable: '사용 불가',
+      unavailableHint: (hint: string) => `설정 필요: ${hint}`,
+      subscriptionNotice:
+        '구독 provider는 이 컴퓨터의 로그인 세션을 사용해요. 로컬 개발용이며 배포 서버에서는 동작하지 않을 수 있어요.',
+      failedToast: '실행에 실패했어요. provider 설정을 확인해 주세요.',
+      statusLoading: 'provider 상태를 불러오는 중…',
+      statusLoadFailed: 'provider 상태를 불러오지 못했어요.',
+      generateImage: '이미지 생성',
+      generatingImage: '이미지 생성 중…',
+      imageNotice:
+        'Codex 구독으로 이미지를 만들어요. 텍스트와 다른 사용량 한도를 쓰고, 한 번에 1분 넘게 걸리거나 여러 장이 나올 수 있어요.',
+      imageHeading: '생성된 이미지',
+      imageRevisedPrompt: (prompt: string) => `다듬어진 프롬프트: ${prompt}`,
+      imageEmpty: '이미지가 생성되지 않았어요.',
+      imageLimitExceeded: (when: string) =>
+        `이미지 사용량 한도를 넘겼어요. ${when}에 초기화돼요.`,
+      imageLimitExceededNoTime: '이미지 사용량 한도를 넘겼어요.',
+      imageFailedToast:
+        '이미지 생성에 실패했어요. Codex 로그인 상태를 확인해 주세요.',
+      responseHeading: '응답',
+      emptyResponse: '아직 실행한 결과가 없어요.',
+      runUsageHeading: '이번 호출 사용량',
+      inputTokens: '입력 토큰',
+      outputTokens: '출력 토큰',
+      cachedTokens: '캐시 토큰',
+      reasoningTokens: '추론 토큰',
+      cost: '비용',
+      loginRequired:
+        '이 앱 전용 계정으로 로그인이 필요해요. 오른쪽 구독 사용량 패널에서 로그인해 주세요.',
+      accountControl: {
+        login: '로그인',
+        change: '계정 변경',
+        logout: '로그아웃',
+        close: '닫기',
+        loginTitle: '앱 전용 계정 로그인',
+        profileNotice:
+          '이 앱에서만 쓰는 계정이에요. Claude Code/Codex CLI의 기본 로그인은 바뀌지 않아요.',
+        starting: '로그인을 준비하는 중…',
+        stepBrowser:
+          '브라우저에서 로그인을 승인해 주세요. 창이 자동으로 열리지 않으면 아래 링크를 눌러 주세요.',
+        openBrowser: '브라우저에서 열기',
+        codeLabel: '인증 코드',
+        codePlaceholder: '브라우저에 표시된 코드를 붙여넣으세요',
+        submitCode: '코드 제출',
+        waiting: '승인을 기다리는 중…',
+        loginSuccess: '로그인했어요.',
+        loginFailed: '로그인에 실패했어요. 다시 시도해 주세요.',
+        retry: '다시 시도',
+        logoutConfirmTitle: '로그아웃할까요?',
+        logoutConfirmDescription:
+          '이 앱 전용 계정만 로그아웃돼요. Claude Code/Codex CLI의 기본 로그인은 유지돼요.',
+        logoutDone: '로그아웃했어요.',
+        logoutFailed: '로그아웃에 실패했어요.',
+      },
+      planUsage: {
+        heading: '구독 사용량',
+        account: (email: string) => `계정: ${email}`,
+        organization: (name: string) => `조직: ${name}`,
+        loading: '사용량을 불러오는 중…',
+        unavailable: '사용량을 확인할 수 없어요.',
+        notApplicable:
+          'API 키 provider는 플랜 한도가 없어요. 호출별 토큰/비용만 확인할 수 있어요.',
+        experimentalNotice:
+          '실험적 API 기반이라 예고 없이 바뀌거나 조회되지 않을 수 있어요.',
+        plan: (plan: string) => `플랜: ${plan}`,
+        used: (percent: number) => `${percent}% 사용`,
+        remaining: (percent: number) => `${percent}% 남음`,
+        resetsAt: (when: string) => `${when} 초기화`,
+        fiveHour: '5시간 한도',
+        sevenDay: '주간 한도',
+        primary: '단기 한도',
+        secondary: '주간 한도',
+        windowMinutes: (minutes: number) =>
+          minutes % 60 === 0 ? `${minutes / 60}시간 한도` : `${minutes}분 한도`,
+        credits: '크레딧',
+        creditsUnlimited: '무제한',
+        refresh: '새로고침',
+      },
+    },
   },
   en: {
     nav: {
@@ -343,6 +466,7 @@ export const messages = {
         reports: 'Reports',
       },
       settings: 'Settings',
+      llmRunner: 'AI Playground',
     },
     navHeader: {
       brand: 'Admin',
@@ -385,6 +509,7 @@ export const messages = {
       copyrightSuffix: 'All rights reserved.',
     },
     common: {
+      pageLoading: 'Loading the page…',
       cancel: 'Cancel',
       close: 'Close',
       save: 'Save',
@@ -487,6 +612,28 @@ export const messages = {
         general: 'General',
         theme: 'Theme',
         security: 'Security',
+        ai: 'AI',
+      },
+      ai: {
+        heading: 'AI integration',
+        description:
+          'Connect a Claude or OpenAI account or an API key to use AI anywhere in this app.',
+        subscriptionNoticeProfile:
+          'Subscription accounts are logged in for this app only. The default Claude Code/Codex CLI login is not changed.',
+        subscriptionNoticeLocal:
+          'This is for local development and may not work on a deployed server.',
+        loading: 'Loading connection status…',
+        loadFailed: 'Failed to load the connection status.',
+        connected: 'Connected',
+        connectedAs: (email: string) => `Connected · ${email}`,
+        needsLogin: 'Not logged in yet. Log in on the right.',
+        cliMissing: (command: string) => `CLI required: ${command}`,
+        apiKeySet: 'API key is set.',
+        apiKeyMissing: (env: string) =>
+          `Set the ${env} server environment variable. (For local development, put it in .env and restart the server.)`,
+        showUsage: 'Show usage',
+        hideUsage: 'Hide usage',
+        tryIt: 'Try it in the playground',
       },
       general: {
         heading: 'General',
@@ -566,6 +713,108 @@ export const messages = {
       title: 'Notifications',
       all: 'All',
       empty: 'No notifications in this category.',
+    },
+    llmRunner: {
+      heading: 'AI Playground',
+      description:
+        'Call Claude/Codex subscription sessions or API keys through the same interface using llm-runner.',
+      providerLabel: 'Provider',
+      modelLabel: 'Model',
+      modelDefault: 'Default',
+      systemLabel: 'System prompt (optional)',
+      systemPlaceholder: 'e.g. You are an assistant who answers concisely.',
+      promptLabel: 'Prompt',
+      promptPlaceholder: 'Enter the prompt to run.',
+      promptRequired: 'Please enter a prompt.',
+      promptTooLong: (max: number) =>
+        `Prompt must be ${max} characters or less.`,
+      run: 'Run',
+      running: 'Running…',
+      webSearchLabel: 'Web search',
+      webSearchDescription:
+        'When on, web search is used to build the response.',
+      webSearchApiUnsupported: 'API key providers do not support web search.',
+      webSearchSlow: 'Web search can take 1–3 minutes. Please wait.',
+      unavailable: 'Unavailable',
+      unavailableHint: (hint: string) => `Setup needed: ${hint}`,
+      subscriptionNotice:
+        'Subscription providers use the login session on this machine. They are for local development and may not work on a deployed server.',
+      failedToast: 'The run failed. Please check the provider setup.',
+      statusLoading: 'Loading provider status…',
+      statusLoadFailed: 'Failed to load the provider status.',
+      generateImage: 'Generate image',
+      generatingImage: 'Generating image…',
+      imageNotice:
+        'Creates images with your Codex subscription. It uses a separate usage limit from text, may take over a minute, and can return several images.',
+      imageHeading: 'Generated images',
+      imageRevisedPrompt: (prompt: string) => `Revised prompt: ${prompt}`,
+      imageEmpty: 'No image was generated.',
+      imageLimitExceeded: (when: string) =>
+        `Image usage limit reached. It resets ${when}.`,
+      imageLimitExceededNoTime: 'Image usage limit reached.',
+      imageFailedToast:
+        'Image generation failed. Please check the Codex login.',
+      responseHeading: 'Response',
+      emptyResponse: 'No results yet.',
+      runUsageHeading: 'This call usage',
+      inputTokens: 'Input tokens',
+      outputTokens: 'Output tokens',
+      cachedTokens: 'Cached tokens',
+      reasoningTokens: 'Reasoning tokens',
+      cost: 'Cost',
+      loginRequired:
+        'Log in with this app’s own account first. Use the Subscription usage panel on the right.',
+      accountControl: {
+        login: 'Log in',
+        change: 'Change account',
+        logout: 'Log out',
+        close: 'Close',
+        loginTitle: 'Log in to the app account',
+        profileNotice:
+          'This account is used only by this app. The default Claude Code/Codex CLI login is not changed.',
+        starting: 'Preparing login…',
+        stepBrowser:
+          'Approve the login in your browser. If it does not open automatically, use the link below.',
+        openBrowser: 'Open in browser',
+        codeLabel: 'Authorization code',
+        codePlaceholder: 'Paste the code shown in the browser',
+        submitCode: 'Submit code',
+        waiting: 'Waiting for approval…',
+        loginSuccess: 'Logged in.',
+        loginFailed: 'Login failed. Please try again.',
+        retry: 'Try again',
+        logoutConfirmTitle: 'Log out?',
+        logoutConfirmDescription:
+          'Only this app’s account is logged out. The default Claude Code/Codex CLI login stays.',
+        logoutDone: 'Logged out.',
+        logoutFailed: 'Failed to log out.',
+      },
+      planUsage: {
+        heading: 'Subscription usage',
+        account: (email: string) => `Account: ${email}`,
+        organization: (name: string) => `Organization: ${name}`,
+        loading: 'Loading usage…',
+        unavailable: 'Usage is unavailable.',
+        notApplicable:
+          'API key providers have no plan limits. Only per-call tokens and cost are available.',
+        experimentalNotice:
+          'Based on an experimental API; it may change or fail without notice.',
+        plan: (plan: string) => `Plan: ${plan}`,
+        used: (percent: number) => `${percent}% used`,
+        remaining: (percent: number) => `${percent}% left`,
+        resetsAt: (when: string) => `Resets ${when}`,
+        fiveHour: '5-hour limit',
+        sevenDay: 'Weekly limit',
+        primary: 'Short-term limit',
+        secondary: 'Weekly limit',
+        windowMinutes: (minutes: number) =>
+          minutes % 60 === 0
+            ? `${minutes / 60}-hour limit`
+            : `${minutes}-min limit`,
+        credits: 'Credits',
+        creditsUnlimited: 'Unlimited',
+        refresh: 'Refresh',
+      },
     },
   },
 } as const
