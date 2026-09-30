@@ -1,5 +1,6 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
+import { LanguageToggle } from '@/components/language-toggle'
 import { NavHeader } from '@/components/nav-header'
 import { NavUser } from '@/components/nav-user'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -24,16 +25,19 @@ import {
   SidebarMenuSubItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { NAV_ITEMS  } from '@/config/nav'
-import type {NavSection} from '@/config/nav';
+import { getNavItems } from '@/config/nav'
+import type { NavItem, NavSection } from '@/config/nav'
 import { useAccordionGroup } from '@/hooks/use-accordion-group'
 import { useTreeBranches } from '@/hooks/use-tree-branches'
+import { useLocaleStore } from '@/i18n/locale-store'
 
-function findOpenGroup(pathname: string) {
-  return NAV_ITEMS.find(
+function findOpenGroup(navItems: Array<NavItem>, pathname: string) {
+  return navItems.find(
     (item) =>
       item.type === 'group' &&
-      item.sections.some((section) => section.items.some((leaf) => leaf.href === pathname)),
+      item.sections.some((section) =>
+        section.items.some((leaf) => leaf.href === pathname),
+      ),
   )?.label
 }
 
@@ -46,7 +50,9 @@ function GroupSubmenu({
   pathname: string
   isOpen: boolean
 }) {
-  const { containerRef, branchYs } = useTreeBranches<HTMLDivElement>(isOpen, [sections])
+  const { containerRef, branchYs } = useTreeBranches<HTMLDivElement>(isOpen, [
+    sections,
+  ])
 
   return (
     <div ref={containerRef} className="relative">
@@ -61,7 +67,11 @@ function GroupSubmenu({
               const LeafIcon = leaf.icon
               return (
                 <SidebarMenuSubItem key={leaf.href} data-tree-leaf>
-                  <SidebarMenuSubButton asChild isActive={pathname === leaf.href} className="h-8">
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={pathname === leaf.href}
+                    className="h-8"
+                  >
                     <Link to={leaf.href}>
                       <LeafIcon />
                       <span className="leading-none">{leaf.label}</span>
@@ -78,8 +88,14 @@ function GroupSubmenu({
 }
 
 export function AppSidebar() {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const { isOpen, setOpen } = useAccordionGroup(findOpenGroup(pathname))
+  const locale = useLocaleStore((state) => state.locale)
+  const navItems = getNavItems(locale)
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+  const { isOpen, setOpen } = useAccordionGroup(
+    findOpenGroup(navItems, pathname),
+  )
 
   return (
     <Sidebar collapsible="icon">
@@ -90,12 +106,15 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 if (item.type === 'link') {
                   const Icon = item.icon
                   return (
                     <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton asChild isActive={pathname === item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                      >
                         <Link to={item.href}>
                           <Icon />
                           <span className="leading-none">{item.label}</span>
@@ -148,7 +167,8 @@ export function AppSidebar() {
           <div className="min-w-0 flex-1">
             <NavUser />
           </div>
-          <div className="group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
+            <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>

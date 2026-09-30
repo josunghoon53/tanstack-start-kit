@@ -1,25 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/i18n/use-translation'
 
 type ColorTheme = 'blue' | 'green' | 'purple' | 'rose' | 'orange' | 'slate'
 
-const COLOR_THEMES: Array<{ key: ColorTheme; label: string; swatch: string }> = [
-  { key: 'blue', label: '블루', swatch: 'oklch(0.55 0.15 260)' },
-  { key: 'green', label: '그린', swatch: 'oklch(0.45 0.08 155)' },
-  { key: 'purple', label: '퍼플', swatch: 'oklch(0.55 0.15 300)' },
-  { key: 'rose', label: '로즈', swatch: 'oklch(0.55 0.15 15)' },
-  { key: 'orange', label: '오렌지', swatch: 'oklch(0.58 0.15 60)' },
-  { key: 'slate', label: '무채색', swatch: 'oklch(0.45 0 0)' },
-]
+interface ColorThemePickerMessages {
+  blue: string
+  green: string
+  purple: string
+  rose: string
+  orange: string
+  slate: string
+}
 
-function getInitialColor(): ColorTheme {
+// 매개변수 타입을 Messages['colorThemePicker']가 아니라 string으로 넓혀서 선언한다 —
+// `as const` 딕셔너리의 ko/en 리터럴 유니언 타입은 서로 대입할 수 없어서 그대로 쓰면 에러가 난다.
+function getColorThemes(
+  t: ColorThemePickerMessages,
+): Array<{ key: ColorTheme; label: string; swatch: string }> {
+  return [
+    { key: 'blue', label: t.blue, swatch: 'oklch(0.55 0.15 260)' },
+    { key: 'green', label: t.green, swatch: 'oklch(0.45 0.08 155)' },
+    { key: 'purple', label: t.purple, swatch: 'oklch(0.55 0.15 300)' },
+    { key: 'rose', label: t.rose, swatch: 'oklch(0.55 0.15 15)' },
+    { key: 'orange', label: t.orange, swatch: 'oklch(0.58 0.15 60)' },
+    { key: 'slate', label: t.slate, swatch: 'oklch(0.45 0 0)' },
+  ]
+}
+
+function getInitialColor(
+  colorThemes: ReturnType<typeof getColorThemes>,
+): ColorTheme {
   if (typeof window === 'undefined') {
     return 'blue'
   }
 
   const stored = window.localStorage.getItem('theme-color')
-  if (COLOR_THEMES.some((item) => item.key === stored)) {
+  if (colorThemes.some((item) => item.key === stored)) {
     return stored as ColorTheme
   }
 
@@ -35,11 +53,13 @@ function applyColorTheme(color: ColorTheme) {
 }
 
 export function ColorThemePicker() {
+  const t = useTranslation().colorThemePicker
+  const colorThemes = useMemo(() => getColorThemes(t), [t])
   const [color, setColor] = useState<ColorTheme>('blue')
 
   useEffect(() => {
-    setColor(getInitialColor())
-  }, [])
+    setColor(getInitialColor(colorThemes))
+  }, [colorThemes])
 
   function selectColor(next: ColorTheme) {
     setColor(next)
@@ -49,7 +69,7 @@ export function ColorThemePicker() {
 
   return (
     <div className="flex flex-wrap gap-3">
-      {COLOR_THEMES.map((item) => (
+      {colorThemes.map((item) => (
         <button
           key={item.key}
           type="button"

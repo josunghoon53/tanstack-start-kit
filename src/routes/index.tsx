@@ -1,7 +1,13 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { StatusDot } from '@/components/status-dot'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -14,21 +20,27 @@ import { ORDER_STATUS_TONE } from '@/config/orders'
 import { NOTIFICATION_ICONS } from '@/config/notifications'
 import { ordersQueryOptions } from '@/server/orders'
 import { notificationsQueryOptions } from '@/server/notifications'
+import { useTranslation } from '@/i18n/use-translation'
 
 export const Route = createFileRoute('/')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(ordersQueryOptions()),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(ordersQueryOptions()),
   component: Dashboard,
 })
 
 function Dashboard() {
+  const t = useTranslation()
   const { data: orders } = useSuspenseQuery(ordersQueryOptions())
   const { data: notifications } = useSuspenseQuery(notificationsQueryOptions())
 
   const stats = [
-    { label: '오늘 매출', value: '₩1,240,000', hint: '어제 대비 +8%' },
-    { label: '신규 주문', value: '18건', hint: '오늘' },
-    { label: '신규 사용자', value: '6명', hint: '오늘' },
-    { label: '미확인 알림', value: `${notifications.length}건`, hint: '지금' },
+    { ...t.dashboard.stats.todayRevenue, value: '₩1,240,000' },
+    { ...t.dashboard.stats.newOrders, value: '18건' },
+    { ...t.dashboard.stats.newUsers, value: '6명' },
+    {
+      ...t.dashboard.stats.unreadNotifications,
+      value: t.dashboard.unreadCount(notifications.length),
+    },
   ]
 
   return (
@@ -48,10 +60,10 @@ function Dashboard() {
       <div className="grid grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>최근 주문</CardTitle>
+            <CardTitle>{t.dashboard.recentOrders.title}</CardTitle>
             <CardDescription>
               <Link to="/orders" className="hover:text-primary hover:underline">
-                전체 주문 보기
+                {t.dashboard.recentOrders.viewAll}
               </Link>
             </CardDescription>
           </CardHeader>
@@ -59,10 +71,10 @@ function Dashboard() {
             <Table className="border-y">
               <TableHeader>
                 <TableRow>
-                  <TableHead>주문번호</TableHead>
-                  <TableHead>고객</TableHead>
-                  <TableHead>금액</TableHead>
-                  <TableHead>상태</TableHead>
+                  <TableHead>{t.orders.columns.id}</TableHead>
+                  <TableHead>{t.orders.columns.customer}</TableHead>
+                  <TableHead>{t.orders.columns.amount}</TableHead>
+                  <TableHead>{t.orders.columns.status}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -85,20 +97,27 @@ function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>최근 알림</CardTitle>
-            <CardDescription>새로 들어온 활동이에요.</CardDescription>
+            <CardTitle>{t.dashboard.recentNotifications.title}</CardTitle>
+            <CardDescription>
+              {t.dashboard.recentNotifications.description}
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-1">
             {notifications.slice(0, 4).map((item, index) => {
               const Icon = NOTIFICATION_ICONS[item.iconKey]
               return (
-                <div key={index} className="flex items-start gap-3 rounded-lg px-2 py-2">
+                <div
+                  key={index}
+                  className="flex items-start gap-3 rounded-lg px-2 py-2"
+                >
                   <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
                     <Icon className="size-4 text-primary" />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <span className="text-sm">{item.message}</span>
-                    <span className="text-xs text-muted-foreground">{item.time}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.time}
+                    </span>
                   </div>
                 </div>
               )

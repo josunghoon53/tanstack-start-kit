@@ -13,66 +13,83 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { Card, CardContent } from '@/components/ui/card'
 import { ORDER_STATUS_TONE } from '@/config/orders'
 import { ordersQueryOptions } from '@/server/orders'
+import { useTranslation } from '@/i18n/use-translation'
 
 export const Route = createFileRoute('/orders')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(ordersQueryOptions()),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(ordersQueryOptions()),
   component: Orders,
 })
 
 function Orders() {
+  const t = useTranslation()
   const { data: orders } = useSuspenseQuery(ordersQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
       orders,
-      (order, q) => order.id.toLowerCase().includes(q) || order.customer.toLowerCase().includes(q),
+      (order, q) =>
+        order.id.toLowerCase().includes(q) ||
+        order.customer.toLowerCase().includes(q),
     )
 
   return (
-    <div className="flex flex-col gap-3">
-      <TableSearchInput value={query} onChange={setQuery} placeholder="주문번호, 고객명으로 검색" />
-      <Table className="border-y">
-        <TableHeader>
-          <TableRow>
-            <TableHead>주문번호</TableHead>
-            <TableHead>고객</TableHead>
-            <TableHead>금액</TableHead>
-            <TableHead>상태</TableHead>
-            <TableHead>주문일</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pageItems.map((order) => (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">{order.id}</TableCell>
-              <TableCell>{order.customer}</TableCell>
-              <TableCell>{order.amount}</TableCell>
-              <TableCell>
-                <StatusDot tone={ORDER_STATUS_TONE[order.status]}>{order.status}</StatusDot>
-              </TableCell>
-              <TableCell>{order.date}</TableCell>
-              <TableCell>
-                <RowActions label={order.id} />
-              </TableCell>
-            </TableRow>
-          ))}
-          {pageItems.length === 0 && (
+    <Card className="flex-1">
+      <CardContent className="flex flex-col gap-3">
+        <TableSearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t.orders.searchPlaceholder}
+        />
+        <Table className="border-y">
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                검색 결과가 없어요.
-              </TableCell>
+              <TableHead>{t.orders.columns.id}</TableHead>
+              <TableHead>{t.orders.columns.customer}</TableHead>
+              <TableHead>{t.orders.columns.amount}</TableHead>
+              <TableHead>{t.orders.columns.status}</TableHead>
+              <TableHead>{t.orders.columns.date}</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <TablePagination
-        page={page}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        onPageChange={setPage}
-      />
-    </div>
+          </TableHeader>
+          <TableBody>
+            {pageItems.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell className="font-medium">{order.id}</TableCell>
+                <TableCell>{order.customer}</TableCell>
+                <TableCell>{order.amount}</TableCell>
+                <TableCell>
+                  <StatusDot tone={ORDER_STATUS_TONE[order.status]}>
+                    {order.status}
+                  </StatusDot>
+                </TableCell>
+                <TableCell>{order.date}</TableCell>
+                <TableCell>
+                  <RowActions label={order.id} />
+                </TableCell>
+              </TableRow>
+            ))}
+            {pageItems.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  {t.common.noResults}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={setPage}
+        />
+      </CardContent>
+    </Card>
   )
 }

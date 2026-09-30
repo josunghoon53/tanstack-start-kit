@@ -31,19 +31,21 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/i18n/use-translation'
 
 export function RowActions({ label }: { label: string }) {
+  const t = useTranslation()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [editValue, setEditValue] = useState(label)
 
   function handleSaveEdit() {
     setEditOpen(false)
-    toast.success(`${editValue}(으)로 수정됐어요.`)
+    toast.success(t.rowActions.editSuccessToast(editValue))
   }
 
   function handleConfirmDelete() {
-    toast.success(`${label} 삭제됐어요.`)
+    toast.success(t.rowActions.deleteSuccessToast(label))
   }
 
   return (
@@ -51,15 +53,15 @@ export function RowActions({ label }: { label: string }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">
-            <span className="sr-only">{label} 작업 열기</span>
+            <span className="sr-only">{t.rowActions.openMenu(label)}</span>
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>작업</DropdownMenuLabel>
+          <DropdownMenuLabel>{t.rowActions.actionsLabel}</DropdownMenuLabel>
           <DropdownMenuItem>
             <Eye />
-            보기
+            {t.common.view}
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {
@@ -68,7 +70,7 @@ export function RowActions({ label }: { label: string }) {
             }}
           >
             <Pencil />
-            수정
+            {t.common.edit}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -76,7 +78,7 @@ export function RowActions({ label }: { label: string }) {
             onSelect={() => setDeleteOpen(true)}
           >
             <Trash2 />
-            삭제
+            {t.common.delete}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -84,11 +86,13 @@ export function RowActions({ label }: { label: string }) {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{label} 수정</DialogTitle>
-            <DialogDescription>이름을 변경하고 저장하세요.</DialogDescription>
+            <DialogTitle>{t.rowActions.editDialogTitle(label)}</DialogTitle>
+            <DialogDescription>
+              {t.rowActions.editDialogDescription}
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="row-edit-value">이름</Label>
+            <Label htmlFor="row-edit-value">{t.rowActions.nameLabel}</Label>
             <Input
               id="row-edit-value"
               value={editValue}
@@ -98,10 +102,10 @@ export function RowActions({ label }: { label: string }) {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">취소</Button>
+              <Button variant="outline">{t.common.cancel}</Button>
             </DialogClose>
             <Button onClick={handleSaveEdit} disabled={!editValue.trim()}>
-              저장
+              {t.common.save}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -110,15 +114,20 @@ export function RowActions({ label }: { label: string }) {
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{label}을(를) 삭제할까요?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t.rowActions.deleteDialogTitle(label)}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              이 작업은 되돌릴 수 없어요. 삭제하면 관련 데이터도 함께 사라져요.
+              {t.rowActions.deleteDialogDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
-              삭제
+            <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              {t.common.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

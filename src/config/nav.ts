@@ -28,6 +28,8 @@ import {
   UsersRound,
   Wallet,
 } from 'lucide-react'
+import { messages } from '@/i18n/messages'
+import type { Locale } from '@/i18n/messages'
 
 type Icon = ComponentType<{ className?: string }>
 
@@ -58,133 +60,189 @@ export interface NavGroup {
 
 export type NavItem = NavLink | NavGroup
 
-export const NAV_ITEMS: Array<NavItem> = [
-  { type: 'link', label: '대시보드', href: '/', icon: LayoutDashboard },
-  {
-    type: 'group',
-    label: '사용자',
-    icon: Users,
-    sections: [
-      {
-        label: '회원 관리',
-        items: [
-          { label: '전체 사용자', href: '/users', icon: Users },
-          { label: '관리자 계정', href: '/users/admins', icon: ShieldCheck },
-        ],
-      },
-      {
-        label: '권한',
-        items: [
-          { label: '역할 관리', href: '/users/roles', icon: KeyRound },
-          { label: '초대 관리', href: '/users/invites', icon: UserPlus },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '주문',
-    icon: ShoppingCart,
-    sections: [
-      {
-        label: '주문 처리',
-        items: [
-          { label: '전체 주문', href: '/orders', icon: ClipboardList },
-          { label: '배송중', href: '/orders/shipping', icon: Truck },
-        ],
-      },
-      {
-        label: '처리 이력',
-        items: [
-          { label: '취소/환불', href: '/orders/refunds', icon: Undo2 },
-          { label: '주문 통계', href: '/orders/stats', icon: FileBarChart },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '상품',
-    icon: Package,
-    sections: [
-      {
-        label: '상품 관리',
-        items: [
-          { label: '전체 상품', href: '/products', icon: Package },
-          { label: '카테고리', href: '/products/categories', icon: Tags },
-        ],
-      },
-      {
-        label: '재고',
-        items: [
-          { label: '재고 현황', href: '/products/stock', icon: Boxes },
-          { label: '입고 관리', href: '/products/inbound', icon: PackagePlus },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '결제',
-    icon: CreditCard,
-    sections: [
-      {
-        label: '결제 내역',
-        items: [
-          { label: '전체 결제', href: '/payments', icon: Receipt },
-          { label: '정기 결제', href: '/payments/subscriptions', icon: RefreshCw },
-        ],
-      },
-      {
-        label: '정산',
-        items: [
-          { label: '정산 내역', href: '/payments/settlements', icon: Wallet },
-          { label: '환불 관리', href: '/payments/refunds', icon: Undo2 },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '콘텐츠',
-    icon: FileText,
-    sections: [
-      {
-        label: '콘텐츠 관리',
-        items: [
-          { label: '전체 콘텐츠', href: '/contents', icon: FileText },
-          { label: '공지사항', href: '/contents/notices', icon: Megaphone },
-        ],
-      },
-      {
-        label: '게시',
-        items: [
-          { label: '발행 예약', href: '/contents/scheduled', icon: CalendarClock },
-          { label: '임시 저장', href: '/contents/drafts', icon: FileEdit },
-        ],
-      },
-    ],
-  },
-  {
-    type: 'group',
-    label: '분석',
-    icon: BarChart3,
-    sections: [
-      {
-        label: '개요',
-        items: [
-          { label: '전체 요약', href: '/analytics', icon: Gauge },
-          { label: '매출 분석', href: '/analytics/revenue', icon: TrendingUp },
-        ],
-      },
-      {
-        label: '상세',
-        items: [
-          { label: '사용자 분석', href: '/analytics/users', icon: UsersRound },
-          { label: '리포트', href: '/analytics/reports', icon: FileBarChart },
-        ],
-      },
-    ],
-  },
-  { type: 'link', label: '설정', href: '/settings', icon: Settings },
-]
+export function getNavItems(locale: Locale): Array<NavItem> {
+  const t = messages[locale].nav
+
+  return [
+    { type: 'link', label: t.dashboard, href: '/', icon: LayoutDashboard },
+    {
+      type: 'group',
+      label: t.users.group,
+      icon: Users,
+      sections: [
+        {
+          label: t.users.memberManagement,
+          items: [
+            { label: t.users.all, href: '/users', icon: Users },
+            { label: t.users.admins, href: '/users/admins', icon: ShieldCheck },
+          ],
+        },
+        {
+          label: t.users.permissions,
+          items: [
+            { label: t.users.roles, href: '/users/roles', icon: KeyRound },
+            { label: t.users.invites, href: '/users/invites', icon: UserPlus },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: t.orders.group,
+      icon: ShoppingCart,
+      sections: [
+        {
+          label: t.orders.processing,
+          items: [
+            { label: t.orders.all, href: '/orders', icon: ClipboardList },
+            { label: t.orders.shipping, href: '/orders/shipping', icon: Truck },
+          ],
+        },
+        {
+          label: t.orders.history,
+          items: [
+            { label: t.orders.refunds, href: '/orders/refunds', icon: Undo2 },
+            {
+              label: t.orders.stats,
+              href: '/orders/stats',
+              icon: FileBarChart,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: t.products.group,
+      icon: Package,
+      sections: [
+        {
+          label: t.products.management,
+          items: [
+            { label: t.products.all, href: '/products', icon: Package },
+            {
+              label: t.products.categories,
+              href: '/products/categories',
+              icon: Tags,
+            },
+          ],
+        },
+        {
+          label: t.products.stock,
+          items: [
+            {
+              label: t.products.stockStatus,
+              href: '/products/stock',
+              icon: Boxes,
+            },
+            {
+              label: t.products.inbound,
+              href: '/products/inbound',
+              icon: PackagePlus,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: t.payments.group,
+      icon: CreditCard,
+      sections: [
+        {
+          label: t.payments.history,
+          items: [
+            { label: t.payments.all, href: '/payments', icon: Receipt },
+            {
+              label: t.payments.subscriptions,
+              href: '/payments/subscriptions',
+              icon: RefreshCw,
+            },
+          ],
+        },
+        {
+          label: t.payments.settlement,
+          items: [
+            {
+              label: t.payments.settlementHistory,
+              href: '/payments/settlements',
+              icon: Wallet,
+            },
+            {
+              label: t.payments.refunds,
+              href: '/payments/refunds',
+              icon: Undo2,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: t.contents.group,
+      icon: FileText,
+      sections: [
+        {
+          label: t.contents.management,
+          items: [
+            { label: t.contents.all, href: '/contents', icon: FileText },
+            {
+              label: t.contents.notices,
+              href: '/contents/notices',
+              icon: Megaphone,
+            },
+          ],
+        },
+        {
+          label: t.contents.publishing,
+          items: [
+            {
+              label: t.contents.scheduled,
+              href: '/contents/scheduled',
+              icon: CalendarClock,
+            },
+            {
+              label: t.contents.drafts,
+              href: '/contents/drafts',
+              icon: FileEdit,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      label: t.analytics.group,
+      icon: BarChart3,
+      sections: [
+        {
+          label: t.analytics.overview,
+          items: [
+            { label: t.analytics.summary, href: '/analytics', icon: Gauge },
+            {
+              label: t.analytics.revenue,
+              href: '/analytics/revenue',
+              icon: TrendingUp,
+            },
+          ],
+        },
+        {
+          label: t.analytics.detail,
+          items: [
+            {
+              label: t.analytics.users,
+              href: '/analytics/users',
+              icon: UsersRound,
+            },
+            {
+              label: t.analytics.reports,
+              href: '/analytics/reports',
+              icon: FileBarChart,
+            },
+          ],
+        },
+      ],
+    },
+    { type: 'link', label: t.settings, href: '/settings', icon: Settings },
+  ]
+}

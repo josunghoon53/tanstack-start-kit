@@ -2,16 +2,20 @@ import { useRouterState } from '@tanstack/react-router'
 import { NotificationsMenu } from '@/components/notifications-menu'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { NAV_ITEMS } from '@/config/nav'
+import { getNavItems } from '@/config/nav'
+import type { NavItem } from '@/config/nav'
+import { useLocaleStore } from '@/i18n/locale-store'
 
-function findTitle(pathname: string) {
-  for (const item of NAV_ITEMS) {
+function findTitle(navItems: Array<NavItem>, pathname: string) {
+  for (const item of navItems) {
     if (item.type === 'link') {
       if (item.href === pathname) return item.label
       continue
     }
     for (const section of item.sections) {
-      const leaf = section.items.find((candidate) => candidate.href === pathname)
+      const leaf = section.items.find(
+        (candidate) => candidate.href === pathname,
+      )
       if (leaf) return leaf.label
     }
   }
@@ -19,8 +23,11 @@ function findTitle(pathname: string) {
 }
 
 export function SiteHeader() {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const title = findTitle(pathname)
+  const locale = useLocaleStore((state) => state.locale)
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+  const title = findTitle(getNavItems(locale), pathname)
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">

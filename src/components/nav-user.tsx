@@ -26,6 +26,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { logoutFn } from '@/server/auth'
+import { useTranslation } from '@/i18n/use-translation'
 
 const USER = {
   name: '관리자',
@@ -35,6 +36,7 @@ const USER = {
 
 export function NavUser() {
   const router = useRouter()
+  const t = useTranslation()
   const [logoutOpen, setLogoutOpen] = useState(false)
 
   async function handleLogout() {
@@ -82,13 +84,13 @@ export function NavUser() {
             <DropdownMenuItem asChild>
               <Link to="/settings">
                 <User />
-                프로필
+                {t.navUser.profile}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/settings">
                 <Settings />
-                설정
+                {t.navUser.settings}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -97,7 +99,7 @@ export function NavUser() {
               onSelect={() => setLogoutOpen(true)}
             >
               <LogOut />
-              로그아웃
+              {t.navUser.logout}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -106,15 +108,15 @@ export function NavUser() {
       <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>로그아웃할까요?</AlertDialogTitle>
+            <AlertDialogTitle>{t.navUser.logoutConfirmTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              다시 로그인해야 관리자 콘솔에 접근할 수 있어요.
+              {t.navUser.logoutConfirmDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogCancel>{t.navUser.cancel}</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={handleLogout}>
-              로그아웃
+              {t.navUser.logout}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -2,8 +2,11 @@ import { Link } from '@tanstack/react-router'
 import { Construction } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
+import { useTranslation } from '@/i18n/use-translation'
 
 export function NotFound() {
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
@@ -11,11 +14,11 @@ export function NotFound() {
           <Construction className="size-6 text-muted-foreground" />
         </div>
         <div className="flex flex-col gap-1">
-          <CardTitle>아직 준비되지 않은 페이지예요</CardTitle>
-          <CardDescription>이 메뉴는 예시로만 등록돼 있고, 실제 화면은 아직 만들지 않았어요.</CardDescription>
+          <CardTitle>{t.notFound.title}</CardTitle>
+          <CardDescription>{t.notFound.description}</CardDescription>
         </div>
         <Button asChild size="sm">
-          <Link to="/">대시보드로 돌아가기</Link>
+          <Link to="/">{t.notFound.backToDashboard}</Link>
         </Button>
       </CardContent>
     </Card>

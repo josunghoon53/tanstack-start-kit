@@ -13,69 +13,88 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { Card, CardContent } from '@/components/ui/card'
 import { USER_STATUS_TONE } from '@/config/users'
 import { usersQueryOptions } from '@/server/users'
+import { useTranslation } from '@/i18n/use-translation'
 
 export const Route = createFileRoute('/users')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(usersQueryOptions()),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(usersQueryOptions()),
   component: Users,
 })
 
 function Users() {
+  const t = useTranslation()
   const { data: users } = useSuspenseQuery(usersQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
       users,
-      (user, q) => user.name.toLowerCase().includes(q) || user.email.toLowerCase().includes(q),
+      (user, q) =>
+        user.name.toLowerCase().includes(q) ||
+        user.email.toLowerCase().includes(q),
     )
 
   return (
-    <div className="flex flex-col gap-3">
-      <TableSearchInput value={query} onChange={setQuery} placeholder="이름, 이메일로 검색" />
-      <Table className="border-y">
-        <TableHeader>
-          <TableRow>
-            <TableHead>이름</TableHead>
-            <TableHead>역할</TableHead>
-            <TableHead>상태</TableHead>
-            <TableHead>가입일</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pageItems.map((user) => (
-            <TableRow key={user.email}>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{user.name}</span>
-                  <span className="text-xs text-muted-foreground">{user.email}</span>
-                </div>
-              </TableCell>
-              <TableCell>{user.role}</TableCell>
-              <TableCell>
-                <StatusDot tone={USER_STATUS_TONE[user.status]}>{user.status}</StatusDot>
-              </TableCell>
-              <TableCell>{user.joinedAt}</TableCell>
-              <TableCell>
-                <RowActions label={user.name} />
-              </TableCell>
-            </TableRow>
-          ))}
-          {pageItems.length === 0 && (
+    <Card className="flex-1">
+      <CardContent className="flex flex-col gap-3">
+        <TableSearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t.users.searchPlaceholder}
+        />
+        <Table className="border-y">
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                검색 결과가 없어요.
-              </TableCell>
+              <TableHead>{t.users.columns.name}</TableHead>
+              <TableHead>{t.users.columns.role}</TableHead>
+              <TableHead>{t.users.columns.status}</TableHead>
+              <TableHead>{t.users.columns.joinedAt}</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <TablePagination
-        page={page}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        onPageChange={setPage}
-      />
-    </div>
+          </TableHeader>
+          <TableBody>
+            {pageItems.map((user) => (
+              <TableRow key={user.email}>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{user.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {user.email}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell>
+                  <StatusDot tone={USER_STATUS_TONE[user.status]}>
+                    {user.status}
+                  </StatusDot>
+                </TableCell>
+                <TableCell>{user.joinedAt}</TableCell>
+                <TableCell>
+                  <RowActions label={user.name} />
+                </TableCell>
+              </TableRow>
+            ))}
+            {pageItems.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  {t.common.noResults}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={setPage}
+        />
+      </CardContent>
+    </Card>
   )
 }

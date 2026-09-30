@@ -10,10 +10,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { NOTIFICATION_CATEGORIES, NOTIFICATION_ICONS } from '@/config/notifications'
+import {
+  NOTIFICATION_CATEGORIES,
+  NOTIFICATION_ICONS,
+} from '@/config/notifications'
 import { notificationsQueryOptions } from '@/server/notifications'
+import { useTranslation } from '@/i18n/use-translation'
 
 export function NotificationsMenu() {
+  const t = useTranslation()
   const { data: notifications } = useSuspenseQuery(notificationsQueryOptions())
   const [category, setCategory] = useState<string | null>(null)
   const items = category
@@ -28,7 +33,7 @@ export function NotificationsMenu() {
           size="icon-lg"
           className="relative focus-visible:ring-0"
         >
-          <span className="sr-only">알림</span>
+          <span className="sr-only">{t.notificationsMenu.srLabel}</span>
           <Bell className="size-6" />
           <span className="absolute -top-1 -right-1 flex size-4.5 min-w-4.5 items-center justify-center rounded-full bg-destructive px-0.5 text-[10px] leading-none font-bold text-white ring-2 ring-background">
             {notifications.length}
@@ -36,7 +41,7 @@ export function NotificationsMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel>알림</DropdownMenuLabel>
+        <DropdownMenuLabel>{t.notificationsMenu.title}</DropdownMenuLabel>
         <div className="flex flex-nowrap gap-1.5 overflow-x-auto px-2 pb-2">
           <button
             type="button"
@@ -48,7 +53,7 @@ export function NotificationsMenu() {
                 : 'border-border text-muted-foreground hover:bg-accent',
             )}
           >
-            전체
+            {t.notificationsMenu.all}
           </button>
           {NOTIFICATION_CATEGORIES.map((value) => (
             <button
@@ -69,7 +74,7 @@ export function NotificationsMenu() {
         <DropdownMenuSeparator />
         {items.length === 0 && (
           <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-            해당 카테고리의 알림이 없어요.
+            {t.notificationsMenu.empty}
           </p>
         )}
         {items.map((item, index) => {
@@ -81,7 +86,9 @@ export function NotificationsMenu() {
               </div>
               <div className="flex flex-1 flex-col">
                 <span className="text-sm text-foreground">{item.message}</span>
-                <span className="text-xs text-muted-foreground">{item.time}</span>
+                <span className="text-xs text-muted-foreground">
+                  {item.time}
+                </span>
               </div>
             </div>
           )

@@ -22,51 +22,56 @@ import { notificationsQueryOptions } from '../server/notifications'
 
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;var color=window.localStorage.getItem('theme-color');if(color){root.setAttribute('data-color',color)}}catch(e){}})();`
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: async ({ location }) => {
-    const user = await getCurrentUserFn()
-    const isLoginPage = location.pathname === '/login'
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    beforeLoad: async ({ location }) => {
+      const user = await getCurrentUserFn()
+      const isLoginPage = location.pathname === '/login'
 
-    if (!user && !isLoginPage) {
-      throw redirect({ to: '/login' })
-    }
+      if (!user && !isLoginPage) {
+        throw redirect({ to: '/login' })
+      }
 
-    if (user && isLoginPage) {
-      throw redirect({ to: '/' })
-    }
+      if (user && isLoginPage) {
+        throw redirect({ to: '/' })
+      }
 
-    return { user }
+      return { user }
+    },
+    loader: ({ context }) =>
+      context.queryClient.ensureQueryData(notificationsQueryOptions()),
+    head: () => ({
+      meta: [
+        {
+          charSet: 'utf-8',
+        },
+        {
+          // 이 킷은 데스크톱 전용 어드민이라 모바일 반응형을 지원하지 않는다.
+          // width=device-width 대신 고정 너비를 줘서, 좁은 화면에서도 축소된
+          // "모바일 레이아웃"으로 깨지지 않고 데스크톱 레이아웃 그대로 가로 스크롤되게 한다.
+          name: 'viewport',
+          content: 'width=1280, initial-scale=1',
+        },
+        {
+          title: 'Admin',
+        },
+      ],
+      links: [
+        {
+          rel: 'stylesheet',
+          href: appCss,
+        },
+      ],
+    }),
+    notFoundComponent: NotFound,
+    shellComponent: RootDocument,
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(notificationsQueryOptions()),
-  head: () => ({
-    meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        // 이 킷은 데스크톱 전용 어드민이라 모바일 반응형을 지원하지 않는다.
-        // width=device-width 대신 고정 너비를 줘서, 좁은 화면에서도 축소된
-        // "모바일 레이아웃"으로 깨지지 않고 데스크톱 레이아웃 그대로 가로 스크롤되게 한다.
-        name: 'viewport',
-        content: 'width=1280, initial-scale=1',
-      },
-      {
-        title: 'Admin',
-      },
-    ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
-  }),
-  notFoundComponent: NotFound,
-  shellComponent: RootDocument,
-})
+)
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
   const isLoginPage = pathname === '/login'
 
   return (
@@ -83,7 +88,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <AppSidebar />
             <SidebarInset className="overflow-hidden">
               <SiteHeader />
-              <div className="flex min-h-0 flex-1 flex-col overflow-auto">
+              <div className="bg-grid-fade flex min-h-0 flex-1 flex-col overflow-auto">
                 <div className="flex min-h-full min-w-5xl flex-col gap-4 p-4">
                   {children}
                 </div>

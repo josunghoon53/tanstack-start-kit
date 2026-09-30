@@ -268,6 +268,27 @@ button:not(:disabled),
   --sidebar-primary-foreground: oklch(0.145 0 0);
 }
 
+/* 콘텐츠 배경: 화면 전체에 은은하게 깔리는 브랜드 컬러 + 보일 듯 말 듯한 격자.
+   레이어는 위에서부터 [전체 컬러 워시] → [격자를 아래로 페이드시키는 덮개] → [격자 가로/세로선].
+   컬러 워시가 맨 위라 페이드된 영역까지 고르게 물든다.
+   색은 전부 테마 변수(--primary/--muted/--border)라 다크모드·색상 프리셋을 자동으로 따라온다. */
+.bg-grid-fade {
+  --grid-line: color-mix(in oklab, var(--border) 45%, transparent);
+  --wash-strong: color-mix(in oklab, var(--primary) 9%, transparent);
+  --wash-soft: color-mix(in oklab, var(--primary) 4%, transparent);
+  background-color: var(--muted);
+  background-image:
+    linear-gradient(135deg, var(--wash-strong), var(--wash-soft) 50%, var(--wash-strong)),
+    radial-gradient(ellipse 110% 100% at 50% 0%, transparent 35%, var(--muted) 95%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    32px 32px,
+    32px 32px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -13,67 +13,83 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { usePaginatedSearch } from '@/hooks/use-paginated-search'
+import { Card, CardContent } from '@/components/ui/card'
 import { PRODUCT_STATUS_TONE } from '@/config/products'
 import { productsQueryOptions } from '@/server/products'
+import { useTranslation } from '@/i18n/use-translation'
 
 export const Route = createFileRoute('/products')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(productsQueryOptions()),
   component: Products,
 })
 
 function Products() {
+  const t = useTranslation()
   const { data: products } = useSuspenseQuery(productsQueryOptions())
   const { query, setQuery, page, setPage, totalPages, pageItems, totalCount } =
     usePaginatedSearch(
       products,
       (product, q) =>
-        product.name.toLowerCase().includes(q) || product.category.toLowerCase().includes(q),
+        product.name.toLowerCase().includes(q) ||
+        product.category.toLowerCase().includes(q),
     )
 
   return (
-    <div className="flex flex-col gap-3">
-      <TableSearchInput value={query} onChange={setQuery} placeholder="상품명, 카테고리로 검색" />
-      <Table className="border-y">
-        <TableHeader>
-          <TableRow>
-            <TableHead>상품명</TableHead>
-            <TableHead>카테고리</TableHead>
-            <TableHead>재고</TableHead>
-            <TableHead>가격</TableHead>
-            <TableHead>상태</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pageItems.map((product) => (
-            <TableRow key={product.name}>
-              <TableCell className="font-medium">{product.name}</TableCell>
-              <TableCell>{product.category}</TableCell>
-              <TableCell>{product.stock}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell>
-                <StatusDot tone={PRODUCT_STATUS_TONE[product.status]}>{product.status}</StatusDot>
-              </TableCell>
-              <TableCell>
-                <RowActions label={product.name} />
-              </TableCell>
-            </TableRow>
-          ))}
-          {pageItems.length === 0 && (
+    <Card className="flex-1">
+      <CardContent className="flex flex-col gap-3">
+        <TableSearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t.products.searchPlaceholder}
+        />
+        <Table className="border-y">
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                검색 결과가 없어요.
-              </TableCell>
+              <TableHead>{t.products.columns.name}</TableHead>
+              <TableHead>{t.products.columns.category}</TableHead>
+              <TableHead>{t.products.columns.stock}</TableHead>
+              <TableHead>{t.products.columns.price}</TableHead>
+              <TableHead>{t.products.columns.status}</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <TablePagination
-        page={page}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        onPageChange={setPage}
-      />
-    </div>
+          </TableHeader>
+          <TableBody>
+            {pageItems.map((product) => (
+              <TableRow key={product.name}>
+                <TableCell className="font-medium">{product.name}</TableCell>
+                <TableCell>{product.category}</TableCell>
+                <TableCell>{product.stock}</TableCell>
+                <TableCell>{product.price}</TableCell>
+                <TableCell>
+                  <StatusDot tone={PRODUCT_STATUS_TONE[product.status]}>
+                    {product.status}
+                  </StatusDot>
+                </TableCell>
+                <TableCell>
+                  <RowActions label={product.name} />
+                </TableCell>
+              </TableRow>
+            ))}
+            {pageItems.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  {t.common.noResults}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={setPage}
+        />
+      </CardContent>
+    </Card>
   )
 }
