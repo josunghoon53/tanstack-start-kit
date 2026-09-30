@@ -302,15 +302,21 @@ button:not(:disabled),
 }
 
 /* 디자인팀이 만든 색상별 오버레이 이미지. 프리셋(data-color)×테마(.dark) 조합마다
-   1장씩 매칭한다 — 라이트 모드 기본 블루(프리셋 미지정)만 아직 이미지가 없어서 위의
-   CSS 패턴 폴백을 그대로 쓴다. background-size/position/repeat을 매 규칙에 같이 써야
-   한다 — 위 폴백 규칙의 background-size는 격자 레이어별로 다른 값 목록(100% 100%,
-   32px 32px, ...)이라, 이미지 단일 레이어용 `cover`를 별도 공용 규칙으로 빼면 그
-   레이어별 사이징까지 덮어써서 블루 폴백의 격자 무늬가 깨진다.
+   1장씩 매칭한다. background-size/position/repeat을 매 규칙에 같이 써야 한다 — 위 CSS
+   패턴 규칙의 background-size는 격자 레이어별로 다른 값 목록(100% 100%, 32px 32px,
+   ...)이라, 이미지 단일 레이어용 `cover`를 별도 공용 규칙으로 빼면 그 레이어별 사이징까지
+   덮어써서 이미지가 없는 조합(새 색상 프리셋을 추가했는데 이미지가 아직 없을 때 등)의
+   격자 무늬가 깨진다 — 위 CSS 패턴 규칙은 그 폴백으로 남겨둔다.
 
    다크 모드 이미지는 원본이 라이트보다 대비가 훨씬 강해서(밝은 코너 장식이 거의
    흰색에 가까움) 그대로 쓰면 카드보다 배경이 튀어 보인다. --background를 살짝 섞은
    반투명 워시 레이어를 이미지 위에 얹어 톤을 죽인다. */
+:root .bg-grid-fade {
+  background-image: url('/backgrounds/bg-blue-light.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 .dark .bg-grid-fade {
   --overlay-tint: color-mix(in oklab, var(--background) 55%, transparent);
   background-image:
