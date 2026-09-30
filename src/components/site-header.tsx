@@ -30,7 +30,7 @@ export function SiteHeader() {
   const title = findTitle(getNavItems(locale), pathname)
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+    <header className="relative z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4 shadow-[0_2px_8px_-2px_rgb(0_0_0/0.06)] dark:shadow-[0_2px_8px_-2px_rgb(0_0_0/0.3)]">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="mr-2 h-4" />
       <h1 className="text-lg font-bold">{title}</h1>
