@@ -149,7 +149,9 @@ export function LlmPlanUsage({ provider }: { provider: LlmProvider }) {
       )}
 
       {enabled && (
-        <p className="text-xs text-muted-foreground">{t.experimentalNotice}</p>
+        <p className="text-xs whitespace-pre-line text-muted-foreground">
+          {t.experimentalNotice}
+        </p>
       )}
     </section>
   )

@@ -391,7 +391,7 @@ export const messages = {
         notApplicable:
           'API 키 provider는 플랜 한도가 없어요. 호출별 토큰/비용만 확인할 수 있어요.',
         experimentalNotice:
-          '실험적 API 기반이라 예고 없이 바뀌거나 조회되지 않을 수 있어요.',
+          '실험적 API 기반이라\n예고 없이 바뀌거나 조회되지 않을 수 있어요.',
         plan: (plan: string) => `플랜: ${plan}`,
         used: (percent: number) => `${percent}% 사용`,
         remaining: (percent: number) => `${percent}% 남음`,
@@ -798,7 +798,7 @@ export const messages = {
         notApplicable:
           'API key providers have no plan limits. Only per-call tokens and cost are available.',
         experimentalNotice:
-          'Based on an experimental API; it may change or fail without notice.',
+          'Based on an experimental API;\nit may change or fail without notice.',
         plan: (plan: string) => `Plan: ${plan}`,
         used: (percent: number) => `${percent}% used`,
         remaining: (percent: number) => `${percent}% left`,
