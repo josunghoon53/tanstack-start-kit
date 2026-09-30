@@ -39,7 +39,11 @@ pnpm install && pnpm dev
 - **UI 패턴**: 검색/페이지네이션, 단일·다중선택 필터, 날짜 범위 필터, 컬럼 정렬, 체크박스
   다중선택 + 일괄작업 + CSV 내보내기, 행 액션 모달(수정/삭제/보기), 인라인 상세 확장,
   토스트 피드백이 리스트 페이지마다 동일하게 재사용됩니다.
-- **테스트**: `vitest` + `@testing-library/react`로 위 기능 전체를 커버합니다(188개 테스트).
+- **AI 연동**: `설정 > AI 연동` 탭에서 Claude/Codex **구독 계정** 로그인 또는 **API 키**
+  (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`) 연결 상태를 확인하고, 구독 사용량(5시간/주간 한도)을
+  볼 수 있습니다. `AI 플레이그라운드`(`/llm-runner`)에서 프롬프트를 실행해 볼 수 있고, Codex
+  구독은 이미지 생성도 됩니다. [`llm-runner`](https://www.npmjs.com/package/llm-runner) 기반입니다.
+- **테스트**: `vitest` + `@testing-library/react`로 위 기능 전체를 커버합니다(219개 테스트).
 
 ## 시작하기
 
@@ -63,6 +67,16 @@ pnpm check       # prettier --check .
 pnpm test        # vitest run (유닛/컴포넌트 테스트, 1회 실행)
 pnpm test:watch  # vitest (watch 모드)
 ```
+
+## AI 연동 사용하기
+
+- **구독 계정(로컬 개발용)**: Claude Code 또는 Codex CLI를 설치한 뒤(`npx llm-runner-setup`으로
+  확인), `설정 > AI 연동`에서 로그인하세요. 이 앱 전용 계정이라 CLI의 기본 로그인은 바뀌지 않습니다.
+  배포 서버에는 로그인 세션이 없어서 동작하지 않습니다.
+- **API 키(배포용)**: 서버 환경 변수에 `ANTHROPIC_API_KEY` / `OPENAI_API_KEY`를 설정하세요.
+  로컬 개발에서는 프로젝트 루트의 `.env`에 넣고 dev 서버를 재시작하면 됩니다.
+- 비용이 나가는 호출이라 로그인한 사용자만 실행할 수 있지만, 역할(RBAC)은 없어서 로그인한
+  누구나 실행할 수 있습니다. 실제 서비스에서는 권한 체크를 추가하세요.
 
 ## 새 페이지 추가하기
 
@@ -88,6 +102,6 @@ pnpm test:watch  # vitest (watch 모드)
 ## 스택
 
 TanStack Start · TanStack Router · React 19 · Vite 8 · Tailwind CSS v4 · shadcn/ui ·
-TanStack Query · Zustand · react-hook-form + zod · Vitest
+TanStack Query · Zustand · react-hook-form + zod · llm-runner · Vitest
 
 더 자세한 설계 결정과 "이렇게 하지 말 것" 목록은 [AGENTS.md](./AGENTS.md)에 있습니다.
