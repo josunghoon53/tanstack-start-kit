@@ -15,8 +15,7 @@ AI 코딩 에이전트(Claude Code, Cursor, Codex 등)로 이 킷을 계속 확�
 ```bash
 gh repo create my-new-app --template josunghoon53/tanstack-start-kit --clone
 cd my-new-app
-pnpm install
-pnpm dev
+pnpm install && pnpm dev
 ```
 
 기존 git 히스토리 없이 깨끗한 커밋 하나로 시작됩니다. `package.json`의 `name`과
