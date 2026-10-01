@@ -7,6 +7,22 @@ AI 코딩 에이전트(Claude Code, Cursor, Codex 등)로 이 킷을 계속 확�
 [AGENTS.md](./AGENTS.md)를 먼저 읽어보세요 — 왜 이렇게 만들었는지, 뭘 건드리면 안 되는지까지
 정리돼 있습니다. 이 문서는 사람이 처음 훑어보기 위한 요약입니다.
 
+## 미리보기
+
+| 대시보드 (라이트)                                        | 대시보드 (다크)                                       |
+| -------------------------------------------------------- | ----------------------------------------------------- |
+| ![대시보드 라이트](docs/screenshots/dashboard-light.png) | ![대시보드 다크](docs/screenshots/dashboard-dark.png) |
+
+| 주문 리스트 (검색/필터/정렬/CSV)                  | 설정 > AI 연동                                          |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| ![주문 리스트](docs/screenshots/orders-light.png) | ![설정 AI 연동](docs/screenshots/settings-ai-light.png) |
+
+| AI 플레이그라운드                                              |
+| -------------------------------------------------------------- |
+| ![AI 플레이그라운드](docs/screenshots/ai-playground-light.png) |
+
+> 스크린샷의 계정 정보는 가렸어요. 데모 데이터와 데모 계정만 쓰고 있어요.
+
 ## 새 프로젝트 시작하기
 
 이 저장소는 GitHub 템플릿 저장소로 등록돼 있습니다. GitHub에서 "Use this template" 버튼을
@@ -105,3 +121,7 @@ TanStack Start · TanStack Router · React 19 · Vite 8 · Tailwind CSS v4 · sh
 TanStack Query · Zustand · react-hook-form + zod · llm-runner · Vitest
 
 더 자세한 설계 결정과 "이렇게 하지 말 것" 목록은 [AGENTS.md](./AGENTS.md)에 있습니다.
+
+## 라이선스
+
+[MIT](./LICENSE)
