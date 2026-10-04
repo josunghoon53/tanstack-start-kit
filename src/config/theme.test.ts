@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   COLOR_STORAGE_KEY,
@@ -92,5 +94,26 @@ describe('THEME_INIT_SCRIPT', () => {
       DEFAULT_THEME_STYLE,
     )
     expect(document.documentElement).not.toHaveAttribute('data-color')
+  })
+})
+
+describe('styles.css consistency', () => {
+  const css = readFileSync(resolve(process.cwd(), 'src/styles.css'), 'utf-8')
+
+  it.each(THEME_STYLES.filter((style) => style !== DEFAULT_THEME_STYLE))(
+    'defines a block for the %s style',
+    (style) => {
+      expect(css).toContain(`:root[data-style='${style}']`)
+    },
+  )
+
+  it.each(THEME_COLORS)('defines a block for the %s color preset', (color) => {
+    expect(css).toContain(`:root[data-color='${color}']`)
+  })
+
+  it('no longer contains dark mode or background-image rules', () => {
+    expect(css).not.toContain('.dark')
+    expect(css).not.toContain('bg-grid-fade')
+    expect(css).not.toContain('/backgrounds/')
   })
 })
