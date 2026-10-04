@@ -139,212 +139,129 @@ button:not(:disabled),
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   스타일 테마. <html data-style="..."> 로 선택하고, 기본은 graphite(속성 없을 때도 적용).
-   색은 oklch(L C var(--h)) — 색상 각도(--h)만 바꾸면 배경·카드·테두리·사이드바·포인트가
-   한 계열로 같이 이동한다. 아래 data-color 프리셋이 그 각도를 덮어쓴다.
-   모든 스타일은 사이드바를 메인과 대비되는 어두운 색으로 두고, 활성 메뉴는 흰 배경(--sidebar-primary)
-   위에 테마색 글씨(--sidebar-primary-foreground)로 표시한다.
+   테마는 두 축이다.
+   - 스타일(<html data-style>): 모양과 글꼴만 정한다. 색은 하나도 갖지 않는다.
+   - 포인트색(<html data-color>): 버튼·활성 메뉴 글씨·차트 강조 같은 작은 곳의 색만 정한다.
+   큰 면(배경/카드/사이드바)은 어떤 선택에서도 무채색이다(눈의 피로를 줄이려는 결정).
+   사이드바는 항상 어두운 중립이고, 활성 메뉴는 off-white 박스에 굵은 글씨로 표시한다.
+   색은 oklch(L C H) — 큰 면은 색상각 90에 채도 .004~.008(아주 약한 따뜻한 기운),
+   포인트색은 --ah(색상각)와 --ae(0=무채색, 1=포인트 켜짐)로 계산한다.
    ──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ah: 90;
+  --ae: 0;
+
+  /* 큰 면: 항상 무채색 */
+  --background: oklch(0.955 0.006 90);
+  --foreground: oklch(0.2 0.006 90);
+  --card: oklch(0.988 0.003 90);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --secondary: oklch(0.935 0.006 90);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--secondary);
+  --muted-foreground: oklch(0.47 0.008 90);
+  --accent: var(--secondary);
+  --accent-foreground: var(--foreground);
+  --border: oklch(0.9 0.006 90);
+  --destructive: oklch(0.56 0.12 25);
+  --success: oklch(0.62 0.09 160);
+  --warning: oklch(0.74 0.095 80);
+
+  /* 포인트색: 무채색일 땐 거의 검정, 색을 고르면 그 색(밝기 .5, 채도 .11) */
+  --primary: oklch(
+    calc(0.25 + 0.25 * var(--ae)) calc(0.11 * var(--ae)) var(--ah)
+  );
+  --primary-foreground: oklch(1 0 0);
+  --ring: var(--primary);
+  --chart-1: oklch(0.85 calc(0.04 * var(--ae)) var(--ah));
+  --chart-2: oklch(0.7 calc(0.07 * var(--ae)) var(--ah));
+  --chart-3: oklch(0.55 calc(0.1 * var(--ae)) var(--ah));
+  --chart-4: oklch(0.42 calc(0.09 * var(--ae)) var(--ah));
+  --chart-5: oklch(0.3 calc(0.06 * var(--ae)) var(--ah));
+
+  /* 사이드바: 항상 어둡게 */
+  --sidebar: oklch(0.21 0.004 90);
+  --sidebar-foreground: oklch(0.84 0.005 90);
+  --sidebar-primary: oklch(0.985 0.004 90);
+  --sidebar-primary-foreground: oklch(
+    calc(0.18 + 0.32 * var(--ae)) calc(0.1 * var(--ae)) var(--ah)
+  );
+  --sidebar-accent: oklch(0.3 0.004 90);
+  --sidebar-accent-foreground: oklch(0.97 0.004 90);
+  --sidebar-border: oklch(0.3 0.004 90);
+  --sidebar-ring: oklch(0.85 calc(0.08 * var(--ae)) var(--ah));
+}
+
+/* ── 스타일 축: 모양과 글꼴 ── */
 :root,
-:root[data-style='graphite'] {
-  --h: 285;
+:root[data-style='clean'] {
   --radius: 0.5rem;
   --font-body: 'IBM Plex Sans KR', ui-sans-serif, system-ui, sans-serif;
   --font-title: var(--font-body);
   --weight-body: 400;
   --weight-title: 600;
-  --shadow-card: 0 1px 2px oklch(0.3 0.03 var(--h) / 0.06);
-  --background: oklch(0.972 0.006 var(--h));
-  --foreground: oklch(0.22 0.02 var(--h));
-  --card: oklch(1 0.002 var(--h));
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --primary: oklch(0.54 0.1 var(--h));
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.945 0.02 var(--h));
-  --secondary-foreground: var(--foreground);
-  --muted: var(--secondary);
-  --muted-foreground: oklch(0.5 0.025 var(--h));
-  --accent: var(--secondary);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.56 0.12 25);
-  --success: oklch(0.62 0.09 160);
-  --warning: oklch(0.74 0.095 80);
-  --border: oklch(0.925 0.01 var(--h));
-  --input: oklch(0.88 0.014 var(--h));
-  --ring: var(--primary);
-  --chart-1: oklch(0.8 0.04 var(--h));
-  --chart-2: oklch(0.65 0.08 var(--h));
-  --chart-3: oklch(0.5 0.1 var(--h));
-  --chart-4: oklch(0.4 0.09 var(--h));
-  --chart-5: oklch(0.3 0.06 var(--h));
-  --sidebar: oklch(0.25 0.014 var(--h));
-  --sidebar-foreground: oklch(0.82 0.014 var(--h));
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.5 0.1 var(--h));
-  --sidebar-accent: oklch(0.31 0.016 var(--h));
-  --sidebar-accent-foreground: oklch(0.96 0.006 var(--h));
-  --sidebar-border: oklch(0.31 0.016 var(--h));
-  --sidebar-ring: oklch(0.78 0.07 var(--h));
+  --shadow-card: 0 1px 2px oklch(0.3 0.01 90 / 0.06);
+  --card-border: var(--border);
+  --input: oklch(0.86 0.006 90);
 }
 
-:root[data-style='warm'] {
-  --h: 42;
+:root[data-style='soft'] {
   --radius: 0.875rem;
   --font-body: 'Gowun Dodum', ui-sans-serif, system-ui, sans-serif;
   --font-title: 'Gowun Batang', serif;
   --weight-body: 400;
   --weight-title: 700;
-  --shadow-card: 0 8px 24px -16px oklch(0.4 0.08 var(--h) / 0.35);
-  --background: oklch(0.975 0.012 var(--h));
-  --foreground: oklch(0.26 0.025 var(--h));
-  --card: oklch(0.992 0.006 var(--h));
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --primary: oklch(0.54 0.1 var(--h));
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.94 0.02 var(--h));
-  --secondary-foreground: var(--foreground);
-  --muted: var(--secondary);
-  --muted-foreground: oklch(0.52 0.035 var(--h));
-  --accent: var(--secondary);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.56 0.12 25);
-  --success: oklch(0.62 0.09 160);
-  --warning: oklch(0.74 0.095 80);
-  --border: oklch(0.91 0.02 var(--h));
-  --input: oklch(0.87 0.026 var(--h));
-  --ring: var(--primary);
-  --chart-1: oklch(0.8 0.05 var(--h));
-  --chart-2: oklch(0.68 0.09 var(--h));
-  --chart-3: oklch(0.56 0.1 var(--h));
-  --chart-4: oklch(0.45 0.09 var(--h));
-  --chart-5: oklch(0.34 0.06 var(--h));
-  --sidebar: oklch(0.3 0.022 var(--h));
-  --sidebar-foreground: oklch(0.86 0.022 var(--h));
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.55 0.1 var(--h));
-  --sidebar-accent: oklch(0.37 0.024 var(--h));
-  --sidebar-accent-foreground: oklch(0.96 0.012 var(--h));
-  --sidebar-border: oklch(0.37 0.024 var(--h));
-  --sidebar-ring: oklch(0.76 0.08 var(--h));
+  --shadow-card: 0 8px 24px -16px oklch(0.35 0.02 90 / 0.35);
+  --card-border: var(--border);
+  --input: oklch(0.86 0.006 90);
 }
 
-/* Editorial은 기본이 무채색(--nk: 0). 색상 프리셋을 고르면 아래에서 --nk/--ak를 켜서 색을 입힌다.
-   --radius를 음수로 둔 건 rounded-xl(= radius + 4px)이 0이 되도록 하기 위해서다. */
+/* --radius를 음수로 둔 건 rounded-xl(= radius + 4px)이 0이 되도록 하기 위해서다. */
 :root[data-style='editorial'] {
-  --h: 0;
-  --nk: 0;
-  --ak: 0;
   --radius: -0.25rem;
   --font-body: 'Nanum Myeongjo', serif;
   --font-title: 'Nanum Myeongjo', serif;
   --weight-body: 400;
   --weight-title: 800;
   --shadow-card: none;
-  --background: oklch(1 calc(0.012 * var(--nk)) var(--h));
-  --foreground: oklch(0.2 calc(0.02 * var(--nk)) var(--h));
-  --card: oklch(1 calc(0.008 * var(--nk)) var(--h));
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --primary: oklch(calc(0.2 + 0.35 * var(--nk)) var(--ak) var(--h));
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 calc(0.02 * var(--nk)) var(--h));
-  --secondary-foreground: var(--foreground);
-  --muted: var(--secondary);
-  --muted-foreground: oklch(0.46 calc(0.03 * var(--nk)) var(--h));
-  --accent: var(--secondary);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.56 0.12 25);
-  --success: oklch(0.62 0.09 160);
-  --warning: oklch(0.74 0.095 80);
-  --border: oklch(0.91 calc(0.014 * var(--nk)) var(--h));
-  --input: oklch(0.2 calc(0.03 * var(--nk)) var(--h));
-  --ring: var(--primary);
-  --chart-1: oklch(0.85 calc(0.5 * var(--ak)) var(--h));
-  --chart-2: oklch(0.68 calc(0.8 * var(--ak)) var(--h));
-  --chart-3: oklch(0.5 var(--ak) var(--h));
-  --chart-4: oklch(0.38 var(--ak) var(--h));
-  --chart-5: oklch(0.28 calc(0.6 * var(--ak)) var(--h));
-  --sidebar: oklch(0.19 calc(0.03 * var(--nk)) var(--h));
-  --sidebar-foreground: oklch(0.88 calc(0.015 * var(--nk)) var(--h));
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(
-    calc(0.2 + 0.3 * var(--nk)) var(--ak) var(--h)
-  );
-  --sidebar-accent: oklch(0.3 calc(0.035 * var(--nk)) var(--h));
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3 calc(0.035 * var(--nk)) var(--h));
-  --sidebar-ring: oklch(
-    calc(1 - 0.25 * var(--nk)) calc(0.7 * var(--ak)) var(--h)
-  );
+  --card-border: var(--border);
+  --input: oklch(0.2 0.006 90);
 }
 
-:root[data-style='nordic'] {
-  --h: 255;
-  --radius: 0.625rem;
+/* radius 0 → 카드(rounded-xl)만 4px, 버튼·입력은 직각. 테두리는 검정에 가까운 선. */
+:root[data-style='crisp'] {
+  --radius: 0rem;
   --font-body: 'Noto Sans KR', ui-sans-serif, system-ui, sans-serif;
   --font-title: var(--font-body);
-  --weight-body: 400;
-  --weight-title: 600;
-  --shadow-card: 0 10px 30px -18px oklch(0.4 0.1 var(--h) / 0.4);
-  --background: oklch(0.965 0.012 var(--h));
-  --foreground: oklch(0.27 0.03 var(--h));
-  --card: oklch(1 0.003 var(--h));
-  --card-foreground: var(--foreground);
-  --popover: var(--card);
-  --popover-foreground: var(--foreground);
-  --primary: oklch(0.52 0.09 var(--h));
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.94 0.02 var(--h));
-  --secondary-foreground: var(--foreground);
-  --muted: var(--secondary);
-  --muted-foreground: oklch(0.52 0.035 var(--h));
-  --accent: var(--secondary);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.56 0.12 25);
-  --success: oklch(0.62 0.09 160);
-  --warning: oklch(0.74 0.095 80);
-  --border: oklch(0.92 0.015 var(--h));
-  --input: oklch(0.88 0.02 var(--h));
-  --ring: var(--primary);
-  --chart-1: oklch(0.82 0.04 var(--h));
-  --chart-2: oklch(0.68 0.07 var(--h));
-  --chart-3: oklch(0.52 0.09 var(--h));
-  --chart-4: oklch(0.4 0.08 var(--h));
-  --chart-5: oklch(0.3 0.05 var(--h));
-  --sidebar: oklch(0.3 0.032 var(--h));
-  --sidebar-foreground: oklch(0.85 0.02 var(--h));
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.5 0.09 var(--h));
-  --sidebar-accent: oklch(0.37 0.032 var(--h));
-  --sidebar-accent-foreground: oklch(0.96 0.008 var(--h));
-  --sidebar-border: oklch(0.37 0.032 var(--h));
-  --sidebar-ring: oklch(0.76 0.07 var(--h));
+  --weight-body: 500;
+  --weight-title: 800;
+  --shadow-card: none;
+  --card-border: oklch(0.22 0.004 90);
+  --input: oklch(0.22 0.004 90);
 }
 
-/* 색상 프리셋: 색상 각도만 덮어쓴다. 위 스타일 블록과 특이도가 같으므로 반드시 그 뒤에 둘 것. */
+/* ── 포인트색 축: 색상각만 정하고 포인트를 켠다. 위 블록들보다 뒤에 둘 것(특이도가 같다). ── */
 :root[data-color='blue'] {
-  --h: 255;
+  --ah: 255;
+  --ae: 1;
 }
 :root[data-color='green'] {
-  --h: 155;
+  --ah: 155;
+  --ae: 1;
 }
 :root[data-color='purple'] {
-  --h: 300;
+  --ah: 300;
+  --ae: 1;
 }
 :root[data-color='rose'] {
-  --h: 12;
+  --ah: 12;
+  --ae: 1;
 }
 :root[data-color='orange'] {
-  --h: 55;
-}
-:root[data-style='editorial'][data-color] {
-  --nk: 1;
-  --ak: 0.1;
+  --ah: 55;
+  --ae: 1;
 }
 
 @layer base {
