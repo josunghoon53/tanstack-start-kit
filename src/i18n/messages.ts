@@ -245,9 +245,12 @@ export const messages = {
       },
       theme: {
         heading: '테마',
-        accentColorLabel: '강조 색상',
+        styleLabel: '스타일',
+        styleDescription:
+          '폰트, 모서리, 사이드바 등 화면 전체의 분위기를 선택하세요.',
+        accentColorLabel: '색상',
         accentColorDescription:
-          '버튼, 링크 등에 사용되는 포인트 컬러를 선택하세요.',
+          '선택한 색을 기준으로 배경과 사이드바까지 전체 색 조합이 바뀌어요.',
       },
       security: {
         heading: '보안',
@@ -281,6 +284,9 @@ export const messages = {
         title: '최근 알림',
         description: '새로 들어온 활동이에요.',
       },
+      weeklyRevenue: {
+        title: '주간 매출',
+      },
     },
     login: {
       emailRequired: '이메일을 입력해주세요.',
@@ -295,12 +301,18 @@ export const messages = {
       demoAccountPrefix: '데모 계정:',
     },
     colorThemePicker: {
+      default: '기본',
       blue: '블루',
       green: '그린',
       purple: '퍼플',
       rose: '로즈',
       orange: '오렌지',
-      slate: '무채색',
+    },
+    stylePicker: {
+      graphite: '쿨 그레이 고딕, 직선적이고 기술적인 느낌',
+      warm: '크림 톤에 둥근 폰트와 바탕체 제목',
+      editorial: '흑백 명조체, 각진 신문 느낌',
+      nordic: '블루 그레이와 부드러운 그림자',
     },
     notificationsMenu: {
       srLabel: '알림',
@@ -651,9 +663,12 @@ export const messages = {
       },
       theme: {
         heading: 'Theme',
-        accentColorLabel: 'Accent color',
+        styleLabel: 'Style',
+        styleDescription:
+          'Choose the overall look: fonts, corners, sidebar, and more.',
+        accentColorLabel: 'Color',
         accentColorDescription:
-          'Choose the accent color used for buttons, links, and more.',
+          'The whole palette, including background and sidebar, shifts to the chosen color.',
       },
       security: {
         heading: 'Security',
@@ -687,6 +702,9 @@ export const messages = {
         title: 'Recent notifications',
         description: 'Recently arrived activity.',
       },
+      weeklyRevenue: {
+        title: 'Weekly revenue',
+      },
     },
     login: {
       emailRequired: 'Please enter an email address.',
@@ -701,12 +719,18 @@ export const messages = {
       demoAccountPrefix: 'Demo account:',
     },
     colorThemePicker: {
+      default: 'Default',
       blue: 'Blue',
       green: 'Green',
       purple: 'Purple',
       rose: 'Rose',
       orange: 'Orange',
-      slate: 'Slate',
+    },
+    stylePicker: {
+      graphite: 'Cool gray sans-serif, sharp and technical',
+      warm: 'Cream tones with rounded body and serif headings',
+      editorial: 'Black and white serif, newspaper-like and angular',
+      nordic: 'Blue-gray with soft shadows',
     },
     notificationsMenu: {
       srLabel: 'Notifications',
