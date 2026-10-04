@@ -1,95 +1,85 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/i18n/use-translation'
+import {
+  COLOR_STORAGE_KEY,
+  THEME_COLORS,
+  applyThemeColor,
+  parseThemeColor,
+} from '@/config/theme'
+import type { ThemeColor } from '@/config/theme'
 
-type ColorTheme = 'blue' | 'green' | 'purple' | 'rose' | 'orange' | 'slate'
-
-interface ColorThemePickerMessages {
-  blue: string
-  green: string
-  purple: string
-  rose: string
-  orange: string
-  slate: string
+// 스와치 색은 src/styles.css의 data-color 프리셋 색상 각도(--h)와 같은 값을 쓴다.
+const COLOR_HUES: Record<ThemeColor, number> = {
+  blue: 255,
+  green: 155,
+  purple: 300,
+  rose: 12,
+  orange: 55,
 }
 
-// 매개변수 타입을 Messages['colorThemePicker']가 아니라 string으로 넓혀서 선언한다 —
-// `as const` 딕셔너리의 ko/en 리터럴 유니언 타입은 서로 대입할 수 없어서 그대로 쓰면 에러가 난다.
-function getColorThemes(
-  t: ColorThemePickerMessages,
-): Array<{ key: ColorTheme; label: string; swatch: string }> {
-  return [
-    { key: 'blue', label: t.blue, swatch: 'oklch(0.55 0.15 260)' },
-    { key: 'green', label: t.green, swatch: 'oklch(0.45 0.08 155)' },
-    { key: 'purple', label: t.purple, swatch: 'oklch(0.55 0.15 300)' },
-    { key: 'rose', label: t.rose, swatch: 'oklch(0.55 0.15 15)' },
-    { key: 'orange', label: t.orange, swatch: 'oklch(0.58 0.15 60)' },
-    { key: 'slate', label: t.slate, swatch: 'oklch(0.45 0 0)' },
-  ]
-}
-
-function getInitialColor(
-  colorThemes: ReturnType<typeof getColorThemes>,
-): ColorTheme {
-  if (typeof window === 'undefined') {
-    return 'blue'
-  }
-
-  const stored = window.localStorage.getItem('theme-color')
-  if (colorThemes.some((item) => item.key === stored)) {
-    return stored as ColorTheme
-  }
-
-  return 'blue'
-}
-
-function applyColorTheme(color: ColorTheme) {
-  if (color === 'blue') {
-    document.documentElement.removeAttribute('data-color')
-  } else {
-    document.documentElement.setAttribute('data-color', color)
-  }
-}
+const DEFAULT_SWATCH =
+  'conic-gradient(oklch(0.54 0.1 285), oklch(0.6 0.1 42), oklch(0.52 0.09 255), oklch(0.54 0.1 285))'
 
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
-  const colorThemes = useMemo(() => getColorThemes(t), [t])
-  const [color, setColor] = useState<ColorTheme>('blue')
+  const [color, setColor] = useState<ThemeColor | null>(null)
 
   useEffect(() => {
-    setColor(getInitialColor(colorThemes))
-  }, [colorThemes])
+    setColor(parseThemeColor(window.localStorage.getItem(COLOR_STORAGE_KEY)))
+  }, [])
 
-  function selectColor(next: ColorTheme) {
+  function selectColor(next: ThemeColor | null) {
     setColor(next)
-    applyColorTheme(next)
-    window.localStorage.setItem('theme-color', next)
+    applyThemeColor(document.documentElement, next)
+    if (next === null) {
+      window.localStorage.removeItem(COLOR_STORAGE_KEY)
+    } else {
+      window.localStorage.setItem(COLOR_STORAGE_KEY, next)
+    }
   }
+
+  const options: Array<{
+    key: ThemeColor | null
+    label: string
+    swatch: string
+  }> = [
+    { key: null, label: t.default, swatch: DEFAULT_SWATCH },
+    ...THEME_COLORS.map((key) => ({
+      key,
+      label: t[key],
+      swatch: `oklch(0.52 0.1 ${COLOR_HUES[key]})`,
+    })),
+  ]
 
   return (
     <div className="flex flex-wrap gap-3">
-      {colorThemes.map((item) => (
-        <button
-          key={item.key}
-          type="button"
-          onClick={() => selectColor(item.key)}
-          className="flex flex-col items-center gap-1.5"
-          aria-label={item.label}
-          title={item.label}
-        >
-          <span
-            className={cn(
-              'flex size-8 items-center justify-center rounded-full ring-2 ring-offset-2 ring-offset-background transition-colors',
-              color === item.key ? 'ring-foreground' : 'ring-transparent',
-            )}
-            style={{ backgroundColor: item.swatch }}
+      {options.map((item) => {
+        const selected = color === item.key
+        return (
+          <button
+            key={item.key ?? 'default'}
+            type="button"
+            onClick={() => selectColor(item.key)}
+            className="flex flex-col items-center gap-1.5"
+            aria-label={item.label}
+            aria-pressed={selected}
+            title={item.label}
           >
-            {color === item.key && <Check className="size-4 text-white" />}
-          </span>
-          <span className="text-xs text-muted-foreground">{item.label}</span>
-        </button>
-      ))}
+            <span
+              className={cn(
+                'flex size-8 items-center justify-center rounded-full ring-2 ring-offset-2 ring-offset-background transition-colors',
+                selected ? 'ring-foreground' : 'ring-transparent',
+              )}
+              style={{ background: item.swatch }}
+            >
+              {selected && <Check className="size-4 text-white" />}
+            </span>
+            <span className="text-xs text-muted-foreground">{item.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
