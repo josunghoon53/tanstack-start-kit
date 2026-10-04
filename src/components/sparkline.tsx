@@ -38,7 +38,9 @@ export function Sparkline({ values, tone, className }: SparklineProps) {
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className={tone === 'positive' ? 'stroke-success' : 'stroke-destructive'}
+        className={
+          tone === 'positive' ? 'stroke-success' : 'stroke-destructive'
+        }
       />
     </svg>
   )

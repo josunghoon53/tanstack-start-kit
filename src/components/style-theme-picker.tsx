@@ -19,29 +19,31 @@ const STYLE_NAMES: Record<ThemeStyle, string> = {
 }
 
 // 미리보기 칩 색: 사이드바 / 배경 / 포인트. src/styles.css 각 스타일의 기본 팔레트와 맞춘다.
-const PREVIEWS: Record<ThemeStyle, { side: string; bg: string; accent: string }> =
-  {
-    graphite: {
-      side: 'oklch(0.25 0.014 285)',
-      bg: 'oklch(0.972 0.006 285)',
-      accent: 'oklch(0.54 0.1 285)',
-    },
-    warm: {
-      side: 'oklch(0.3 0.022 42)',
-      bg: 'oklch(0.975 0.012 42)',
-      accent: 'oklch(0.54 0.1 42)',
-    },
-    editorial: {
-      side: 'oklch(0.19 0 0)',
-      bg: 'oklch(1 0 0)',
-      accent: 'oklch(0.2 0 0)',
-    },
-    nordic: {
-      side: 'oklch(0.3 0.032 255)',
-      bg: 'oklch(0.965 0.012 255)',
-      accent: 'oklch(0.52 0.09 255)',
-    },
-  }
+const PREVIEWS: Record<
+  ThemeStyle,
+  { side: string; bg: string; accent: string }
+> = {
+  graphite: {
+    side: 'oklch(0.25 0.014 285)',
+    bg: 'oklch(0.972 0.006 285)',
+    accent: 'oklch(0.54 0.1 285)',
+  },
+  warm: {
+    side: 'oklch(0.3 0.022 42)',
+    bg: 'oklch(0.975 0.012 42)',
+    accent: 'oklch(0.54 0.1 42)',
+  },
+  editorial: {
+    side: 'oklch(0.19 0 0)',
+    bg: 'oklch(1 0 0)',
+    accent: 'oklch(0.2 0 0)',
+  },
+  nordic: {
+    side: 'oklch(0.3 0.032 255)',
+    bg: 'oklch(0.965 0.012 255)',
+    accent: 'oklch(0.52 0.09 255)',
+  },
+}
 
 export function StyleThemePicker() {
   const t = useTranslation().stylePicker

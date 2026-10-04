@@ -47,7 +47,7 @@ pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 
 **테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
 컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
-config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 53개 테스트 파일, 219개 테스트. `vitest.config.ts`는
+config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 57개 테스트 파일, 260개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
 (예: `src/i18n/messages.test.ts`).
@@ -361,6 +361,9 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 배경·카드·사이드바·포인트가 한 계열로 같이 움직인다. 라이트 전용이다(다크 모드 없음).
 새 스타일은 `THEME_STYLES`에 추가하고 `styles.css`에 `:root[data-style='...']` 블록을 만들면 된다 —
 `theme.test.ts`가 둘의 불일치를 잡아준다. 새 색상 프리셋도 같은 방식(`THEME_COLORS` + `:root[data-color='...']`).
+
+- 알려진 주의사항 1: 스타일별 폰트(@fontsource) CSS를 전부 정적 import해서 렌더 차단 CSS가 약 1.1MB(gzip ~400KB)다. 폰트 파일 자체는 unicode-range로 필요한 조각만 받지만 @font-face 선언이 모든 페이지 첫 렌더에 포함된다. 줄이려면 쓰지 않는 굵기를 빼거나 선택한 스타일의 폰트만 동적으로 import하는 방식을 검토할 것.
+- 알려진 주의사항 2: Editorial의 `--radius`는 rounded-xl이 0이 되도록 의도적으로 음수(-0.25rem)다. sonner 토스트처럼 `var(--radius)`를 직접 쓰는 곳에서는 무효값이 되어 기본 반경으로 떨어진다.
 
 ---
 

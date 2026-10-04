@@ -30,9 +30,10 @@ describe('StyleThemePicker', () => {
   it('marks Graphite as selected when nothing is stored', () => {
     render(<StyleThemePicker />)
 
-    expect(
-      screen.getByRole('button', { name: /^Graphite/ }),
-    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Graphite/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('applies and stores the chosen style', async () => {
@@ -43,23 +44,26 @@ describe('StyleThemePicker', () => {
 
     expect(document.documentElement).toHaveAttribute('data-style', 'warm')
     expect(window.localStorage.getItem('theme-style')).toBe('warm')
-    expect(
-      screen.getByRole('button', { name: /^Warm Paper/ }),
-    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Warm Paper/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('restores a stored style and falls back to Graphite for invalid values', () => {
     window.localStorage.setItem('theme-style', 'nordic')
     const { unmount } = render(<StyleThemePicker />)
-    expect(
-      screen.getByRole('button', { name: /^Nordic/ }),
-    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Nordic/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
     unmount()
 
     window.localStorage.setItem('theme-style', 'bogus')
     render(<StyleThemePicker />)
-    expect(
-      screen.getByRole('button', { name: /^Graphite/ }),
-    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Graphite/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 })

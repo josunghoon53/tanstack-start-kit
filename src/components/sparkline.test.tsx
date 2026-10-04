@@ -22,7 +22,9 @@ describe('Sparkline', () => {
     expect(container.querySelector('polyline')).toHaveClass('stroke-success')
 
     rerender(<Sparkline values={[1, 2]} tone="negative" />)
-    expect(container.querySelector('polyline')).toHaveClass('stroke-destructive')
+    expect(container.querySelector('polyline')).toHaveClass(
+      'stroke-destructive',
+    )
   })
 
   it('does not produce NaN for flat or single-value series', () => {

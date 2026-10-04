@@ -275,7 +275,9 @@ button:not(:disabled),
   --sidebar-accent: oklch(0.3 calc(0.035 * var(--nk)) var(--h));
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(0.3 calc(0.035 * var(--nk)) var(--h));
-  --sidebar-ring: oklch(calc(1 - 0.25 * var(--nk)) calc(0.7 * var(--ak)) var(--h));
+  --sidebar-ring: oklch(
+    calc(1 - 0.25 * var(--nk)) calc(0.7 * var(--ak)) var(--h)
+  );
 }
 
 :root[data-style='nordic'] {

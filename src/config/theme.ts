@@ -8,7 +8,13 @@ export const DEFAULT_THEME_STYLE: ThemeStyle = 'graphite'
 
 // 색상 프리셋은 "포인트색"이 아니라 전체 색 조합의 색상 각도(--h)를 옮긴다.
 // 값이 없으면(null) 선택한 스타일의 기본 색상을 쓴다.
-export const THEME_COLORS = ['blue', 'green', 'purple', 'rose', 'orange'] as const
+export const THEME_COLORS = [
+  'blue',
+  'green',
+  'purple',
+  'rose',
+  'orange',
+] as const
 export type ThemeColor = (typeof THEME_COLORS)[number]
 
 export const STYLE_STORAGE_KEY = 'theme-style'

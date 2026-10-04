@@ -21,7 +21,6 @@ import { getCurrentUserFn } from '../server/auth'
 import { notificationsQueryOptions } from '../server/notifications'
 import { THEME_INIT_SCRIPT } from '../config/theme'
 
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
     beforeLoad: async ({ location }) => {
