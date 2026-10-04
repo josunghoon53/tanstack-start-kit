@@ -29,6 +29,19 @@ describe('parseThemeStyle', () => {
     expect(parseThemeStyle('nope')).toBe(DEFAULT_THEME_STYLE)
     expect(parseThemeStyle(null)).toBe(DEFAULT_THEME_STYLE)
   })
+
+  it.each([
+    ['graphite', 'clean'],
+    ['nordic', 'clean'],
+    ['warm', 'soft'],
+  ] as const)('maps the legacy style %s to %s', (legacy, expected) => {
+    expect(parseThemeStyle(legacy)).toBe(expected)
+  })
+
+  it('does not treat object prototype keys as legacy styles', () => {
+    expect(parseThemeStyle('constructor')).toBe(DEFAULT_THEME_STYLE)
+    expect(parseThemeStyle('toString')).toBe(DEFAULT_THEME_STYLE)
+  })
 })
 
 describe('parseThemeColor', () => {
@@ -45,8 +58,8 @@ describe('parseThemeColor', () => {
 
 describe('apply helpers', () => {
   it('sets data-style on the element', () => {
-    applyThemeStyle(document.documentElement, 'warm')
-    expect(document.documentElement).toHaveAttribute('data-style', 'warm')
+    applyThemeStyle(document.documentElement, 'soft')
+    expect(document.documentElement).toHaveAttribute('data-style', 'soft')
   })
 
   it('sets and clears data-color', () => {
@@ -64,13 +77,21 @@ describe('THEME_INIT_SCRIPT', () => {
   }
 
   it('restores a stored style and color before first paint', () => {
-    window.localStorage.setItem(STYLE_STORAGE_KEY, 'nordic')
+    window.localStorage.setItem(STYLE_STORAGE_KEY, 'crisp')
     window.localStorage.setItem(COLOR_STORAGE_KEY, 'rose')
 
     runScript()
 
-    expect(document.documentElement).toHaveAttribute('data-style', 'nordic')
+    expect(document.documentElement).toHaveAttribute('data-style', 'crisp')
     expect(document.documentElement).toHaveAttribute('data-color', 'rose')
+  })
+
+  it('maps legacy stored styles to their new equivalents', () => {
+    window.localStorage.setItem(STYLE_STORAGE_KEY, 'warm')
+
+    runScript()
+
+    expect(document.documentElement).toHaveAttribute('data-style', 'soft')
   })
 
   it('uses the default style and no color when nothing is stored', () => {
@@ -107,8 +128,16 @@ describe('styles.css consistency', () => {
     },
   )
 
-  it.each(THEME_COLORS)('defines a block for the %s color preset', (color) => {
+  it.each(THEME_COLORS)('defines a block for the %s color', (color) => {
     expect(css).toContain(`:root[data-color='${color}']`)
+  })
+
+  it('keeps styles free of color: no hue shifting or per-style palettes remain', () => {
+    for (const legacy of ['graphite', 'warm', 'nordic']) {
+      expect(css).not.toContain(`data-style='${legacy}'`)
+    }
+    expect(css).not.toContain('--nk')
+    expect(css).not.toContain('--ak')
   })
 
   it('no longer contains dark mode or background-image rules', () => {
