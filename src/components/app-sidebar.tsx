@@ -58,7 +58,7 @@ function GroupSubmenu({
       <TreeConnector branchYs={branchYs} />
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
-          <div className="pb-1.5 pl-6 text-xs font-medium text-muted-foreground">
+          <div className="pb-1.5 pl-6 text-xs font-medium text-sidebar-foreground/60">
             {section.label}
           </div>
           <div className="flex flex-col gap-1 pl-6">
@@ -98,7 +98,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-14 justify-center border-b py-0">
+      <SidebarHeader className="h-14 justify-center border-b border-sidebar-border py-0">
         <NavHeader />
       </SidebarHeader>
       <SidebarContent>
@@ -167,7 +167,7 @@ export function AppSidebar() {
             <NavUser />
           </div>
           <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
-            <LanguageToggle />
+            <LanguageToggle className="border-sidebar-border bg-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
           </div>
         </div>
       </SidebarFooter>

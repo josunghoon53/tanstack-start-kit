@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { useLocaleStore } from '@/i18n/locale-store'
+import { cn } from '@/lib/utils'
 import type { Locale } from '@/i18n/messages'
 
 // 언어 이름(한국어/English)은 각 언어 표기 그대로 보여주는 고유명사라 번역 딕셔너리에
@@ -14,7 +15,7 @@ const NEXT_LOCALE: Record<Locale, Locale> = {
   en: 'ko',
 }
 
-export function LanguageToggle() {
+export function LanguageToggle({ className }: { className?: string }) {
   const locale = useLocaleStore((state) => state.locale)
   const setLocale = useLocaleStore((state) => state.setLocale)
   const nextLocale = NEXT_LOCALE[locale]
@@ -24,6 +25,7 @@ export function LanguageToggle() {
       type="button"
       variant="outline"
       size="sm"
+      className={cn(className)}
       onClick={() => setLocale(nextLocale)}
       aria-label={`Switch language to ${LOCALE_LABELS[nextLocale]}`}
       title={`Switch language to ${LOCALE_LABELS[nextLocale]}`}

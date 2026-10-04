@@ -18,7 +18,7 @@ export function TreeConnector({ branchYs }: { branchYs: Array<number> }) {
       width={STUB_END_X}
       height={lastY}
       viewBox={`0 0 ${STUB_END_X} ${lastY}`}
-      className="pointer-events-none absolute top-0 left-0 text-muted-foreground/50"
+      className="pointer-events-none absolute top-0 left-0 text-sidebar-foreground/30"
       aria-hidden="true"
     >
       <path
