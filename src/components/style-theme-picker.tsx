@@ -12,36 +12,41 @@ import type { ThemeStyle } from '@/config/theme'
 
 // 스타일 이름은 고유명사라 번역하지 않는다(언어 토글의 언어 이름과 같은 이유).
 const STYLE_NAMES: Record<ThemeStyle, string> = {
-  graphite: 'Graphite',
-  warm: 'Warm Paper',
+  clean: 'Clean',
+  soft: 'Soft',
   editorial: 'Editorial',
-  nordic: 'Nordic',
+  crisp: 'Crisp',
 }
 
-// 미리보기 칩 색: 사이드바 / 배경 / 포인트. src/styles.css 각 스타일의 기본 팔레트와 맞춘다.
+// 미리보기는 모양과 글꼴만 보여주도록 항상 회색조로 그린다(스타일은 색을 갖지 않는다).
+// 값은 src/styles.css 각 스타일 블록의 --card-border/--shadow-card/--font-body 와 맞춘다.
 const PREVIEWS: Record<
   ThemeStyle,
-  { side: string; bg: string; accent: string }
+  { radius: string; border: string; shadow: string; font: string }
 > = {
-  graphite: {
-    side: 'oklch(0.25 0.014 285)',
-    bg: 'oklch(0.972 0.006 285)',
-    accent: 'oklch(0.54 0.1 285)',
+  clean: {
+    radius: '8px',
+    border: 'oklch(0.9 0.006 90)',
+    shadow: '0 1px 2px oklch(0.3 0.01 90 / 0.06)',
+    font: "'IBM Plex Sans KR', sans-serif",
   },
-  warm: {
-    side: 'oklch(0.3 0.022 42)',
-    bg: 'oklch(0.975 0.012 42)',
-    accent: 'oklch(0.54 0.1 42)',
+  soft: {
+    radius: '14px',
+    border: 'oklch(0.9 0.006 90)',
+    shadow: '0 8px 24px -16px oklch(0.35 0.02 90 / 0.35)',
+    font: "'Gowun Dodum', sans-serif",
   },
   editorial: {
-    side: 'oklch(0.19 0 0)',
-    bg: 'oklch(1 0 0)',
-    accent: 'oklch(0.2 0 0)',
+    radius: '0px',
+    border: 'oklch(0.9 0.006 90)',
+    shadow: 'none',
+    font: "'Nanum Myeongjo', serif",
   },
-  nordic: {
-    side: 'oklch(0.3 0.032 255)',
-    bg: 'oklch(0.965 0.012 255)',
-    accent: 'oklch(0.52 0.09 255)',
+  crisp: {
+    radius: '3px',
+    border: 'oklch(0.22 0.004 90)',
+    shadow: 'none',
+    font: "'Noto Sans KR', sans-serif",
   },
 }
 
@@ -80,17 +85,26 @@ export function StyleThemePicker() {
             <span
               aria-hidden="true"
               className="flex h-14 overflow-hidden rounded-md border"
+              style={{ background: 'oklch(0.955 0.006 90)' }}
             >
-              <span className="w-1/4" style={{ background: preview.side }} />
               <span
-                className="flex flex-1 flex-col gap-1 p-1.5"
-                style={{ background: preview.bg }}
-              >
+                className="w-1/4"
+                style={{ background: 'oklch(0.21 0.004 90)' }}
+              />
+              <span className="flex flex-1 items-center p-2">
                 <span
-                  className="h-1.5 w-1/2 rounded-full"
-                  style={{ background: preview.accent }}
-                />
-                <span className="h-1.5 w-3/4 rounded-full bg-black/10" />
+                  className="w-full border px-2 py-1 text-xs leading-tight"
+                  style={{
+                    background: 'oklch(0.988 0.003 90)',
+                    borderRadius: preview.radius,
+                    borderColor: preview.border,
+                    boxShadow: preview.shadow,
+                    fontFamily: preview.font,
+                    color: 'oklch(0.2 0.006 90)',
+                  }}
+                >
+                  가나다 Aa
+                </span>
               </span>
             </span>
             <span className="flex flex-col gap-0.5">

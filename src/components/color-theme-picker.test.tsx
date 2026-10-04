@@ -17,15 +17,15 @@ describe('ColorThemePicker', () => {
   it('renders the default option and 5 colors', () => {
     render(<ColorThemePicker />)
 
-    for (const label of ['기본', '블루', '그린', '퍼플', '로즈', '오렌지']) {
+    for (const label of ['무채색', '블루', '그린', '퍼플', '로즈', '오렌지']) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
     }
   })
 
-  it('marks 기본 as selected when nothing is stored', () => {
+  it('marks 무채색 as selected when nothing is stored', () => {
     render(<ColorThemePicker />)
 
-    expect(screen.getByRole('button', { name: '기본' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: '무채색' })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
@@ -45,18 +45,18 @@ describe('ColorThemePicker', () => {
     )
   })
 
-  it('clears the attribute and storage when 기본 is chosen again', async () => {
+  it('clears the attribute and storage when 무채색 is chosen again', async () => {
     const user = userEvent.setup()
     render(<ColorThemePicker />)
 
     await user.click(screen.getByRole('button', { name: '로즈' }))
-    await user.click(screen.getByRole('button', { name: '기본' }))
+    await user.click(screen.getByRole('button', { name: '무채색' }))
 
     expect(document.documentElement).not.toHaveAttribute('data-color')
     expect(window.localStorage.getItem('theme-color')).toBeNull()
   })
 
-  it('restores a stored color and treats the legacy slate value as 기본', () => {
+  it('restores a stored color and treats the legacy slate value as 무채색', () => {
     window.localStorage.setItem('theme-color', 'purple')
     const { unmount } = render(<ColorThemePicker />)
     expect(screen.getByRole('button', { name: '퍼플' })).toHaveAttribute(
@@ -67,7 +67,7 @@ describe('ColorThemePicker', () => {
 
     window.localStorage.setItem('theme-color', 'slate')
     render(<ColorThemePicker />)
-    expect(screen.getByRole('button', { name: '기본' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: '무채색' })).toHaveAttribute(
       'aria-pressed',
       'true',
     )

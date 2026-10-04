@@ -61,12 +61,12 @@ describe('Settings route', () => {
 
     await user.click(screen.getByRole('button', { name: '테마' }))
 
-    for (const name of ['Graphite', 'Warm Paper', 'Editorial', 'Nordic']) {
+    for (const name of ['Clean', 'Soft', 'Editorial', 'Crisp']) {
       expect(
         screen.getByRole('button', { name: new RegExp(`^${name}`) }),
       ).toBeInTheDocument()
     }
-    for (const label of ['기본', '블루', '그린', '퍼플', '로즈', '오렌지']) {
+    for (const label of ['무채색', '블루', '그린', '퍼플', '로즈', '오렌지']) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
     }
   })

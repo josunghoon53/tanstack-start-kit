@@ -17,20 +17,20 @@ describe('StyleThemePicker', () => {
   it('renders the 4 styles with their descriptions', () => {
     render(<StyleThemePicker />)
 
-    for (const name of ['Graphite', 'Warm Paper', 'Editorial', 'Nordic']) {
+    for (const name of ['Clean', 'Soft', 'Editorial', 'Crisp']) {
       expect(
         screen.getByRole('button', { name: new RegExp(`^${name}`) }),
       ).toBeInTheDocument()
     }
     expect(
-      screen.getByText('크림 톤에 둥근 폰트와 바탕체 제목'),
+      screen.getByText('크게 둥근 카드와 부드러운 그림자, 둥근 글꼴'),
     ).toBeInTheDocument()
   })
 
-  it('marks Graphite as selected when nothing is stored', () => {
+  it('marks Clean as selected when nothing is stored', () => {
     render(<StyleThemePicker />)
 
-    expect(screen.getByRole('button', { name: /^Graphite/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /^Clean/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
@@ -40,20 +40,20 @@ describe('StyleThemePicker', () => {
     const user = userEvent.setup()
     render(<StyleThemePicker />)
 
-    await user.click(screen.getByRole('button', { name: /^Warm Paper/ }))
+    await user.click(screen.getByRole('button', { name: /^Soft/ }))
 
-    expect(document.documentElement).toHaveAttribute('data-style', 'warm')
-    expect(window.localStorage.getItem('theme-style')).toBe('warm')
-    expect(screen.getByRole('button', { name: /^Warm Paper/ })).toHaveAttribute(
+    expect(document.documentElement).toHaveAttribute('data-style', 'soft')
+    expect(window.localStorage.getItem('theme-style')).toBe('soft')
+    expect(screen.getByRole('button', { name: /^Soft/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
   })
 
-  it('restores a stored style and falls back to Graphite for invalid values', () => {
-    window.localStorage.setItem('theme-style', 'nordic')
+  it('restores a stored style and falls back to Clean for invalid values', () => {
+    window.localStorage.setItem('theme-style', 'crisp')
     const { unmount } = render(<StyleThemePicker />)
-    expect(screen.getByRole('button', { name: /^Nordic/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /^Crisp/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
@@ -61,7 +61,24 @@ describe('StyleThemePicker', () => {
 
     window.localStorage.setItem('theme-style', 'bogus')
     render(<StyleThemePicker />)
-    expect(screen.getByRole('button', { name: /^Graphite/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /^Clean/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('maps legacy stored styles to their new equivalents', () => {
+    window.localStorage.setItem('theme-style', 'warm')
+    const { unmount } = render(<StyleThemePicker />)
+    expect(screen.getByRole('button', { name: /^Soft/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    unmount()
+
+    window.localStorage.setItem('theme-style', 'graphite')
+    render(<StyleThemePicker />)
+    expect(screen.getByRole('button', { name: /^Clean/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     )

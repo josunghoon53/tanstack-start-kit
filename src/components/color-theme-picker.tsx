@@ -10,7 +10,7 @@ import {
 } from '@/config/theme'
 import type { ThemeColor } from '@/config/theme'
 
-// 스와치 색은 src/styles.css의 data-color 프리셋 색상 각도(--h)와 같은 값을 쓴다.
+// 스와치 색은 src/styles.css의 data-color 포인트색의 색상각(--ah)과 같은 값을 쓴다.
 const COLOR_HUES: Record<ThemeColor, number> = {
   blue: 255,
   green: 155,
@@ -18,9 +18,6 @@ const COLOR_HUES: Record<ThemeColor, number> = {
   rose: 12,
   orange: 55,
 }
-
-const DEFAULT_SWATCH =
-  'conic-gradient(oklch(0.54 0.1 285), oklch(0.54 0.1 42), oklch(0.52 0.09 255), oklch(0.54 0.1 285))'
 
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
@@ -45,11 +42,11 @@ export function ColorThemePicker() {
     label: string
     swatch: string
   }> = [
-    { key: null, label: t.default, swatch: DEFAULT_SWATCH },
+    { key: null, label: t.neutral, swatch: 'oklch(0.25 0 90)' },
     ...THEME_COLORS.map((key) => ({
       key,
       label: t[key],
-      swatch: `oklch(0.52 0.1 ${COLOR_HUES[key]})`,
+      swatch: `oklch(0.5 0.11 ${COLOR_HUES[key]})`,
     })),
   ]
 

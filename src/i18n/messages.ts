@@ -246,11 +246,10 @@ export const messages = {
       theme: {
         heading: '테마',
         styleLabel: '스타일',
-        styleDescription:
-          '폰트, 모서리, 사이드바 등 화면 전체의 분위기를 선택하세요.',
-        accentColorLabel: '색상',
+        styleDescription: '모양과 글꼴을 바꿔요. 색은 바뀌지 않아요.',
+        accentColorLabel: '포인트 색상',
         accentColorDescription:
-          '선택한 색을 기준으로 배경과 사이드바까지 전체 색 조합이 바뀌어요.',
+          '버튼, 활성 메뉴 글씨, 차트 강조처럼 작은 곳에만 쓰여요. 화면의 큰 면은 항상 무채색이에요.',
       },
       security: {
         heading: '보안',
@@ -301,7 +300,7 @@ export const messages = {
       demoAccountPrefix: '데모 계정:',
     },
     colorThemePicker: {
-      default: '기본',
+      neutral: '무채색',
       blue: '블루',
       green: '그린',
       purple: '퍼플',
@@ -309,10 +308,10 @@ export const messages = {
       orange: '오렌지',
     },
     stylePicker: {
-      graphite: '쿨 그레이 고딕, 직선적이고 기술적인 느낌',
-      warm: '크림 톤에 둥근 폰트와 바탕체 제목',
-      editorial: '흑백 명조체, 각진 신문 느낌',
-      nordic: '블루 그레이와 부드러운 그림자',
+      clean: '8px 모서리와 가는 테두리, 깔끔한 고딕',
+      soft: '크게 둥근 카드와 부드러운 그림자, 둥근 글꼴',
+      editorial: '각진 모서리와 명조체, 신문 같은 느낌',
+      crisp: '검은 테두리와 굵은 고딕, 또렷한 느낌',
     },
     notificationsMenu: {
       srLabel: '알림',
@@ -665,10 +664,10 @@ export const messages = {
         heading: 'Theme',
         styleLabel: 'Style',
         styleDescription:
-          'Choose the overall look: fonts, corners, sidebar, and more.',
-        accentColorLabel: 'Color',
+          'Changes the shape and typography. Colors stay the same.',
+        accentColorLabel: 'Accent color',
         accentColorDescription:
-          'The whole palette, including background and sidebar, shifts to the chosen color.',
+          'Used only in small places such as buttons, the active menu text and chart highlights. Large surfaces always stay neutral.',
       },
       security: {
         heading: 'Security',
@@ -719,7 +718,7 @@ export const messages = {
       demoAccountPrefix: 'Demo account:',
     },
     colorThemePicker: {
-      default: 'Default',
+      neutral: 'Neutral',
       blue: 'Blue',
       green: 'Green',
       purple: 'Purple',
@@ -727,10 +726,10 @@ export const messages = {
       orange: 'Orange',
     },
     stylePicker: {
-      graphite: 'Cool gray sans-serif, sharp and technical',
-      warm: 'Cream tones with rounded body and serif headings',
-      editorial: 'Black and white serif, newspaper-like and angular',
-      nordic: 'Blue-gray with soft shadows',
+      clean: 'Clean sans-serif with 8px corners and thin borders',
+      soft: 'Large rounded cards, soft shadows and rounded type',
+      editorial: 'Square corners and serif type, newspaper-like',
+      crisp: 'Dark outlines and bold sans-serif, sharp and clear',
     },
     notificationsMenu: {
       srLabel: 'Notifications',
