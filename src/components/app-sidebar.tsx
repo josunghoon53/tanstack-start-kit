@@ -58,7 +58,7 @@ function GroupSubmenu({
       <TreeConnector branchYs={branchYs} />
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
-          <div className="pb-1.5 pl-6 text-xs font-medium text-sidebar-foreground/60">
+          <div className="pb-1.5 pl-6 text-xs font-medium text-sidebar-foreground/70">
             {section.label}
           </div>
           <div className="flex flex-col gap-1 pl-6">

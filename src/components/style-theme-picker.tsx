@@ -29,7 +29,7 @@ const PREVIEWS: Record<ThemeStyle, { side: string; bg: string; accent: string }>
     warm: {
       side: 'oklch(0.3 0.022 42)',
       bg: 'oklch(0.975 0.012 42)',
-      accent: 'oklch(0.6 0.1 42)',
+      accent: 'oklch(0.54 0.1 42)',
     },
     editorial: {
       side: 'oklch(0.19 0 0)',

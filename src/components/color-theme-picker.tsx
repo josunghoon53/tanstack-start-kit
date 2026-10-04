@@ -20,7 +20,7 @@ const COLOR_HUES: Record<ThemeColor, number> = {
 }
 
 const DEFAULT_SWATCH =
-  'conic-gradient(oklch(0.54 0.1 285), oklch(0.6 0.1 42), oklch(0.52 0.09 255), oklch(0.54 0.1 285))'
+  'conic-gradient(oklch(0.54 0.1 285), oklch(0.54 0.1 42), oklch(0.52 0.09 255), oklch(0.54 0.1 285))'
 
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
