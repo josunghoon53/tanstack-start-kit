@@ -2,7 +2,7 @@
 
 TanStack Start 기반의 **최소 어드민 셸 킷**입니다.
 
-사이드바, 헤더, 다크모드, 다국어(ko/en), 공용 UI 패턴을 갖추고 폼(react-hook-form + zod)과
+사이드바, 헤더, 스타일 테마, 다국어(ko/en), 공용 UI 패턴을 갖추고 폼(react-hook-form + zod)과
 서버 데이터 왕복(React Query, 리스트 5개·대시보드·헤더 알림까지 전부 적용)까지는 붙어 있지만,
 실제 DB와 외부 인증은 아직 의도적으로 비워뒀습니다.
 
@@ -354,10 +354,13 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 `toast.success` / `toast.error`만 사용.
 
 **테마**
-라이트 / 다크 / 자동 (`ThemeToggle.tsx`) + 6종 색상 프리셋 (`color-theme-picker.tsx`).
-`localStorage` + `<html>`의 `data-theme` / `data-color` 속성으로 관리하고,
-`__root.tsx`의 인라인 스크립트로 FOUC를 방지한다.
-새 색상 프리셋은 `src/styles.css`에 `:root[data-color="..."]` 블록을 추가하고 피커에 옵션을 추가할 것.
+스타일 4종(`graphite`/`warm`/`editorial`/`nordic`)을 `<html data-style>`로, 색상 프리셋(블루/그린/퍼플/로즈/오렌지)을
+`<html data-color>`로 고른다. 허용 값·저장 키(`theme-style`, `theme-color`)·초기화 스크립트는
+`src/config/theme.ts`가 단일 출처이고, 선택 UI는 `style-theme-picker.tsx` / `color-theme-picker.tsx`다.
+색은 `src/styles.css`에서 `oklch(L C var(--h))`로 정의하며, 색상 프리셋은 `--h`(색상 각도)만 덮어써서
+배경·카드·사이드바·포인트가 한 계열로 같이 움직인다. 라이트 전용이다(다크 모드 없음).
+새 스타일은 `THEME_STYLES`에 추가하고 `styles.css`에 `:root[data-style='...']` 블록을 만들면 된다 —
+`theme.test.ts`가 둘의 불일치를 잡아준다. 새 색상 프리셋도 같은 방식(`THEME_COLORS` + `:root[data-color='...']`).
 
 ---
 
@@ -402,20 +405,9 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
   같은 별도 패키지를 추가로 고려할 것 — 지금은 lucide 하나로 통일하는 쪽을 택했다.
 - dev 모드에서는 우측 하단 TanStack Devtools 플로팅 버튼이 화면 일부를 가릴 수 있는데,
   프로덕션 빌드에는 devtools가 빠지므로 실제 문제는 아니다.
-- 콘텐츠 영역 배경은 `.bg-grid-fade`(`src/styles.css`)다. 색상 프리셋(`data-color`) × 테마(`.dark`)
-  6×2 조합 전부에 디자인팀이 만든 오버레이 이미지(`public/backgrounds/bg-{color}-{light|dark}.webp`)가
-  매칭돼 있다(기본 블루 포함). 예전에는 `--muted` 배경 위에 보일 듯 말 듯한 32px 격자를 깔고
-  (아래·양옆으로 갈수록 페이드), 맨 위에 `--primary`를 4~9%만 섞은 대각선 컬러 워시를 덮는
-  순수 CSS 패턴이었는데, 그 규칙은 지우지 않고 폴백으로 남겨뒀다 — 새 색상 프리셋을 추가했는데
-  매칭되는 이미지가 아직 없을 때 자동으로 여기로 떨어진다. 다크 모드 이미지는 원본 대비가
-  강해서 `--background`를 55% 섞은 반투명 워시를
-  이미지 위에 한 겹 더 얹어 톤을 죽여뒀다(`--overlay-tint`, `.dark .bg-grid-fade`) — 너무
-  흐리다/진하다는 피드백이 오면 이 55% 값만 조정하면 된다. (참고: 예전에는 이미지·SVG를 전혀
-  안 쓰는 순수 CSS 패턴이었고, SVG 물결·등고선 무늬나 구석에만 컬러를 두는 방식도 여러 번
-  시도했지만 전부 어색하다는 피드백으로 폐기했었다 — 지금 이미지 방식은 프리셋×테마별로
-  정확히 매칭되는 디자인 자산이 생기고 나서 다시 채택한 것이다. 무늬/배경을 바꾸자는 요청이
-  오면 방향부터 먼저 확인할 것.)
-- **페이지 콘텐츠는 반드시 `Card`/`CardContent`로 감싼다** — 배경(`.bg-grid-fade`) 위에 흰 카드로
+- 콘텐츠 영역 배경은 단색 `--background`다(예전에는 색상별 오버레이 이미지와 격자 패턴이었지만 옛스럽다는
+  피드백으로 제거했다). 무늬/배경 이미지를 되살리자는 요청이 오면 방향부터 먼저 확인할 것.
+- **페이지 콘텐츠는 반드시 `Card`/`CardContent`로 감싼다** — 배경 위에 카드로
   떠 있어야 "카드가 배경과 구분이 안 된다"는 밋밋함이 안 생긴다. 리스트 페이지는 검색창+테이블+
   페이지네이션 전체를, 설정 페이지(`settings.tsx`)는 탭 내비게이션+콘텐츠 전체를 하나의 `Card`로
   감싼다. 새 페이지를 만들 때 이 카드 래핑을 빼먹지 말 것 — 빼먹으면 배경 위에 맨몸으로 떠서
@@ -436,4 +428,3 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 - ESLint는 `@tanstack/eslint-config` 기반. `import/order`, `sort-imports` 등 일부 규칙은 꺼져 있음 — 임의로 켜지 말 것
 - `src/components/ui/*`(shadcn 컴포넌트)는 가급적 CLI로 생성된 형태를 유지
 - 커스텀 컴포넌트는 `src/components/*.tsx`에 named export로 작성
-  (`ThemeToggle.tsx`만 예외적으로 default export — 새 컴포넌트는 named export 관례를 따를 것)

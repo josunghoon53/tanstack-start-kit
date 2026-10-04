@@ -55,7 +55,7 @@
 | `--sidebar-primary` / `-foreground` | `--ssel` / `--sseltx` (활성 메뉴 채움/글씨) |
 | `--sidebar-accent` / `--sidebar-border` | `--sln` |
 
-추가 토큰: `--success`, `--warning`(시안의 `--ok`, `--warn`), `--font-heading`, `--shadow-card`, `--radius`(스타일별).
+추가 토큰: `--success`, `--warning`(시안의 `--ok`, `--warn`), `--font-title`(+ `--font-body`, `--weight-body`, `--weight-title`), `--shadow-card`, `--radius`(스타일별).
 
 ### 제거 대상
 
