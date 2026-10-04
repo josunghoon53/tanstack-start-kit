@@ -77,7 +77,7 @@ function Dashboard() {
             <span className="text-sm font-medium text-muted-foreground">
               {stat.label}
             </span>
-            <span className="text-3xl font-semibold tracking-tight">
+            <span className="text-3xl tracking-tight [font-family:var(--font-title)] [font-weight:var(--weight-title)]">
               {stat.value}
             </span>
             <div className="flex items-end justify-between gap-2">
