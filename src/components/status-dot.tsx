@@ -3,9 +3,9 @@ import { cn } from '@/lib/utils'
 export type StatusTone = 'success' | 'danger' | 'warning' | 'neutral'
 
 const DOT_COLOR: Record<StatusTone, string> = {
-  success: 'bg-emerald-500',
-  danger: 'bg-red-500',
-  warning: 'bg-amber-500',
+  success: 'bg-success',
+  danger: 'bg-destructive',
+  warning: 'bg-warning',
   neutral: 'bg-muted-foreground',
 }
 

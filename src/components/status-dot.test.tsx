@@ -11,9 +11,9 @@ describe('StatusDot', () => {
   })
 
   const toneClasses: Record<StatusTone, string> = {
-    success: 'bg-emerald-500',
-    danger: 'bg-red-500',
-    warning: 'bg-amber-500',
+    success: 'bg-success',
+    danger: 'bg-destructive',
+    warning: 'bg-warning',
     neutral: 'bg-muted-foreground',
   }
 

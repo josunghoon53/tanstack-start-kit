@@ -15,8 +15,8 @@ import {
 
 // 사용률이 높을수록 색을 바꿔 한도 임박을 눈에 띄게 한다.
 function barTone(usedPercent: number) {
-  if (usedPercent >= 90) return 'bg-red-500'
-  if (usedPercent >= 70) return 'bg-amber-500'
+  if (usedPercent >= 90) return 'bg-destructive'
+  if (usedPercent >= 70) return 'bg-warning'
   return 'bg-primary'
 }
 
