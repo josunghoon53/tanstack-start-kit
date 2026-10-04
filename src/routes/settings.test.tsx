@@ -55,14 +55,18 @@ describe('Settings route', () => {
     expect(toast.success).not.toHaveBeenCalled()
   })
 
-  it('renders the ColorThemePicker with 6 swatches under the 테마 tab', async () => {
+  it('renders the style and color pickers under the 테마 tab', async () => {
     const user = userEvent.setup()
     render(<Settings />)
 
     await user.click(screen.getByRole('button', { name: '테마' }))
 
-    const labels = ['블루', '그린', '퍼플', '로즈', '오렌지', '무채색']
-    for (const label of labels) {
+    for (const name of ['Graphite', 'Warm Paper', 'Editorial', 'Nordic']) {
+      expect(
+        screen.getByRole('button', { name: new RegExp(`^${name}`) }),
+      ).toBeInTheDocument()
+    }
+    for (const label of ['기본', '블루', '그린', '퍼플', '로즈', '오렌지']) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
     }
   })

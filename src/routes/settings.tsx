@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { ChevronDown } from 'lucide-react'
 import { ColorThemePicker } from '@/components/color-theme-picker'
+import { StyleThemePicker } from '@/components/style-theme-picker'
 import { LlmPlanUsage } from '@/components/llm-plan-usage'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -222,7 +223,16 @@ function ThemeSection() {
   return (
     <div className="flex flex-col">
       <h2 className="pb-2 text-lg font-bold">{t.theme.heading}</h2>
-      <div className="rounded-xl bg-muted/50 px-4 py-4">
+      <div className="flex flex-col gap-6 rounded-xl bg-muted/50 px-4 py-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-0.5">
+            <Label>{t.theme.styleLabel}</Label>
+            <span className="text-sm text-muted-foreground">
+              {t.theme.styleDescription}
+            </span>
+          </div>
+          <StyleThemePicker />
+        </div>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-0.5">
             <Label>{t.theme.accentColorLabel}</Label>
