@@ -58,7 +58,7 @@ function GroupSubmenu({
       <TreeConnector branchYs={branchYs} />
       {sections.map((section) => (
         <div key={section.label} className="pt-4 first:pt-1">
-          <div className="pb-1.5 pl-6 text-xs font-medium text-sidebar-foreground/70">
+          <div className="pb-1.5 pl-6 text-xs font-semibold text-sidebar-foreground/70">
             {section.label}
           </div>
           <div className="flex flex-col gap-1 pl-6">
@@ -137,7 +137,10 @@ export function AppSidebar() {
                   >
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton isActive={isGroupActive}>
+                        <SidebarMenuButton
+                          isActive={isGroupActive}
+                          className="data-[active=true]:bg-transparent data-[active=true]:font-bold data-[active=true]:text-sidebar-accent-foreground"
+                        >
                           <Icon />
                           <span className="leading-none">{item.label}</span>
                           <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />

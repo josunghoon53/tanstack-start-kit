@@ -14,7 +14,7 @@ export function NavHeader() {
               A
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-              <span className="truncate font-semibold text-sidebar-accent-foreground">{t.navHeader.brand}</span>
+              <span className="truncate font-bold text-sidebar-accent-foreground">{t.navHeader.brand}</span>
               <span className="truncate text-xs text-sidebar-foreground/70">
                 {t.navHeader.tagline}
               </span>

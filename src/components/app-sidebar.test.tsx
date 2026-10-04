@@ -89,18 +89,28 @@ describe('AppSidebar', () => {
     expect(shippingLink).toHaveAttribute('data-active', 'false')
   })
 
-  it('uses readable accent tokens for the active sub-menu item on the dark sidebar', async () => {
+  it('fills the active sub-menu item white with the theme color text and bold weight', async () => {
     renderSidebar('/orders')
 
     const activeLink = await screen.findByRole('link', { name: '전체 주문' })
     expect(activeLink).toHaveAttribute('data-active', 'true')
     expect(activeLink.className).toContain(
-      'data-[active=true]:text-sidebar-accent-foreground',
+      'data-[active=true]:bg-sidebar-primary',
     )
     expect(activeLink.className).toContain(
-      'data-[active=true]:bg-sidebar-accent',
+      'data-[active=true]:text-sidebar-primary-foreground',
     )
-    expect(activeLink.className).not.toContain('text-sidebar-primary')
+    expect(activeLink.className).toContain('data-[active=true]:font-bold')
+  })
+
+  it('keeps the group trigger of an active child unfilled but bold', async () => {
+    renderSidebar('/orders')
+
+    const ordersTrigger = await screen.findByRole('button', { name: '주문' })
+    expect(ordersTrigger.className).toContain(
+      'data-[active=true]:bg-transparent',
+    )
+    expect(ordersTrigger.className).toContain('data-[active=true]:font-bold')
   })
 
   it('expands a group on click and collapses a previously open group (accordion)', async () => {

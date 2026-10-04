@@ -58,7 +58,7 @@ export function NavUser() {
                 <AvatarFallback className="rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">{USER.initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium text-sidebar-accent-foreground">{USER.name}</span>
+                <span className="truncate font-semibold text-sidebar-accent-foreground">{USER.name}</span>
                 <span className="truncate text-xs text-sidebar-foreground/70">{USER.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
