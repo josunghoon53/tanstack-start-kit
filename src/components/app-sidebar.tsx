@@ -3,7 +3,6 @@ import { ChevronRight } from 'lucide-react'
 import { LanguageToggle } from '@/components/language-toggle'
 import { NavHeader } from '@/components/nav-header'
 import { NavUser } from '@/components/nav-user'
-import ThemeToggle from '@/components/ThemeToggle'
 import { TreeConnector } from '@/components/tree-connector'
 import {
   Collapsible,
@@ -169,7 +168,6 @@ export function AppSidebar() {
           </div>
           <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
             <LanguageToggle />
-            <ThemeToggle />
           </div>
         </div>
       </SidebarFooter>

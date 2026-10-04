@@ -119,13 +119,13 @@ describe('AppSidebar', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('renders the footer with NavUser, language toggle, and theme toggle', async () => {
+  it('renders the footer with NavUser and the language toggle', async () => {
     renderSidebar('/')
 
     expect(await screen.findByText('관리자')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /english/i })).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /theme mode/i }),
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: /theme mode/i }),
+    ).not.toBeInTheDocument()
   })
 })
