@@ -19,8 +19,8 @@ import { SidebarInset, SidebarProvider } from '../components/ui/sidebar'
 import { Toaster } from '../components/ui/sonner'
 import { getCurrentUserFn } from '../server/auth'
 import { notificationsQueryOptions } from '../server/notifications'
+import { THEME_INIT_SCRIPT } from '../config/theme'
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;var color=window.localStorage.getItem('theme-color');if(color){root.setAttribute('data-color',color)}}catch(e){}})();`
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -90,7 +90,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <AppSidebar />
             <SidebarInset className="overflow-hidden">
               <SiteHeader />
-              <div className="bg-grid-fade flex min-h-0 flex-1 flex-col overflow-auto">
+              <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-background">
                 <div className="flex min-h-full min-w-5xl shrink-0 flex-col gap-4 p-4">
                   {children}
                 </div>
