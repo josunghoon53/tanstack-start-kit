@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JSH-OS 테마 미리보기</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Gowun+Dodum&family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+
+body.t-editorial{font-size:14px}
+body.t-editorial .top h2{font-size:26px;font-weight:800;letter-spacing:-.03em}
+body.t-editorial .kpi .v{font-weight:800;font-size:30px}
+body.t-editorial th,body.t-editorial .sec,body.t-editorial .kpi .l{letter-spacing:.04em}
+body.t-warm{font-size:14px}
+body.t-warm .top h2{font-size:24px;font-weight:700}
+body.t-warm .kpi .v{font-family:var(--hf);font-size:28px}
+
+/* ---- 타이포 보강: 더 크고 굵게 ---- */
+body{font-size:14px;font-weight:500}
+.brand b{font-size:16px;font-weight:800}
+.sec{font-size:12px;font-weight:700;padding:14px 10px 6px}
+.nav{font-size:14px;font-weight:600;height:36px}
+.nav.on{font-weight:700}
+header h1{font-size:15px;font-weight:700}
+.crumb,.search,.me small{font-size:13px;font-weight:500}
+.me{font-size:14px;font-weight:700}
+.top h2{font-size:26px!important;font-weight:800!important;letter-spacing:-.03em}
+.top p{font-size:14px;font-weight:500}
+.seg span{font-size:13px;font-weight:700;padding:5px 14px}
+.kpi{padding:18px 20px}
+.kpi .l{font-size:13px;font-weight:600}
+.kpi .v{font-size:32px!important;font-weight:800!important;margin:10px 0 8px}
+.kpi .d{font-size:13px;font-weight:600}
+.card h3{font-size:15px!important;font-weight:800!important;padding:16px 20px}
+.card h3 a{font-size:13px;font-weight:600}
+th{font-size:12px;font-weight:700;padding:10px 20px}
+td{font-size:14px;font-weight:600;padding:13px 20px}
+td.m{font-weight:500}
+.pill{font-size:13px;font-weight:700;padding:3px 10px}
+.row{padding:12px 20px}
+.row p{font-size:14px;font-weight:600}
+.row small{font-size:12px;font-weight:500}
+.chart b{font-size:15px!important;font-weight:800!important}
+body.t-editorial .top h2{font-size:30px!important;font-weight:800!important}
+body.t-editorial .kpi .v{font-size:34px!important}
+body.t-warm .top h2{font-size:28px!important}
+body.t-warm .kpi .v{font-size:32px!important}
+
+/* ---- 사이드바: 메인과 대비되는 전용 색 ---- */
+aside{background:var(--sbg);border-right:0;color:var(--stx)}
+aside .brand b{color:var(--stx)}
+aside .brand span{color:var(--smu);border-color:var(--sln)}
+aside .sec{color:var(--sdm)}
+aside .nav{color:var(--smu)}
+aside .nav.on{background:var(--ssel);color:var(--sseltx);font-weight:700}
+aside .nav.on svg{color:var(--sseltx)}
+aside .nav.on kbd{color:var(--sseltx);opacity:.7}
+aside .nav kbd{color:var(--sdm)}
+aside .nav svg{opacity:.9}
+aside .me{border-top-color:var(--sln);color:var(--stx)}
+aside .me small{color:var(--sdm)}
+aside .av{background:var(--sln);color:var(--smu)}
+aside .logo{background:var(--sacc);color:var(--sbg)!important}
+
+/* ---- Nordic: 가볍고 정돈된 굵기 ---- */
+body.t-nordic{font-weight:400}
+body.t-nordic .brand b{font-weight:700}
+body.t-nordic .sec{font-weight:600}
+body.t-nordic aside .nav{font-weight:500}
+body.t-nordic aside .nav.on{font-weight:600}
+body.t-nordic header h1{font-weight:600}
+body.t-nordic .crumb,body.t-nordic .search,body.t-nordic .me small{font-weight:400}
+body.t-nordic .me{font-weight:600}
+body.t-nordic .top h2{font-weight:600!important;font-size:24px!important}
+body.t-nordic .top p{font-weight:400}
+body.t-nordic .seg span{font-weight:500}
+body.t-nordic .kpi .l{font-weight:500}
+body.t-nordic .kpi .v{font-weight:600!important;font-size:30px!important}
+body.t-nordic .kpi .d{font-weight:500}
+body.t-nordic .card h3{font-weight:600!important}
+body.t-nordic .card h3 a{font-weight:500}
+body.t-nordic th{font-weight:600}
+body.t-nordic td{font-weight:400}
+body.t-nordic .pill{font-weight:500}
+body.t-nordic .row p{font-weight:400}
+body.t-nordic .row small{font-weight:400}
+body.t-nordic .chart b{font-weight:600!important}
+
+/* ---- Graphite: 또렷하되 과하지 않은 굵기 ---- */
+body.t-graphite{font-weight:400}
+body.t-graphite .brand b{font-weight:700}
+body.t-graphite .sec{font-weight:600}
+body.t-graphite aside .nav{font-weight:500}
+body.t-graphite aside .nav.on{font-weight:600}
+body.t-graphite header h1{font-weight:600}
+body.t-graphite .crumb,body.t-graphite .search,body.t-graphite .me small{font-weight:400}
+body.t-graphite .me{font-weight:600}
+body.t-graphite .top h2{font-weight:600!important;font-size:24px!important}
+body.t-graphite .top p{font-weight:400}
+body.t-graphite .seg span{font-weight:500}
+body.t-graphite .kpi .l{font-weight:500}
+body.t-graphite .kpi .v{font-weight:600!important;font-size:30px!important}
+body.t-graphite .kpi .d{font-weight:500}
+body.t-graphite .card h3{font-weight:600!important}
+body.t-graphite .card h3 a{font-weight:500}
+body.t-graphite th{font-weight:600}
+body.t-graphite td{font-weight:400}
+body.t-graphite .pill{font-weight:500}
+body.t-graphite .row p{font-weight:400}
+body.t-graphite .row small{font-weight:400}
+body.t-graphite .chart b{font-weight:600!important}
+
+/* ---- 모드별 팔레트 (네이티브가 아닌 쪽) ---- */
+.switch .sep{width:1px;background:#444;margin:4px 4px}
+.switch .dot{width:22px;height:22px;border-radius:50%;padding:0;border:2px solid transparent;align-self:center;margin:0 2px}
+.switch .dot.on{border-color:#fff;background-clip:padding-box}
+.switch{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:99px;background:rgba(20,20,24,.92);border:1px solid #333;z-index:9;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.switch button{font:600 12px 'Pretendard Variable',sans-serif;color:#bbb;background:transparent;border:0;padding:8px 14px;border-radius:99px;cursor:pointer}
+.switch button.on{background:#fff;color:#111}
+
+/* ---- 색은 oklch + 색상 각도(--h)로 정의: 각도만 바꾸면 배경·사이드바·테두리·포인트가 통째로 이동 ---- */
+:root{--ok:oklch(.62 .09 160);--warn:oklch(.74 .095 80);--bad:oklch(.6 .12 25);--onacc:#fff}
+:root,[data-theme=graphite]{--h:285;--r:12px;--sh:0 1px 2px oklch(.3 .03 var(--h) / .06);--bf:'IBM Plex Sans KR',system-ui,sans-serif;--hf:var(--bf);
+ --bg:oklch(.972 .006 var(--h));--panel:oklch(1 .002 var(--h));--line:oklch(.925 .01 var(--h));--line2:oklch(.88 .014 var(--h));
+ --text:oklch(.22 .02 var(--h));--mute:oklch(.5 .025 var(--h));--dim:oklch(.66 .02 var(--h));--acc:oklch(.54 .1 var(--h));
+ --sel:oklch(.945 .02 var(--h));--bar:oklch(.93 .014 var(--h));--av:oklch(.92 .025 var(--h));
+ --sbg:oklch(.25 .014 var(--h));--stx:oklch(.96 .006 var(--h));--smu:oklch(.82 .014 var(--h));--sdm:oklch(.64 .02 var(--h));--sln:oklch(.31 .016 var(--h));--ssel:oklch(.5 .1 var(--h));--sseltx:#fff;--sacc:oklch(.78 .07 var(--h))}
+[data-theme=warm]{--h:42;--r:18px;--sh:0 8px 24px -16px oklch(.4 .08 var(--h) / .35);--bf:'Gowun Dodum',sans-serif;--hf:'Gowun Batang',serif;
+ --bg:oklch(.975 .012 var(--h));--panel:oklch(.992 .006 var(--h));--line:oklch(.91 .02 var(--h));--line2:oklch(.87 .026 var(--h));
+ --text:oklch(.26 .025 var(--h));--mute:oklch(.52 .035 var(--h));--dim:oklch(.66 .03 var(--h));--acc:oklch(.6 .1 var(--h));
+ --sel:oklch(.94 .02 var(--h));--bar:oklch(.93 .02 var(--h));--av:oklch(.9 .04 var(--h));
+ --sbg:oklch(.3 .022 var(--h));--stx:oklch(.96 .012 var(--h));--smu:oklch(.86 .022 var(--h));--sdm:oklch(.69 .03 var(--h));--sln:oklch(.37 .024 var(--h));--ssel:oklch(.57 .1 var(--h));--sseltx:#fff;--sacc:oklch(.76 .08 var(--h))}
+[data-theme=editorial]{--h:0;--nk:0;--ak:0;--r:0px;--sh:none;--bf:'Nanum Myeongjo',serif;--hf:'Nanum Myeongjo',serif;
+ --bg:oklch(1 calc(.012*var(--nk)) var(--h));--panel:oklch(1 calc(.008*var(--nk)) var(--h));--line:oklch(.91 calc(.014*var(--nk)) var(--h));--line2:oklch(.2 calc(.03*var(--nk)) var(--h));
+ --text:oklch(.2 calc(.02*var(--nk)) var(--h));--mute:oklch(.46 calc(.03*var(--nk)) var(--h));--dim:oklch(.62 calc(.03*var(--nk)) var(--h));--acc:oklch(calc(.2 + .35*var(--nk)) var(--ak) var(--h));
+ --sel:oklch(.95 calc(.02*var(--nk)) var(--h));--bar:oklch(.91 calc(.02*var(--nk)) var(--h));--av:oklch(.92 calc(.03*var(--nk)) var(--h));
+ --sbg:oklch(.19 calc(.03*var(--nk)) var(--h));--stx:oklch(1 0 0);--smu:oklch(.88 calc(.015*var(--nk)) var(--h));--sdm:oklch(.66 calc(.025*var(--nk)) var(--h));--sln:oklch(.3 calc(.035*var(--nk)) var(--h));
+ --ssel:oklch(calc(1 - .45*var(--nk)) var(--ak) var(--h));--sseltx:oklch(calc(.15 + .85*var(--nk)) 0 0);--sacc:oklch(calc(1 - .25*var(--nk)) calc(.7*var(--ak)) var(--h))}
+[data-theme=nordic]{--h:255;--r:14px;--sh:0 10px 30px -18px oklch(.4 .1 var(--h) / .4);--bf:'Noto Sans KR','Pretendard Variable',sans-serif;--hf:var(--bf);
+ --bg:oklch(.965 .012 var(--h));--panel:oklch(1 .003 var(--h));--line:oklch(.92 .015 var(--h));--line2:oklch(.88 .02 var(--h));
+ --text:oklch(.27 .03 var(--h));--mute:oklch(.52 .035 var(--h));--dim:oklch(.67 .03 var(--h));--acc:oklch(.52 .09 var(--h));
+ --sel:oklch(.94 .02 var(--h));--bar:oklch(.93 .018 var(--h));--av:oklch(.91 .03 var(--h));
+ --sbg:oklch(.3 .032 var(--h));--stx:oklch(.96 .008 var(--h));--smu:oklch(.85 .02 var(--h));--sdm:oklch(.68 .03 var(--h));--sln:oklch(.37 .032 var(--h));--ssel:oklch(.5 .09 var(--h));--sseltx:#fff;--sacc:oklch(.76 .07 var(--h))}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--bf);background:var(--bg);color:var(--text);font-size:13px;width:1440px;height:900px;overflow:hidden;display:flex;-webkit-font-smoothing:antialiased}
+.num{font-feature-settings:'tnum';font-variant-numeric:tabular-nums}
+aside{width:232px;border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px;flex:none}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 10px 16px}
+.logo{width:24px;height:24px;border-radius:calc(var(--r)*.6);color:var(--onacc)!important;background:var(--acc);display:grid;place-items:center;font-weight:800;font-size:11px}
+.brand b{font-size:14px;letter-spacing:-.01em}
+.brand span{margin-left:auto;font-size:11px;color:var(--dim);border:1px solid var(--line2);padding:1px 6px;border-radius:5px}
+.sec{font-size:11px;color:var(--dim);padding:12px 10px 6px;letter-spacing:.02em}
+.nav{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:calc(var(--r)*.6);color:var(--mute);font-size:13px}
+.nav svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.nav.on{background:var(--sel);color:var(--text)}
+.nav.on svg{color:var(--acc)}
+.nav kbd{margin-left:auto;font:11px 'Pretendard Variable';color:var(--dim)}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid var(--line)}
+.av{width:26px;height:26px;border-radius:50%;background:var(--av);display:grid;place-items:center;font-size:11px;color:var(--mute)}
+.me small{display:block;color:var(--dim);font-size:11px}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:12px}
+header h1{font-size:14px;font-weight:600}
+.crumb{color:var(--dim)}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;width:260px;height:30px;border:1px solid var(--line2);border-radius:calc(var(--r)*.7);padding:0 10px;color:var(--dim)}
+.search kbd{margin-left:auto;border:1px solid var(--line2);border-radius:4px;padding:0 5px;font:11px 'Pretendard Variable'}
+.ibtn{width:30px;height:30px;border:1px solid var(--line2);border-radius:calc(var(--r)*.7);display:grid;place-items:center;position:relative;color:var(--mute)}
+.ibtn i{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.content{padding:24px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.top{display:flex;align-items:flex-end;justify-content:space-between}
+.top h2{font-size:20px;font-weight:650;letter-spacing:-.02em;font-family:var(--hf)}
+.top p{color:var(--mute);margin-top:4px}
+.seg{display:flex;border:1px solid var(--line2);border-radius:calc(var(--r)*.7);padding:2px}
+.seg span{padding:4px 12px;border-radius:calc(var(--r)*.5);color:var(--mute);font-size:12px}
+.seg .on{background:var(--sel);color:var(--text)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);background:var(--panel);box-shadow:var(--sh)}
+.kpi{padding:16px 18px;border-right:1px solid var(--line)}
+.kpi:last-child{border:0}
+.kpi .l{color:var(--mute);display:flex;justify-content:space-between}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.03em;margin:8px 0 6px}
+.kpi .d{font-size:12px;display:flex;align-items:center;gap:8px;color:var(--mute)}
+.up{color:var(--ok)}.dn{color:var(--bad)}
+.spark{margin-left:auto;width:72px;height:22px}
+.grid{display:grid;grid-template-columns:1.7fr 1fr;gap:16px}
+.card{border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);background:var(--panel);overflow:hidden}
+.card h3{font-family:var(--hf);font-size:13px;font-weight:600;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+.card h3 a{margin-left:auto;color:var(--mute);font-weight:400;font-size:12px}
+table{width:100%;border-collapse:collapse}
+th{font-weight:500;color:var(--dim);font-size:11px;text-align:left;padding:9px 18px;border-bottom:1px solid var(--line)}
+td{padding:11px 18px;border-bottom:1px solid var(--line);color:var(--text)}
+tr:last-child td{border:0}
+td.m{color:var(--mute)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line2);color:var(--mute)}
+.pill i{width:6px;height:6px;border-radius:50%}
+.feed{padding:6px 0}
+.row{display:flex;gap:12px;padding:11px 18px;align-items:flex-start}
+.row .dot{width:22px;height:22px;border-radius:calc(var(--r)*.5);background:var(--sel);border:1px solid var(--line2);display:grid;place-items:center;flex:none;color:var(--acc)}
+.row .dot svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
+.row p{line-height:1.45}.row small{color:var(--dim)}
+.chart{padding:16px 18px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:10px}
+.bars i{flex:1;background:var(--bar);border-radius:calc(var(--r)*.3) calc(var(--r)*.3) 0 0}
+.bars i.h{background:var(--acc)}
+</style></head><body>
+<aside>
+  <div class="brand"><div class="logo">J</div><b>JSH-OS</b><span>Pro</span></div>
+  <div class="nav on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>대시보드<kbd>G D</kbd></div>
+  <div class="sec">운영</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3-5.5 6.5-5.5s6 2 6.5 5.5M16 4.5a3.5 3.5 0 010 7M18 15c2 .5 3.200 2.200 3.500 5"/></svg>사용자</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.500 11h11L21 7H6"/><circle cx="9" cy="20" r="1.200"/><circle cx="18" cy="20" r="1.200"/></svg>주문</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/></svg>상품</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><rect x="2.500" y="5" width="19" height="14" rx="2.500"/><path d="M2.500 10h19"/></svg>결제</div>
+  <div class="sec">워크스페이스</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg>콘텐츠</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>분석</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>AI 플레이그라운드</div>
+  <div class="nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.200l2-1.500-2-3.400-2.300.9a7 7 0 00-2-1.200L14 3h-4l-.6 2.600a7 7 0 00-2 1.200l-2.300-.9-2 3.400 2 1.500A7 7 0 005 12c0 .4 0 .8.1 1.200l-2 1.500 2 3.400 2.300-.9c.6.5 1.300.9 2 1.200L10 21h4l.6-2.600c.7-.3 1.400-.7 2-1.200l2.300.9 2-3.400-2-1.500c.1-.4.100-.8.100-1.200z"/></svg>설정</div>
+  <div class="me"><div class="av">AD</div><div>관리자<small>admin@example.com</small></div></div>
+</aside>
+<main>
+  <header><span class="crumb">JSH-OS</span><span class="crumb">/</span><h1>대시보드</h1>
+    <div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.500-3.500"/></svg>검색<kbd>⌘K</kbd></div>
+    <div class="ibtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 1112 0c0 6 2 7 2 7H4s2-1 2-7zM10 20a2 2 0 004 0"/></svg><i></i></div>
+  </header>
+  <div class="content">
+    <div class="top"><div><h2>오늘의 현황</h2><p>10월 4일 일요일 · 마지막 갱신 방금 전</p></div>
+      <div class="seg"><span class="on">오늘</span><span>7일</span><span>30일</span></div></div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">오늘 매출</div><div class="v num">₩1,240,000</div><div class="d"><span class="up">▲ 8.0%</span>어제 대비<svg class="spark" viewBox="0 0 72 22"><polyline fill="none" style="stroke:var(--ok)" stroke-width="1.5" points="0,18 10,15 20,16 30,10 40,12 50,6 60,8 72,2"/></svg></div></div>
+      <div class="kpi"><div class="l">신규 주문</div><div class="v num">18건</div><div class="d"><span class="up">▲ 3건</span>어제 대비<svg class="spark" viewBox="0 0 72 22"><polyline fill="none" style="stroke:var(--ok)" stroke-width="1.5" points="0,14 10,16 20,9 30,12 40,7 50,10 60,4 72,6"/></svg></div></div>
+      <div class="kpi"><div class="l">신규 사용자</div><div class="v num">6명</div><div class="d"><span class="dn">▼ 2명</span>어제 대비<svg class="spark" viewBox="0 0 72 22"><polyline fill="none" style="stroke:var(--bad)" stroke-width="1.5" points="0,4 10,6 20,5 30,10 40,9 50,14 60,12 72,17"/></svg></div></div>
+      <div class="kpi"><div class="l">미확인 알림</div><div class="v num">6건</div><div class="d"><span style="color:var(--acc)">● 확인 필요</span></div></div>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>최근 주문<a>전체 보기 →</a></h3>
+        <table><thead><tr><th>주문번호</th><th>고객</th><th>금액</th><th>상태</th></tr></thead><tbody>
+        <tr><td class="num">ORD-1042</td><td>김민지</td><td class="num">128,000원</td><td><span class="pill"><i style="background:var(--warn)"></i>배송중</span></td></tr>
+        <tr><td class="num">ORD-1041</td><td>이서준</td><td class="num">54,000원</td><td><span class="pill"><i style="background:var(--ok)"></i>완료</span></td></tr>
+        <tr><td class="num">ORD-1040</td><td>박지훈</td><td class="num">212,500원</td><td><span class="pill"><i style="background:var(--ok)"></i>완료</span></td></tr>
+        <tr><td class="num">ORD-1039</td><td>최유나</td><td class="num">39,900원</td><td><span class="pill"><i style="background:var(--bad)"></i>취소</span></td></tr>
+        <tr><td class="num">ORD-1038</td><td>정하늘</td><td class="num">86,000원</td><td><span class="pill"><i style="background:var(--ok)"></i>완료</span></td></tr>
+        </tbody></table>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card"><h3>최근 알림<a>모두 읽음</a></h3><div class="feed">
+          <div class="row"><div class="dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div><div><p>최유나 님이 새로 가입했어요.</p><small>5분 전</small></div></div>
+          <div class="row"><div class="dot"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/></svg></div><div><p>ORD-1042 주문이 배송을 시작했어요.</p><small>32분 전</small></div></div>
+          <div class="row"><div class="dot"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div><div><p>PAY-9078 결제가 환불 처리됐어요.</p><small>1시간 전</small></div></div>
+        </div></div>
+        <div class="card chart"><div style="display:flex;justify-content:space-between"><b style="font-size:13px;font-weight:600">주간 매출</b><span style="color:var(--mute)" class="num">₩8.4M</span></div>
+          <div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:60%"></i><i style="height:48%"></i><i class="h" style="height:92%"></i></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="switch">
+<button data-t="graphite" class="on">Graphite</button><button data-t="warm">Warm Paper</button><button data-t="editorial">Editorial</button><button data-t="nordic">Nordic</button>
+<span class="sep"></span>
+<button class="dot on" data-p="default" title="테마 기본색" style="background:conic-gradient(#8b7cff,#d9633b,#2f6fed,#8b7cff)"></button>
+<button class="dot" data-p="blue" title="파랑" style="background:#2f6fed"></button>
+<button class="dot" data-p="green" title="초록" style="background:#16a34a"></button>
+<button class="dot" data-p="purple" title="보라" style="background:#8b5cf6"></button>
+<button class="dot" data-p="rose" title="로즈" style="background:#e11d48"></button>
+<button class="dot" data-p="orange" title="오렌지" style="background:#f97316"></button>
+</div>
+<script>
+const HUE={blue:255,green:155,purple:300,rose:12,orange:55};
+const qs=new URLSearchParams(location.search);
+let theme=qs.get('t')||'graphite', preset=qs.get('p')||'default';
+function apply(){
+  const r=document.documentElement;
+  r.dataset.theme=theme; document.body.className='t-'+theme;
+  ['--h','--nk','--ak'].forEach(v=>r.style.removeProperty(v));
+  if(HUE[preset]){
+    r.style.setProperty('--h',HUE[preset]);
+    if(theme==='editorial'){r.style.setProperty('--nk','1');r.style.setProperty('--ak','.1')}
+  }
+  document.querySelectorAll('.switch [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===theme));
+  document.querySelectorAll('.switch [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===preset));
+}
+document.querySelectorAll('.switch [data-t]').forEach(b=>b.onclick=()=>{theme=b.dataset.t;apply()});
+document.querySelectorAll('.switch [data-p]').forEach(b=>b.onclick=()=>{preset=b.dataset.p;apply()});
+apply();
+</script>
+</body></html>
