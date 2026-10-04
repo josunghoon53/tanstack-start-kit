@@ -89,6 +89,20 @@ describe('AppSidebar', () => {
     expect(shippingLink).toHaveAttribute('data-active', 'false')
   })
 
+  it('uses readable accent tokens for the active sub-menu item on the dark sidebar', async () => {
+    renderSidebar('/orders')
+
+    const activeLink = await screen.findByRole('link', { name: '전체 주문' })
+    expect(activeLink).toHaveAttribute('data-active', 'true')
+    expect(activeLink.className).toContain(
+      'data-[active=true]:text-sidebar-accent-foreground',
+    )
+    expect(activeLink.className).toContain(
+      'data-[active=true]:bg-sidebar-accent',
+    )
+    expect(activeLink.className).not.toContain('text-sidebar-primary')
+  })
+
   it('expands a group on click and collapses a previously open group (accordion)', async () => {
     const user = userEvent.setup()
     renderSidebar('/settings')
