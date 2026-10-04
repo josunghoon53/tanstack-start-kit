@@ -1,6 +1,8 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { Sparkline } from '@/components/sparkline'
 import { StatusDot } from '@/components/status-dot'
+import { WeeklyBars } from '@/components/weekly-bars'
 import {
   Card,
   CardContent,
@@ -28,36 +30,65 @@ export const Route = createFileRoute('/')({
   component: Dashboard,
 })
 
+// 아래 추이/주간 수치는 킷의 데모 데이터다. 실제 지표를 붙일 때 서버 함수에서 받아 교체할 것.
+const REVENUE_TREND = [2, 5, 4, 8, 6, 12, 10, 16]
+const ORDERS_TREND = [4, 2, 9, 6, 11, 8, 14, 12]
+const USERS_TREND = [16, 14, 15, 10, 11, 6, 8, 3]
+const WEEKLY_REVENUE = [40, 55, 35, 70, 60, 48, 92]
+const WEEKLY_TOTAL = '₩8,400,000'
+
 function Dashboard() {
   const t = useTranslation()
   const { data: orders } = useSuspenseQuery(ordersQueryOptions())
   const { data: notifications } = useSuspenseQuery(notificationsQueryOptions())
 
   const stats = [
-    { ...t.dashboard.stats.todayRevenue, value: '₩1,240,000' },
-    { ...t.dashboard.stats.newOrders, value: '18건' },
-    { ...t.dashboard.stats.newUsers, value: '6명' },
+    {
+      ...t.dashboard.stats.todayRevenue,
+      value: '₩1,240,000',
+      trend: REVENUE_TREND,
+      tone: 'positive' as const,
+    },
+    {
+      ...t.dashboard.stats.newOrders,
+      value: '18건',
+      trend: ORDERS_TREND,
+      tone: 'positive' as const,
+    },
+    {
+      ...t.dashboard.stats.newUsers,
+      value: '6명',
+      trend: USERS_TREND,
+      tone: 'negative' as const,
+    },
     {
       ...t.dashboard.stats.unreadNotifications,
       value: t.dashboard.unreadCount(notifications.length),
+      trend: null,
+      tone: 'positive' as const,
     },
   ]
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-4 gap-4">
+      <Card className="grid grid-cols-4 gap-0 divide-x py-0">
         {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardHeader>
-              <CardDescription>{stat.label}</CardDescription>
-              <CardTitle className="text-2xl">{stat.value}</CardTitle>
-              <CardDescription>{stat.hint}</CardDescription>
-            </CardHeader>
-          </Card>
+          <div key={stat.label} className="flex flex-col gap-2 px-5 py-4">
+            <span className="text-sm font-medium text-muted-foreground">
+              {stat.label}
+            </span>
+            <span className="text-3xl font-semibold tracking-tight">
+              {stat.value}
+            </span>
+            <div className="flex items-end justify-between gap-2">
+              <span className="text-sm text-muted-foreground">{stat.hint}</span>
+              {stat.trend && <Sparkline values={stat.trend} tone={stat.tone} />}
+            </div>
+          </div>
         ))}
-      </div>
+      </Card>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-[1.7fr_1fr] gap-4">
         <Card>
           <CardHeader>
             <CardTitle>{t.dashboard.recentOrders.title}</CardTitle>
@@ -95,35 +126,50 @@ function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t.dashboard.recentNotifications.title}</CardTitle>
-            <CardDescription>
-              {t.dashboard.recentNotifications.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-1">
-            {notifications.slice(0, 4).map((item, index) => {
-              const Icon = NOTIFICATION_ICONS[item.iconKey]
-              return (
-                <div
-                  key={index}
-                  className="flex items-start gap-3 rounded-lg px-2 py-2"
-                >
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <Icon className="size-4 text-primary" />
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t.dashboard.recentNotifications.title}</CardTitle>
+              <CardDescription>
+                {t.dashboard.recentNotifications.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-1">
+              {notifications.slice(0, 4).map((item, index) => {
+                const Icon = NOTIFICATION_ICONS[item.iconKey]
+                return (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 rounded-lg px-2 py-2"
+                  >
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Icon className="size-4 text-primary" />
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <span className="text-sm">{item.message}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.time}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-1 flex-col">
-                    <span className="text-sm">{item.message}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {item.time}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </CardContent>
-        </Card>
+                )
+              })}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t.dashboard.weeklyRevenue.title}</CardTitle>
+              <CardDescription>{WEEKLY_TOTAL}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WeeklyBars
+                values={WEEKLY_REVENUE}
+                label={t.dashboard.weeklyRevenue.title}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

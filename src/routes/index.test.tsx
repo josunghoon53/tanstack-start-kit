@@ -161,4 +161,14 @@ describe('Dashboard route', () => {
       screen.queryByText('테스트유저2 님이 새로 가입했어요.'),
     ).not.toBeInTheDocument()
   })
+
+  it('renders the weekly revenue chart', async () => {
+    renderWithRouter(<Dashboard />, { extraPaths: ['/orders'] })
+
+    await screen.findByText('ORD-4001')
+
+    expect(
+      screen.getByRole('img', { name: t.dashboard.weeklyRevenue.title }),
+    ).toBeInTheDocument()
+  })
 })
