@@ -49,11 +49,19 @@ describe('parseThemeColor', () => {
     expect(parseThemeColor(color)).toBe(color)
   })
 
-  it('returns null (= style default color) for unknown, legacy, or missing values', () => {
+  it('returns null (= neutral default) for unknown or missing values', () => {
     expect(parseThemeColor('slate')).toBeNull()
     expect(parseThemeColor('nope')).toBeNull()
+    expect(parseThemeColor('constructor')).toBeNull()
     expect(parseThemeColor(null)).toBeNull()
   })
+
+  it.each(['blue', 'green', 'purple', 'rose', 'orange'])(
+    'falls back to neutral for the legacy accent color %s',
+    (legacy) => {
+      expect(parseThemeColor(legacy)).toBeNull()
+    },
+  )
 })
 
 describe('apply helpers', () => {
@@ -63,8 +71,8 @@ describe('apply helpers', () => {
   })
 
   it('sets and clears data-color', () => {
-    applyThemeColor(document.documentElement, 'green')
-    expect(document.documentElement).toHaveAttribute('data-color', 'green')
+    applyThemeColor(document.documentElement, 'nature')
+    expect(document.documentElement).toHaveAttribute('data-color', 'nature')
 
     applyThemeColor(document.documentElement, null)
     expect(document.documentElement).not.toHaveAttribute('data-color')
@@ -78,13 +86,33 @@ describe('THEME_INIT_SCRIPT', () => {
 
   it('restores a stored style and color before first paint', () => {
     window.localStorage.setItem(STYLE_STORAGE_KEY, 'crisp')
-    window.localStorage.setItem(COLOR_STORAGE_KEY, 'rose')
+    window.localStorage.setItem(COLOR_STORAGE_KEY, 'pop-red')
 
     runScript()
 
     expect(document.documentElement).toHaveAttribute('data-style', 'crisp')
-    expect(document.documentElement).toHaveAttribute('data-color', 'rose')
+    expect(document.documentElement).toHaveAttribute('data-color', 'pop-red')
   })
+
+  it.each(THEME_COLORS)('restores the %s palette', (color) => {
+    window.localStorage.setItem(COLOR_STORAGE_KEY, color)
+
+    runScript()
+
+    expect(document.documentElement).toHaveAttribute('data-color', color)
+  })
+
+  it.each(['blue', 'green', 'purple', 'rose', 'orange'])(
+    'drops the legacy accent color %s back to neutral',
+    (legacy) => {
+      document.documentElement.setAttribute('data-color', 'pop')
+      window.localStorage.setItem(COLOR_STORAGE_KEY, legacy)
+
+      runScript()
+
+      expect(document.documentElement).not.toHaveAttribute('data-color')
+    },
+  )
 
   it('maps legacy stored styles to their new equivalents', () => {
     window.localStorage.setItem(STYLE_STORAGE_KEY, 'warm')
