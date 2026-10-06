@@ -123,6 +123,9 @@ button:not(:disabled),
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --color-chip: var(--chip);
+  --color-chip-foreground: var(--chip-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -141,16 +144,14 @@ button:not(:disabled),
 /* ────────────────────────────────────────────────────────────────────────────
    테마는 두 축이다.
    - 스타일(<html data-style>): 모양과 글꼴만 정한다. 색은 하나도 갖지 않는다.
-   - 포인트색(<html data-color>): 버튼·활성 메뉴 글씨·차트 강조 같은 작은 곳의 색만 정한다.
-   큰 면(배경/카드/사이드바)은 어떤 선택에서도 무채색이다(눈의 피로를 줄이려는 결정).
-   사이드바는 항상 어두운 중립이고, 활성 메뉴는 off-white 박스에 굵은 글씨로 표시한다.
-   색은 oklch(L C H) — 큰 면은 색상각 90에 채도 .004~.008(아주 약한 따뜻한 기운),
-   포인트색은 --ah(색상각)와 --ae(0=무채색, 1=포인트 켜짐)로 계산한다.
+   - 팔레트(<html data-color>): 3색 팔레트 프리셋(주색/포인트/옅은 색).
+     사이드바 면과 메인의 작은 포인트(주요 버튼·링크·주간 막대 강조 1개·활성 탭·칩)에만 쓰인다.
+   메인의 큰 면(배경/카드/표/본문/테두리)은 어떤 선택에서도 무채색이다(눈의 피로를 줄이려는 결정).
+   프리셋이 없으면(기본) 사이드바는 어두운 중립이고, 활성 메뉴는 off-white 박스에 굵은 글씨다.
+   큰 면 색은 oklch(L C H) — 색상각 90에 채도 .004~.008(아주 약한 따뜻한 기운).
+   팔레트 값(--pal-*)은 src/config/theme.ts의 PALETTE_PRESETS와 같아야 한다(theme.test.ts가 비교).
    ──────────────────────────────────────────────────────────────────────────── */
 :root {
-  --ah: 90;
-  --ae: 0;
-
   /* 큰 면: 항상 무채색 */
   --background: oklch(0.955 0.006 90);
   --foreground: oklch(0.2 0.006 90);
@@ -168,30 +169,30 @@ button:not(:disabled),
   --destructive: oklch(0.56 0.12 25);
   --success: oklch(0.62 0.09 160);
   --warning: oklch(0.74 0.095 80);
+  /* 팔레트와 무관하게 항상 무채색인 진한 잉크(알림 아이콘 같은 작은 장식용) */
+  --ink: oklch(0.25 0 90);
 
-  /* 포인트색: 무채색일 땐 거의 검정, 색을 고르면 그 색(밝기 .5, 채도 .11) */
-  --primary: oklch(
-    calc(0.25 + 0.25 * var(--ae)) calc(0.11 * var(--ae)) var(--ah)
-  );
+  /* 포인트: 기본은 거의 검정. 프리셋을 고르면 아래 :root[data-color] 블록이 주색으로 바꾼다. */
+  --primary: var(--ink);
   --primary-foreground: oklch(1 0 0);
   --ring: var(--primary);
-  --chart-1: oklch(0.85 calc(0.04 * var(--ae)) var(--ah));
-  --chart-2: oklch(0.7 calc(0.07 * var(--ae)) var(--ah));
-  --chart-3: oklch(0.55 calc(0.1 * var(--ae)) var(--ah));
-  --chart-4: oklch(0.42 calc(0.09 * var(--ae)) var(--ah));
-  --chart-5: oklch(0.3 calc(0.06 * var(--ae)) var(--ah));
+  --chip: var(--secondary);
+  --chip-foreground: var(--secondary-foreground);
+  --chart-1: oklch(0.85 0 90);
+  --chart-2: oklch(0.7 0 90);
+  --chart-3: oklch(0.55 0 90);
+  --chart-4: oklch(0.42 0 90);
+  --chart-5: oklch(0.3 0 90);
 
-  /* 사이드바: 항상 어둡게 */
+  /* 사이드바: 기본은 어두운 중립 */
   --sidebar: oklch(0.21 0.004 90);
   --sidebar-foreground: oklch(0.84 0.005 90);
   --sidebar-primary: oklch(0.985 0.004 90);
-  --sidebar-primary-foreground: oklch(
-    calc(0.18 + 0.32 * var(--ae)) calc(0.1 * var(--ae)) var(--ah)
-  );
+  --sidebar-primary-foreground: oklch(0.18 0 90);
   --sidebar-accent: oklch(0.3 0.004 90);
   --sidebar-accent-foreground: oklch(0.97 0.004 90);
   --sidebar-border: oklch(0.3 0.004 90);
-  --sidebar-ring: oklch(0.85 calc(0.08 * var(--ae)) var(--ah));
+  --sidebar-ring: oklch(0.85 0 90);
 }
 
 /* ── 스타일 축: 모양과 글꼴 ── */
@@ -242,26 +243,158 @@ button:not(:disabled),
   --input: oklch(0.22 0.004 90);
 }
 
-/* ── 포인트색 축: 색상각만 정하고 포인트를 켠다. 위 블록들보다 뒤에 둘 것(특이도가 같다). ── */
-:root[data-color='blue'] {
-  --ah: 255;
-  --ae: 1;
+/* ── 팔레트 축. 위 블록들보다 뒤에 둘 것(특이도가 같다). ──
+   프리셋 블록은 --pal-* 값만 정하고, 아래 :root[data-color] 블록이 그 값을 shadcn 토큰에 연결한다.
+   사이드바만 주색 면을 갖고, 메인은 --primary(주요 버튼·링크·막대 강조·활성 탭)와 --chip(칩)만 바뀐다. */
+:root[data-color] {
+  --primary: var(--pal-main);
+  --primary-foreground: var(--pal-main-fg);
+  --ring: var(--pal-main);
+  --chip: var(--pal-soft);
+  --chip-foreground: var(--pal-soft-fg);
+  --chart-1: var(--pal-main);
+
+  --sidebar: var(--pal-main);
+  --sidebar-foreground: var(--pal-sidebar-text);
+  --sidebar-primary: var(--pal-accent);
+  --sidebar-primary-foreground: var(--pal-accent-fg);
+  --sidebar-accent: var(--pal-sidebar-line);
+  --sidebar-accent-foreground: var(--pal-sidebar-strong);
+  --sidebar-border: var(--pal-sidebar-line);
+  --sidebar-ring: var(--pal-accent);
 }
-:root[data-color='green'] {
-  --ah: 155;
-  --ae: 1;
+
+:root[data-color='pop'] {
+  --pal-main: #003fe2;
+  --pal-accent: #d6fc43;
+  --pal-soft: #f6f4f0;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #faf8f6;
+  --pal-sidebar-strong: #fcfcfb;
+  --pal-sidebar-line: #295ee7;
 }
-:root[data-color='purple'] {
-  --ah: 300;
-  --ae: 1;
+:root[data-color='pop-red'] {
+  --pal-main: #1d2330;
+  --pal-accent: #e84635;
+  --pal-soft: #f4f1e8;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f8f7f1;
+  --pal-sidebar-strong: #fcfbf8;
+  --pal-sidebar-line: #414651;
 }
-:root[data-color='rose'] {
-  --ah: 12;
-  --ae: 1;
+:root[data-color='dreamy'] {
+  --pal-main: #3a1d37;
+  --pal-accent: #a868a6;
+  --pal-soft: #fca873;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fdcbab;
+  --pal-sidebar-strong: #fee5d5;
+  --pal-sidebar-line: #5a4157;
 }
-:root[data-color='orange'] {
-  --ah: 55;
-  --ae: 1;
+:root[data-color='nature'] {
+  --pal-main: #344638;
+  --pal-accent: #c4b7d8;
+  --pal-soft: #e9e7db;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f2f1e9;
+  --pal-sidebar-strong: #f8f8f4;
+  --pal-sidebar-line: #546458;
+}
+:root[data-color='energy'] {
+  --pal-main: #1b2b86;
+  --pal-accent: #fc5c2f;
+  --pal-soft: #e7fc66;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f1fda3;
+  --pal-sidebar-strong: #f8fed1;
+  --pal-sidebar-line: #3f4d99;
+}
+:root[data-color='pop-color'] {
+  --pal-main: #4d2bba;
+  --pal-accent: #ff796b;
+  --pal-soft: #f4f27d;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f8f7b1;
+  --pal-sidebar-strong: #fcfbd8;
+  --pal-sidebar-line: #694dc5;
+}
+:root[data-color='sweet'] {
+  --pal-main: #bf1d46;
+  --pal-accent: #c6d699;
+  --pal-soft: #feeaa5;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fef2c9;
+  --pal-sidebar-strong: #ffffff;
+  --pal-sidebar-line: #c94164;
+}
+:root[data-color='cozy'] {
+  --pal-main: #5b342d;
+  --pal-accent: #f3a891;
+  --pal-soft: #fff0d9;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fff6e8;
+  --pal-sidebar-strong: #fffbf4;
+  --pal-sidebar-line: #75544f;
+}
+:root[data-color='retro'] {
+  --pal-main: #163729;
+  --pal-accent: #f86e32;
+  --pal-soft: #7ad0ec;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #afe3f4;
+  --pal-sidebar-strong: #d7f1f9;
+  --pal-sidebar-line: #3b574b;
+}
+:root[data-color='rest'] {
+  --pal-main: #465936;
+  --pal-accent: #e9ab7c;
+  --pal-soft: #f2ead8;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f7f2e8;
+  --pal-sidebar-strong: #fbf9f3;
+  --pal-sidebar-line: #647456;
+}
+:root[data-color='elegant'] {
+  --pal-main: #45090f;
+  --pal-accent: #f1bab9;
+  --pal-soft: #fbecdf;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fdf4ec;
+  --pal-sidebar-strong: #fef9f5;
+  --pal-sidebar-line: #633035;
+}
+:root[data-color='clear'] {
+  --pal-main: #1c4b52;
+  --pal-accent: #bfb2d9;
+  --pal-soft: #eaf4f6;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f2f8fa;
+  --pal-sidebar-strong: #f9fcfc;
+  --pal-sidebar-line: #40686e;
 }
 
 @layer base {

@@ -17,7 +17,7 @@ import {
 function barTone(usedPercent: number) {
   if (usedPercent >= 90) return 'bg-destructive'
   if (usedPercent >= 70) return 'bg-warning'
-  return 'bg-primary'
+  return 'bg-ink'
 }
 
 export function LlmPlanUsage({ provider }: { provider: LlmProvider }) {

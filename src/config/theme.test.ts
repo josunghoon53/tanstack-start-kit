@@ -7,6 +7,7 @@ import {
   STYLE_STORAGE_KEY,
   THEME_COLORS,
   THEME_INIT_SCRIPT,
+  PALETTE_PRESETS,
   THEME_STYLES,
   applyThemeColor,
   applyThemeStyle,
@@ -158,6 +159,67 @@ describe('styles.css consistency', () => {
 
   it.each(THEME_COLORS)('defines a block for the %s color', (color) => {
     expect(css).toContain(`:root[data-color='${color}']`)
+  })
+
+  // theme.ts의 PALETTE_PRESETS 값이 CSS 블록에 그대로 들어 있어야 한다(둘은 손으로 맞춘다).
+  const PAL_VARS = {
+    main: '--pal-main',
+    accent: '--pal-accent',
+    soft: '--pal-soft',
+    mainFg: '--pal-main-fg',
+    accentFg: '--pal-accent-fg',
+    softFg: '--pal-soft-fg',
+    sidebarText: '--pal-sidebar-text',
+    sidebarStrong: '--pal-sidebar-strong',
+    sidebarLine: '--pal-sidebar-line',
+  } as const
+
+  function colorBlock(color: string) {
+    const start = css.indexOf(`:root[data-color='${color}'] {`)
+    return css.slice(start, css.indexOf('}', start))
+  }
+
+  // prettier가 CSS의 hex를 소문자로 바꾸므로 소문자로 비교한다.
+  it.each(THEME_COLORS)('the %s block matches PALETTE_PRESETS', (color) => {
+    const block = colorBlock(color)
+    for (const [key, cssVar] of Object.entries(PAL_VARS)) {
+      const value = PALETTE_PRESETS[color][key as keyof typeof PAL_VARS]
+      expect(block).toContain(`${cssVar}: ${value.toLowerCase()};`)
+    }
+  })
+
+  it('maps the palette onto shadcn tokens after the style blocks', () => {
+    const mapping = css.indexOf(':root[data-color] {')
+    expect(mapping).toBeGreaterThan(css.lastIndexOf(":root[data-style='"))
+    for (const color of THEME_COLORS) {
+      expect(css.indexOf(`:root[data-color='${color}']`)).toBeGreaterThan(
+        css.lastIndexOf(":root[data-style='"),
+      )
+    }
+  })
+
+  it('never puts a palette color on the big main surfaces', () => {
+    const mapping = css.slice(
+      css.indexOf(':root[data-color] {'),
+      css.indexOf('}', css.indexOf(':root[data-color] {')),
+    )
+    for (const token of [
+      '--background',
+      '--card',
+      '--foreground',
+      '--secondary',
+      '--muted',
+      '--accent',
+      '--border',
+      '--popover',
+    ]) {
+      expect(mapping).not.toContain(`${token}:`)
+    }
+  })
+
+  it('drops the old hue-angle accent switches', () => {
+    expect(css).not.toContain('--ah')
+    expect(css).not.toContain('--ae')
   })
 
   it('keeps styles free of color: no hue shifting or per-style palettes remain', () => {
