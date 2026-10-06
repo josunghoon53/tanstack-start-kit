@@ -1,5 +1,7 @@
 # 스타일 × 포인트색 분리 설계 + 구현 계획
 
+> **갱신됨(2026-10-06):** 포인트색 5종(블루/그린/퍼플/로즈/오렌지, `--ah`/`--ae`)은 3색 팔레트 프리셋 12종으로 대체됐다 — [2026-10-06-palette-presets-design.md](../specs/2026-10-06-palette-presets-design.md). 스타일 축은 이 계획 그대로다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** 테마를 "스타일(모양과 글꼴)"과 "포인트색(작은 곳의 강조색)" 두 축으로 완전히 분리한다. 큰 면(배경/카드/사이드바)은 어떤 선택에서도 무채색이고, 사이드바는 항상 어둡다.

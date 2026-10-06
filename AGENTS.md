@@ -47,7 +47,7 @@ pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 
 **테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
 컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
-config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 57개 테스트 파일, 268개 테스트. `vitest.config.ts`는
+config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 58개 테스트 파일, 431개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
 (예: `src/i18n/messages.test.ts`).
@@ -356,16 +356,37 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 **테마**
 테마는 두 축이다. 스타일 4종(`clean` 기본/`soft`/`editorial`/`crisp`)은 `<html data-style>`로 고르고
 모양과 글꼴(`--radius`, 폰트·굵기, `--shadow-card`, `--card-border`, `--input`)만 바꾼다 — 색은 하나도 갖지 않는다.
-포인트색(무채색 + 블루/그린/퍼플/로즈/오렌지)은 `<html data-color>`로 고르고 `--ah`(색상각)와 `--ae`(포인트 켜짐 0/1)만 정해서
-`--primary`, `--ring`, `--chart-*`, `--sidebar-primary-foreground`, `--sidebar-ring` 같은 작은 곳의 색을 바꾼다.
-큰 면(배경/카드/사이드바)은 어떤 선택에서도 무채색이고 사이드바는 항상 어둡다. 라이트 전용이다(다크 모드 없음).
-허용 값·저장 키(`theme-style`, `theme-color`)·초기화 스크립트는 `src/config/theme.ts`가 단일 출처이고,
-선택 UI는 `style-theme-picker.tsx` / `color-theme-picker.tsx`다. 예전 저장값은 읽을 때 옮긴다
-(`graphite`/`nordic` → `clean`, `warm` → `soft`).
+컬러 팔레트는 `<html data-color>`로 고른다. 값이 없으면 기본(무채색 — 어두운 중립 사이드바, 흰 활성 메뉴 박스)이고,
+프리셋은 12종이다: `pop`(코발트/라임/아이보리), `pop-red`(잉크/레드/오프화이트), `dreamy`(플럼/모브/애프리콧),
+`nature`(모스/라일락/미스트), `energy`(인디고/오렌지/옐로), `pop-color`(바이올렛/코랄/레몬), `sweet`(라즈베리/피스타치오/옐로),
+`cozy`(코코아/피치/바닐라), `retro`(그린/탠저린/블루), `rest`(말차/살구/크림), `elegant`(버건디/핑크/아이보리),
+`clear`(틸/라벤더/아이스). 이름은 `messages.ts`의 `colorThemePicker.presets`에 있다. 라이트 전용이다(다크 모드 없음).
+
+- **역할은 상대 휘도로 정한다**: 가장 어두운 색 = 주색(`main`), 중간 = 포인트(`accent`), 가장 밝은 색 = 옅은 색(`soft`).
+  두 색의 휘도 차가 0.05 미만이면 프리셋별로 순서를 명시해도 된다(지금 12종은 해당 없음).
+- **사이드바만 팔레트 면을 갖는다**: 면 = 주색, 비활성 글자 = 옅은 색을 흰색 쪽으로 40%(4.5:1 미만이면 더 흰색 쪽으로),
+  활성 메뉴 = 포인트 박스 + `#111`/`#FFF` 중 대비 높은 글자(굵게), 구분선·호버 = 주색을 흰색 쪽으로 16%.
+- **메인은 무채색으로 둔다.** 페이지·카드·표·본문/제목/KPI 글자·테두리·차트의 일반 막대·보조 버튼에는 팔레트를 쓰지 않는다.
+  팔레트가 메인에 나오는 곳은 `--primary`(= 주색: 주요 버튼 면(흰 글자), 링크, 주간 막대의 강조 1개, 활성 탭/세그먼트, 포커스 링)와
+  `--chip`(= 옅은 색 면 + 진한 글자: secondary 배지·칩)뿐이다. 알림 아이콘처럼 팔레트와 무관해야 하는 작은 장식은 `--ink`(항상 무채색)를 쓴다.
+  큰 면 토큰(`--background`, `--card`, `--secondary`, `--muted`, `--accent`, `--border` …)을 팔레트에 연결하지 말 것 — `theme.test.ts`가 막는다.
+- **값은 미리 계산해 둔다**: `src/config/theme.ts`의 `PALETTE_PRESETS`가 프리셋별 최종 hex(`main`, `accent`, `soft`, `mainFg`,
+  `accentFg`, `softFg`, `sidebarText`, `sidebarStrong`, `sidebarLine`)를 갖고, `styles.css`의 `:root[data-color='…']` 블록이 같은 값을
+  `--pal-*` 변수로 정의한다. 공용 `:root[data-color]` 블록이 `--pal-*`를 shadcn 토큰(`--primary`, `--ring`, `--chip`, `--chart-1`,
+  `--sidebar*`)에 연결한다. 프리셋이 없으면 `:root` 기본값(예전 무채색과 같은 값)이 그대로 쓰인다.
+- 허용 값·저장 키(`theme-style`, `theme-color`)·초기화 스크립트는 `src/config/theme.ts`가 단일 출처이고,
+  선택 UI는 `style-theme-picker.tsx` / `color-theme-picker.tsx`(라디오 그룹, 카드마다 주색/포인트/옅은 색 스와치)다.
+  예전 저장값은 읽을 때 옮긴다(스타일 `graphite`/`nordic` → `clean`, `warm` → `soft`; 예전 포인트색 `blue`/`green`/`purple`/`rose`/`orange`와
+  알 수 없는 값 → 기본(무채색)).
+
 새 스타일은 `THEME_STYLES`에 추가하고 `styles.css`에 `:root[data-style='...']` 블록을 만들면 된다 —
 이 블록에는 **색 토큰을 넣지 말 것**(모양·글꼴 토큰만). `theme.test.ts`가 둘의 불일치를 잡아준다.
-새 포인트색은 `THEME_COLORS`에 추가하고 `:root[data-color='...']` 블록에 `--ah`와 `--ae: 1`만 정의한다
-(`styles.css`에서 스타일 블록보다 뒤에 둘 것).
+새 팔레트는 (1) 세 색을 휘도 순으로 정렬해 역할을 정하고, (2) 위 규칙(미리보기
+`docs/superpowers/specs/assets/color-combos-preview.html`의 `derive()`, 모드 2)으로 파생 값을 계산해
+(3) `THEME_COLORS`·`PALETTE_PRESETS`·`messages.ts`(ko/en 이름)·`styles.css`의 `:root[data-color='...']` 블록(`--pal-*`만, 스타일 블록보다 뒤)에
+추가한다. `palette-contrast.test.ts`가 대비(흰 글자/주색 ≥ 4.5, 사이드바 글자/주색 ≥ 4.5, 활성 메뉴 글자/포인트 ≥ 4.5,
+칩 글자/옅은 색 ≥ 4.5, 포인트/주색 ≥ 3)를 확인하고, `theme.test.ts`가 CSS 값 일치를 확인한다.
+흰 글자가 주색 위에서 4.5:1이 안 되면 주색을 검정 쪽으로 5%씩 어둡게 해서 저장한다.
 
 - 알려진 주의사항 1: 스타일별 폰트(@fontsource) CSS를 전부 정적 import해서 렌더 차단 CSS가 약 1.1MB(gzip ~400KB)다. 폰트 파일 자체는 unicode-range로 필요한 조각만 받지만 @font-face 선언이 모든 페이지 첫 렌더에 포함된다. 줄이려면 쓰지 않는 굵기를 빼거나 선택한 스타일의 폰트만 동적으로 import하는 방식을 검토할 것.
 - 알려진 주의사항 2: Editorial의 `--radius`는 rounded-xl이 0이 되도록 의도적으로 음수(-0.25rem)다. sonner 토스트처럼 `var(--radius)`를 직접 쓰는 곳에서는 무효값이 되어 기본 반경으로 떨어진다. Crisp의 `--radius`도 0이라 같은 주의가 필요하고, 카드만 4px로 따로 둔다.
