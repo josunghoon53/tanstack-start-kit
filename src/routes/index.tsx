@@ -142,8 +142,8 @@ function Dashboard() {
                     key={index}
                     className="flex items-start gap-3 rounded-lg px-2 py-2"
                   >
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <Icon className="size-4 text-primary" />
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-ink/10">
+                      <Icon className="size-4 text-ink" />
                     </div>
                     <div className="flex flex-1 flex-col">
                       <span className="text-sm">{item.message}</span>

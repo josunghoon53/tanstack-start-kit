@@ -1,7 +1,8 @@
 // 테마는 두 축이다.
 //  - 스타일(data-style): 모양과 글꼴만 정한다. 색은 하나도 갖지 않는다.
-//  - 포인트색(data-color): 버튼·활성 메뉴 글씨·차트 강조 같은 작은 곳의 색만 정한다.
-// 큰 면(배경/카드/사이드바)은 어떤 선택에서도 무채색이다.
+//  - 팔레트(data-color): 3색 팔레트 프리셋. 사이드바 면과 메인의 작은 포인트
+//    (주요 버튼·링크·주간 막대 강조 1개·활성 탭·칩)에만 쓰인다.
+// 메인의 큰 면(배경/카드/표/본문)은 어떤 선택에서도 무채색이다. 프리셋이 없으면 사이드바도 무채색이다.
 // 허용 값을 늘리면 src/styles.css에도 같은 이름의 블록을 추가해야 한다 —
 // 어긋나면 theme.test.ts의 CSS 일관성 테스트가 잡아준다.
 
@@ -17,15 +18,192 @@ const LEGACY_STYLES = new Map<string, ThemeStyle>([
   ['warm', 'soft'],
 ])
 
-// 포인트색. 값이 없으면(null) 무채색이다.
+// 팔레트 프리셋. 값이 없으면(null) 기본(무채색)이다.
 export const THEME_COLORS = [
-  'blue',
-  'green',
-  'purple',
-  'rose',
-  'orange',
+  'pop',
+  'pop-red',
+  'dreamy',
+  'nature',
+  'energy',
+  'pop-color',
+  'sweet',
+  'cozy',
+  'retro',
+  'rest',
+  'elegant',
+  'clear',
 ] as const
 export type ThemeColor = (typeof THEME_COLORS)[number]
+
+// 프리셋 하나의 최종 색 토큰(hex). styles.css의 :root[data-color='…'] 블록과 값이 같아야 한다
+// (theme.test.ts가 비교한다). 세 색의 역할은 상대 휘도로 정한다:
+//   main(주색)=가장 어두운 색, accent(포인트)=중간, soft(옅은 색)=가장 밝은 색.
+// 나머지는 승인된 미리보기(docs/superpowers/specs/assets/color-combos-preview.html, 모드 2)의
+// 규칙으로 미리 계산한 값이다:
+//   mainFg       주색 위 글자. 항상 흰색(흰 글자 4.5:1 미만이면 주색을 5%씩 어둡게 — 12종 모두 필요 없었다).
+//   accentFg     포인트 위 글자(사이드바 활성 메뉴). #111/#FFF 중 대비가 높은 쪽.
+//   softFg       옅은 색 위 칩 글자. 중립 잉크 #1F2024(4.5:1 미만이면 어둡게 — 필요 없었다).
+//   sidebarText  사이드바 비활성 글자. 옅은 색을 흰색 쪽으로 40% 섞음(4.5:1 미만이면 더 흰색 쪽으로).
+//   sidebarStrong 사이드바 강한 글자(브랜드·호버). 옅은 색을 흰색 쪽으로 70%(7:1 보장).
+//   sidebarLine  사이드바 구분선·호버 면. 주색을 흰색 쪽으로 16% 섞음.
+export interface PalettePreset {
+  main: string
+  accent: string
+  soft: string
+  mainFg: string
+  accentFg: string
+  softFg: string
+  sidebarText: string
+  sidebarStrong: string
+  sidebarLine: string
+}
+
+export const PALETTE_PRESETS: Record<ThemeColor, PalettePreset> = {
+  // 코발트 / 라임 / 아이보리
+  pop: {
+    main: '#003FE2',
+    accent: '#D6FC43',
+    soft: '#F6F4F0',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FAF8F6',
+    sidebarStrong: '#FCFCFB',
+    sidebarLine: '#295EE7',
+  },
+  // 잉크 / 레드 / 오프화이트
+  'pop-red': {
+    main: '#1D2330',
+    accent: '#E84635',
+    soft: '#F4F1E8',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F8F7F1',
+    sidebarStrong: '#FCFBF8',
+    sidebarLine: '#414651',
+  },
+  // 플럼 / 모브 / 애프리콧
+  dreamy: {
+    main: '#3A1D37',
+    accent: '#A868A6',
+    soft: '#FCA873',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FDCBAB',
+    sidebarStrong: '#FEE5D5',
+    sidebarLine: '#5A4157',
+  },
+  // 모스 / 라일락 / 미스트
+  nature: {
+    main: '#344638',
+    accent: '#C4B7D8',
+    soft: '#E9E7DB',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F2F1E9',
+    sidebarStrong: '#F8F8F4',
+    sidebarLine: '#546458',
+  },
+  // 인디고 / 오렌지 / 옐로
+  energy: {
+    main: '#1B2B86',
+    accent: '#FC5C2F',
+    soft: '#E7FC66',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F1FDA3',
+    sidebarStrong: '#F8FED1',
+    sidebarLine: '#3F4D99',
+  },
+  // 바이올렛 / 코랄 / 레몬
+  'pop-color': {
+    main: '#4D2BBA',
+    accent: '#FF796B',
+    soft: '#F4F27D',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F8F7B1',
+    sidebarStrong: '#FCFBD8',
+    sidebarLine: '#694DC5',
+  },
+  // 라즈베리 / 피스타치오 / 옐로
+  sweet: {
+    main: '#BF1D46',
+    accent: '#C6D699',
+    soft: '#FEEAA5',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FEF2C9',
+    sidebarStrong: '#FFFFFF',
+    sidebarLine: '#C94164',
+  },
+  // 코코아 / 피치 / 바닐라
+  cozy: {
+    main: '#5B342D',
+    accent: '#F3A891',
+    soft: '#FFF0D9',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FFF6E8',
+    sidebarStrong: '#FFFBF4',
+    sidebarLine: '#75544F',
+  },
+  // 그린 / 탠저린 / 블루
+  retro: {
+    main: '#163729',
+    accent: '#F86E32',
+    soft: '#7AD0EC',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#AFE3F4',
+    sidebarStrong: '#D7F1F9',
+    sidebarLine: '#3B574B',
+  },
+  // 말차 / 살구 / 크림
+  rest: {
+    main: '#465936',
+    accent: '#E9AB7C',
+    soft: '#F2EAD8',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F7F2E8',
+    sidebarStrong: '#FBF9F3',
+    sidebarLine: '#647456',
+  },
+  // 버건디 / 핑크 / 아이보리
+  elegant: {
+    main: '#45090F',
+    accent: '#F1BAB9',
+    soft: '#FBECDF',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FDF4EC',
+    sidebarStrong: '#FEF9F5',
+    sidebarLine: '#633035',
+  },
+  // 틸 / 라벤더 / 아이스
+  clear: {
+    main: '#1C4B52',
+    accent: '#BFB2D9',
+    soft: '#EAF4F6',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F2F8FA',
+    sidebarStrong: '#F9FCFC',
+    sidebarLine: '#40686E',
+  },
+}
 
 export const STYLE_STORAGE_KEY = 'theme-style'
 export const COLOR_STORAGE_KEY = 'theme-color'
@@ -38,7 +216,8 @@ export function parseThemeStyle(value: string | null): ThemeStyle {
   return (value !== null && LEGACY_STYLES.get(value)) || DEFAULT_THEME_STYLE
 }
 
-// 알 수 없는 값(예전의 'slate' 등)은 무채색(null)으로 취급한다.
+// 알 수 없는 값(예전 포인트색 'blue'/'green'/'purple'/'rose'/'orange', 그보다 예전의 'slate' 등)은
+// 기본(무채색, null)으로 취급한다.
 export function parseThemeColor(value: string | null): ThemeColor | null {
   return THEME_COLORS.find((color) => color === value) ?? null
 }

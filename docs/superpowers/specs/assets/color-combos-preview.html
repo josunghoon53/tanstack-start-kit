@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=1280">
+<title>컬러 조합 미리보기</title>
+<style>
+:root{--bf:'Pretendard Variable','IBM Plex Sans KR','Noto Sans KR','Apple SD Gothic Neo',system-ui,sans-serif;--ok:#3f9b72;--warn:#c99a2e;--bad:#c9503f}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--bf);background:#e9e9ec;color:#1d1e22;-webkit-font-smoothing:antialiased;min-height:100vh}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---- 컨트롤 바 ---- */
+.bar{position:sticky;top:0;z-index:9;background:rgba(20,20,24,.96);color:#ddd;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.bar select{font:600 13px var(--bf);background:#2a2a30;color:#fff;border:1px solid #444;border-radius:8px;padding:6px 8px;min-width:250px}
+.grp{display:flex;gap:4px;padding:3px;border-radius:99px;background:#26262c;border:1px solid #333}
+.grp button{font:600 12px var(--bf);color:#bbb;background:transparent;border:0;padding:6px 12px;border-radius:99px;cursor:pointer}
+.grp button.on{background:#fff;color:#111}
+.grp button kbd{font:11px var(--bf);opacity:.55;margin-right:4px}
+.sw{display:flex;gap:6px;align-items:center}
+.sw span{display:flex;align-items:center;gap:5px;color:#ccc}
+.sw i{width:16px;height:16px;border-radius:5px;border:1px solid rgba(255,255,255,.25);display:inline-block}
+.badge{padding:4px 9px;border-radius:99px;background:#1f3b2c;color:#9fe0b9;font-weight:700}
+.badge.bad{background:#4a1f1f;color:#ffb0a6}
+.notes{flex-basis:100%;display:flex;gap:6px;flex-wrap:wrap;color:#aaa;font-size:12px;line-height:1.5}
+.notes b{color:#fff;font-weight:600}
+.fix{background:#4a3a14;color:#ffd98a;padding:1px 8px;border-radius:99px}
+.hint{margin-left:auto;color:#777}
+
+/* ---- 보기 ---- */
+.stage{padding:20px 16px 40px;display:flex;justify-content:center}
+.fitbox{position:relative;flex:none}
+.fitbox>.app{position:absolute;left:0;top:0;transform-origin:0 0;box-shadow:0 20px 50px -20px rgba(0,0,0,.45);border-radius:10px}
+.thumbs{display:none;padding:20px 16px 40px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+body.all .thumbs{display:grid}body.all .stage{display:none}
+.th{cursor:pointer;border-radius:10px;padding:8px;background:#fff;border:2px solid transparent}
+.th.on{border-color:#111}
+.th:hover{box-shadow:0 8px 24px -12px rgba(0,0,0,.4)}
+.th .clip{width:310px;height:190px;overflow:hidden;position:relative;border-radius:6px}
+.th .clip>.app{position:absolute;left:0;top:0;transform:scale(.5);transform-origin:0 0} /* 사이드바가 크게 보이도록 좌상단만 확대 */
+.th p{font-size:12px;font-weight:700;margin-top:8px;display:flex;gap:6px;align-items:center}
+.th p small{margin-left:auto;font-weight:600;color:#3f7a59}.th p small.bad{color:#c9503f}
+
+/* ---- 목업 앱 (기존 style-themes-preview 구조) ---- */
+.app{width:1240px;height:760px;overflow:hidden;display:flex;font-family:var(--bf);background:var(--bg);color:var(--text);font-size:14px;font-weight:500;--r:12px}
+.app aside{width:220px;background:var(--sbg);color:var(--stx);padding:14px 10px;display:flex;flex-direction:column;gap:2px;flex:none}
+.app .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 16px}
+.app .logo{width:24px;height:24px;border-radius:7px;background:var(--sacc);color:var(--sacctx);display:grid;place-items:center;font-weight:800;font-size:11px}
+.app .brand b{font-size:16px;font-weight:800}
+.app .brand span{margin-left:auto;font-size:11px;color:var(--smu);border:1px solid var(--sln);padding:1px 6px;border-radius:5px}
+.app .sec{font-size:12px;font-weight:700;color:var(--sdm);padding:14px 10px 6px}
+.app .nav{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:var(--smu);font-weight:600}
+.app .nav:not(.on):hover{background:var(--sln)}
+.app .nav svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app .nav.on{background:var(--ssel);color:var(--sseltx);font-weight:800}
+.app .nav kbd{margin-left:auto;font:11px var(--bf);opacity:.7}
+.app .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid var(--sln);font-weight:700}
+.app .av{width:26px;height:26px;border-radius:50%;background:var(--sln);color:var(--smu);display:grid;place-items:center;font-size:11px}
+.app .me small{display:block;color:var(--sdm);font-size:12px;font-weight:500}
+.app main{flex:1;display:flex;flex-direction:column;min-width:0}
+.app header{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:12px}
+.app header h1{font-size:15px;font-weight:700;color:var(--head)}
+.app .crumb{color:var(--dim);font-size:13px}
+.app .search{margin-left:auto;display:flex;align-items:center;gap:8px;width:260px;height:30px;border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:0 10px;color:var(--dim);font-size:13px}
+.app .ibtn{width:30px;height:30px;border:1px solid var(--line2);border-radius:8px;display:grid;place-items:center;position:relative;color:var(--mute)}
+.app .ibtn i{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.app .content{padding:22px 24px;display:flex;flex-direction:column;gap:16px}
+.app .top{display:flex;align-items:flex-end;gap:10px}
+.app .top h2{font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--head)}
+.app .top p{color:var(--mute);margin-top:4px}
+.app .seg{margin-left:auto;display:flex;border:1px solid var(--line2);border-radius:8px;padding:2px;background:var(--panel)}
+.app .seg span{padding:5px 14px;border-radius:6px;color:var(--mute);font-size:13px;font-weight:700}
+.app .seg .on{background:var(--sel);color:var(--seltx);box-shadow:inset 0 -2px 0 var(--tabline)}
+.app .btn{height:34px;padding:0 14px;border-radius:8px;font:700 13px var(--bf);display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);background:var(--panel);color:var(--text)}
+.app .btn.p{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.app .kpis{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+.app .kpi{padding:18px 20px;border-right:1px solid var(--line)}
+.app .kpi:last-child{border:0}
+.app .kpi .l{color:var(--mute);font-size:13px;font-weight:600}
+.app .kpi .v{font-size:32px;font-weight:800;letter-spacing:-.03em;margin:10px 0 8px;color:var(--head)}
+.app .kpi .d{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--mute)}
+.app .up{color:var(--ok)}.app .dn{color:var(--bad)}
+.app .spark{margin-left:auto;width:72px;height:22px}
+.app .grid{display:grid;grid-template-columns:1.7fr 1fr;gap:16px}
+.app .card{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden}
+.app .card h3{font-size:15px;font-weight:800;padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;color:var(--head)}
+.app .card h3 a{margin-left:auto;color:var(--link);font-size:13px;font-weight:600}
+.app .chip{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--chipbg);color:var(--chiptx)}
+.app table{width:100%;border-collapse:collapse}
+.app th{font-size:12px;font-weight:700;color:var(--dim);text-align:left;padding:10px 20px;border-bottom:1px solid var(--line)}
+.app td{font-size:14px;font-weight:600;padding:12px 20px;border-bottom:1px solid var(--line);color:var(--text)}
+.app tr:last-child td{border:0}
+.app td.m{color:var(--mute);font-weight:500}
+.app .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid var(--line2);color:var(--mute)}
+.app .pill i{width:6px;height:6px;border-radius:50%}
+.app .row{display:flex;gap:12px;padding:11px 20px;align-items:flex-start}
+.app .row .dot{width:22px;height:22px;border-radius:6px;background:var(--sel);display:grid;place-items:center;flex:none;color:var(--seltx)}
+.app .row .dot svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
+.app .row p{font-size:14px;font-weight:600;line-height:1.45}.app .row small{font-size:12px;color:var(--dim)}
+.app .chart{padding:14px 20px}
+.app .chart b{font-size:15px;font-weight:800;color:var(--head)}
+.app .bars{display:flex;align-items:flex-end;gap:6px;height:84px;margin-top:10px}
+.app .bars i{flex:1;background:var(--bar);border-radius:4px 4px 0 0}
+.app .bars i.h{background:var(--barh)}
+</style></head><body>
+<div class="bar">
+  <select id="sel" aria-label="조합 선택"></select>
+  <div class="grp" id="modes">
+    <button data-m="0"><kbd>1</kbd>사이드바 컬러 / 메인 무채</button><button data-m="1"><kbd>2</kbd>사이드바 컬러 + 메인 최소 포인트</button>
+  </div>
+  <div class="grp" id="views"><button data-v="one">한 화면</button><button data-v="all">12개 한눈에</button></div>
+  <div class="sw" id="sw"></div>
+  <span class="badge" id="b1"></span><span class="badge" id="b2"></span>
+  <span class="hint">←/→ 조합 · 1/2 모드</span>
+  <div class="notes" id="notes"></div>
+</div>
+<div class="stage"><div class="fitbox" id="fit"></div></div>
+<div class="thumbs" id="thumbs"></div>
+<script>
+// 원본 페이지의 역할 라벨은 쓰지 않는다. 3색을 상대 휘도로 정렬: 가장 어두운=주색, 중간=포인트, 가장 밝은=옅은 색.
+// 휘도 차가 0.05 미만이라 순서가 애매하면 ord:[주색,포인트,옅은 색 hex]로 명시 오버라이드.
+const C=[
+ ['1','톡톡 튀는 스타일',['#D6FC43','라임'],['#003FE2','코발트'],['#F6F4F0','아이보리']],
+ ['1+','보너스 · 선명한 레드 포인트',['#F4F1E8','오프화이트'],['#1D2330','잉크'],['#E84635','레드']],
+ ['2','몽환적인 분위기',['#FCA873','애프리콧'],['#3A1D37','플럼'],['#A868A6','모브']],
+ ['2+','보너스 · 차분한 자연의 감성',['#E9E7DB','미스트'],['#344638','모스'],['#C4B7D8','라일락']],
+ ['3','강렬한 에너지',['#1B2B86','인디고'],['#E7FC66','옐로'],['#FC5C2F','오렌지']],
+ ['3+','보너스 · 경쾌한 팝 컬러',['#4D2BBA','바이올렛'],['#F4F27D','레몬'],['#FF796B','코랄']],
+ ['4','달콤한 즐거움',['#FEEAA5','옐로'],['#BF1D46','라즈베리'],['#C6D699','피스타치오']],
+ ['4+','보너스 · 포근한 달콤함',['#FFF0D9','바닐라'],['#5B342D','코코아'],['#F3A891','피치']],
+ ['5','경쾌한 레트로',['#7AD0EC','블루'],['#163729','그린'],['#F86E32','탠저린']],
+ ['5+','보너스 · 편안한 휴식',['#F2EAD8','크림'],['#465936','말차'],['#E9AB7C','살구']],
+ ['6','부드러운 우아함',['#FBECDF','아이보리'],['#45090F','버건디'],['#F1BAB9','핑크']],
+ ['6+','보너스 · 맑고 깨끗한 분위기',['#EAF4F6','아이스'],['#1C4B52','틸'],['#BFB2D9','라벤더']]
+].map(a=>({id:a[0],name:a[1],cols:a.slice(2,5).map(([h,n])=>({h,n})),ord:a[5]}));
+const MODES=['사이드바 컬러 / 메인 무채','사이드바 컬러 + 메인 최소 포인트'];
+const RULES=[
+ '사이드바 면=주색(흰 글자 4.5 미만이면 어둡게 보정) · 비활성 글자=옅은 색을 흰색 쪽으로 40% 섞음(4.5 보장) · 활성 알약=포인트 면+#111/#FFF 중 대비 높은 글자 · 구분선=주색을 밝게 · 메인 전부 무채(페이지 #F6F6F7, 카드 #FFF, 본문 #1F2024, 보조 #6B6E76, 주요 버튼 #232428)',
+ '모드 1과 같고, 메인에서는 주요 버튼 면·링크·주간 막대 강조 1개·활성 탭 밑줄에만 주색(흰 글자 4.5 보장), 칩 면에만 옅은 색 · 나머지 메인은 무채'
+];
+// ---- 색 계산 (WCAG 2.x) ----
+const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const toHex=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('').toUpperCase();
+const mix=(a,b,t)=>{const A=hx(a),B=hx(b);return toHex(A.map((v,i)=>v+(B[i]-v)*t))};
+const lum=h=>{const [r,g,b]=hx(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*r+.7152*g+.0722*b};
+const cr=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const best=bg=>cr('#111111',bg)>=cr('#FFFFFF',bg)?'#111111':'#FFFFFF';
+function roles(c){
+  const s=[...c.cols].sort((a,b)=>lum(a.h)-lum(b.h));
+  const amb=lum(s[1].h)-lum(s[0].h)<.05||lum(s[2].h)-lum(s[1].h)<.05;
+  let r=s,over=false;
+  if(c.ord){r=c.ord.map(h=>c.cols.find(x=>x.h===h));over=true}
+  return {main:r[0],point:r[1],light:r[2],amb,over};
+}
+function derive(c,m){
+  const notes=[],R=roles(c),M=R.main.h,P=R.point.h,L=R.light.h;
+  // fg를 bgs 모두에 대해 min 이상이 되도록 to 쪽으로 5%씩 섞는다. label이 있으면 "대비 보정"으로 기록.
+  const fix=(fg,bgs,min,label,to)=>{
+    const ok=x=>bgs.every(b=>cr(x,b)>=min);
+    if(ok(fg))return fg;
+    let out=null;
+    for(let t=.05;t<=1.001&&!out;t+=.05)for(const k of(to?[to]:['#000000','#FFFFFF'])){const x=mix(fg,k,t);if(ok(x)){out=x;break}}
+    out=out||best(bgs[0]);
+    if(label)notes.push(label+' '+fg+'→'+out);
+    return out;
+  };
+  // 주색을 흰 글자 4.5:1이 될 때까지 어둡게 (사이드바 면·메인 주요색 공용)
+  const darkMain=(label)=>{let s=M,i=0;while(cr('#FFFFFF',s)<4.5&&i++<40)s=mix(s,'#000000',.05);if(s!==M)notes.push(label+' '+M+'→'+s);return s};
+  const v={bg:'#F6F6F7',panel:'#FFFFFF',line:'#E7E7EA',line2:'#DCDCE0',text:'#1F2024',mute:'#6B6E76',dim:'#6B6E76',head:'#1F2024',
+    link:'#6B6E76',acc:'#232428',onacc:'#FFFFFF',chipbg:'#EEEEF0',chiptx:'#4A4C52',bar:'#DCDCE0',barh:'#4A4C52',sel:'#EEEEF0',seltx:'#1F2024',tabline:'#1F2024'};
+  // 사이드바
+  v.sbg=darkMain('사이드바 면');
+  v.smu=fix(mix(L,'#FFFFFF',.4),[v.sbg],4.5,'사이드바 글자','#FFFFFF');
+  v.stx=fix(mix(L,'#FFFFFF',.7),[v.sbg],7,null,'#FFFFFF');
+  v.sdm=fix(mix(v.smu,v.sbg,.3),[v.sbg],3,null,'#FFFFFF');
+  v.sln=mix(v.sbg,'#FFFFFF',.16);
+  v.ssel=P;v.sseltx=best(P);v.sacc=P;v.sacctx=best(P);
+  if(m===1){
+    const pm=v.sbg!==M?v.sbg:darkMain('메인 주요색');
+    v.acc=pm;v.onacc='#FFFFFF';v.link=pm;v.barh=pm;v.tabline=pm;
+    v.chipbg=L;v.chiptx=fix('#1F2024',[L],4.5,'칩 글자');
+  }
+  const side=cr(v.smu,v.sbg),pill=cr(v.sseltx,P),btn=cr(v.onacc,v.acc);
+  if(pill<4.5)notes.push('활성 메뉴 글자 '+pill.toFixed(2)+':1 (흑/백 모두 부족)');
+  return {v,R,notes,side,pill,btn,pillEdge:cr(P,v.sbg)};
+}
+// ---- 목업 마크업 ----
+const I={
+ dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+ user:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3-5.5 6.5-5.5s6 2 6.5 5.5"/>',
+ cart:'<path d="M3 4h2l2.5 11h11L21 7H6"/><circle cx="9" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/>',
+ box:'<path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8"/>',
+ card:'<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/>',
+ doc:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>',
+ chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>'
+};
+const nav=(k,t,on,kb)=>`<div class="nav${on?' on':''}"><svg viewBox="0 0 24 24">${I[k]}</svg>${t}${kb?`<kbd>${kb}</kbd>`:''}</div>`;
+const spark=(c,p)=>`<svg class="spark" viewBox="0 0 72 22"><polyline fill="none" style="stroke:var(--${c})" stroke-width="1.5" points="${p}"/></svg>`;
+const pill=(c,t)=>`<span class="pill"><i style="background:var(--${c})"></i>${t}</span>`;
+const MOCK=`<aside><div class="brand"><div class="logo">J</div><b>JSH-OS</b><span>Pro</span></div>
+${nav('dash','대시보드',1,'G D')}<div class="sec">운영</div>${nav('user','사용자')}${nav('cart','주문')}${nav('box','상품')}${nav('card','결제')}
+<div class="sec">워크스페이스</div>${nav('doc','콘텐츠')}${nav('chart','분석')}${nav('gear','설정')}
+<div class="me"><div class="av">AD</div><div>관리자<small>admin@example.com</small></div></div></aside>
+<main><header><span class="crumb">JSH-OS</span><span class="crumb">/</span><h1>대시보드</h1>
+<div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>검색</div>
+<div class="ibtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 1112 0c0 6 2 7 2 7H4s2-1 2-7zM10 20a2 2 0 004 0"/></svg><i></i></div></header>
+<div class="content"><div class="top"><div><h2>오늘의 현황</h2><p>10월 4일 일요일 · 마지막 갱신 방금 전</p></div>
+<div class="seg"><span class="on">오늘</span><span>7일</span><span>30일</span></div><span class="btn">내보내기</span><span class="btn p">+ 새 주문</span></div>
+<div class="kpis">
+<div class="kpi"><div class="l">오늘 매출</div><div class="v num">₩1,240,000</div><div class="d"><span class="up">▲ 8.0%</span>어제 대비${spark('ok','0,18 10,15 20,16 30,10 40,12 50,6 60,8 72,2')}</div></div>
+<div class="kpi"><div class="l">신규 주문</div><div class="v num">18건</div><div class="d"><span class="up">▲ 3건</span>어제 대비${spark('ok','0,14 10,16 20,9 30,12 40,7 50,10 60,4 72,6')}</div></div>
+<div class="kpi"><div class="l">신규 사용자</div><div class="v num">6명</div><div class="d"><span class="dn">▼ 2명</span>어제 대비${spark('bad','0,4 10,6 20,5 30,10 40,9 50,14 60,12 72,17')}</div></div>
+<div class="kpi"><div class="l">미확인 알림</div><div class="v num">6건</div><div class="d"><span class="chip">확인 필요</span></div></div></div>
+<div class="grid"><div class="card"><h3>최근 주문<span class="chip">이번 주</span><a>전체 보기 →</a></h3>
+<table><thead><tr><th>주문번호</th><th>고객</th><th>금액</th><th>상태</th></tr></thead><tbody>
+<tr><td class="num">ORD-1042</td><td>김민지</td><td class="num">128,000원</td><td>${pill('warn','배송중')}</td></tr>
+<tr><td class="num">ORD-1041</td><td class="m">이서준</td><td class="num">54,000원</td><td>${pill('ok','완료')}</td></tr>
+<tr><td class="num">ORD-1040</td><td>박지훈</td><td class="num">212,500원</td><td>${pill('ok','완료')}</td></tr>
+<tr><td class="num">ORD-1039</td><td class="m">최유나</td><td class="num">39,900원</td><td>${pill('bad','취소')}</td></tr>
+<tr><td class="num">ORD-1038</td><td>정하늘</td><td class="num">86,000원</td><td>${pill('ok','완료')}</td></tr>
+</tbody></table></div>
+<div style="display:flex;flex-direction:column;gap:16px"><div class="card"><h3>최근 알림<a>모두 읽음</a></h3><div style="padding:4px 0">
+<div class="row"><div class="dot"><svg viewBox="0 0 24 24">${I.user}</svg></div><div><p>최유나 님이 새로 가입했어요.</p><small>5분 전</small></div></div>
+<div class="row"><div class="dot"><svg viewBox="0 0 24 24">${I.box}</svg></div><div><p>ORD-1042 주문이 배송을 시작했어요.</p><small>32분 전</small></div></div></div></div>
+<div class="card chart"><div style="display:flex;justify-content:space-between"><b>주간 매출</b><span style="color:var(--mute)" class="num">₩8.4M</span></div>
+<div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:60%"></i><i style="height:48%"></i><i class="h" style="height:92%"></i></div></div></div></div></div></main>`;
+const KEYS=['bg','panel','line','line2','text','mute','dim','head','link','acc','onacc','chipbg','chiptx','bar','barh','sel','seltx','tabline','sbg','stx','smu','sdm','sln','ssel','sseltx','sacc','sacctx'];
+const paint=(el,v)=>KEYS.forEach(k=>el.style.setProperty('--'+k,v[k]));
+function makeApp(){const d=document.createElement('div');d.className='app';d.innerHTML=MOCK;return d}
+// ---- 상태 ----
+const $=id=>document.getElementById(id);
+const SKEY='combo-preview-v2';
+let idx=0,mode=0,view='one';
+const main=makeApp();$('fit').appendChild(main);
+const thumbs=C.map((c,i)=>{const w=document.createElement('div');w.className='th';
+  w.innerHTML='<div class="clip"></div><p></p>';const a=makeApp();w.firstChild.appendChild(a);
+  w.onclick=()=>{idx=i;view='one';render()};$('thumbs').appendChild(w);return {w,a}});
+C.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.id+' '+c.name;$('sel').appendChild(o)});
+function fit(){const s=Math.min(1,(innerWidth-32)/1240);main.style.transform=`scale(${s})`;$('fit').style.width=1240*s+'px';$('fit').style.height=760*s+'px'}
+const r2=x=>x.toFixed(2)+':1';
+function render(){
+  const c=C[idx],d=derive(c,mode),R=d.R;
+  paint(main,d.v);
+  $('sel').value=idx;
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',+b.dataset.m===mode));
+  document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  document.body.classList.toggle('all',view==='all');
+  $('sw').innerHTML=[['주색',R.main],['포인트',R.point],['옅은 색',R.light]].map(([k,x])=>`<span><i style="background:${x.h}"></i><b style="color:#fff">${k}</b> ${x.n} ${x.h}</span>`).join('')+(R.over?' <span class="fix">순서 오버라이드</span>':R.amb?' <span class="fix">휘도 순서 애매</span>':'');
+  $('b1').textContent='사이드바 글자/면 '+r2(d.side);$('b1').classList.toggle('bad',d.side<4.5);
+  $('b2').textContent='활성 메뉴 글자/알약 '+r2(d.pill);$('b2').classList.toggle('bad',d.pill<4.5);
+  $('notes').innerHTML='<b>'+MODES[mode]+'</b> — '+RULES[mode]+(d.notes.length?'':' · <span style="color:#9fe0b9">대비 보정 없음</span>')+d.notes.map(n=>' <span class="fix">대비 보정 · '+n+'</span>').join('');
+  thumbs.forEach((t,i)=>{const x=derive(C[i],mode);paint(t.a,x.v);t.w.classList.toggle('on',i===idx);
+    const bad=x.side<4.5||x.pill<4.5;
+    t.w.lastChild.innerHTML=`${C[i].id} ${C[i].name}${x.notes.length?' <span class="fix" style="font-size:11px">보정 '+x.notes.length+'</span>':''}<small class="${bad?'bad':''}">글자 ${x.side.toFixed(1)} · 알약 ${x.pill.toFixed(1)}</small>`});
+  try{localStorage.setItem(SKEY,JSON.stringify({idx,mode,view}))}catch(e){}
+}
+try{const s=JSON.parse(localStorage.getItem(SKEY)||'null');if(s){idx=s.idx|0;mode=s.mode|0;view=s.view==='all'?'all':'one'}}catch(e){}
+if(idx<0||idx>=C.length)idx=0;if(mode<0||mode>1)mode=0;
+$('sel').onchange=e=>{idx=+e.target.value;render()};
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{mode=+b.dataset.m;render()});
+document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>{view=b.dataset.v;render()});
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='SELECT'||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key==='ArrowRight'){idx=(idx+1)%C.length;render()}
+  else if(e.key==='ArrowLeft'){idx=(idx+C.length-1)%C.length;render()}
+  else if(e.key==='1'||e.key==='2'){mode=+e.key-1;render()}
+});
+addEventListener('resize',fit);fit();render();
+</script>
+</body></html>

@@ -247,9 +247,9 @@ export const messages = {
         heading: '테마',
         styleLabel: '스타일',
         styleDescription: '모양과 글꼴을 바꿔요. 색은 바뀌지 않아요.',
-        accentColorLabel: '포인트 색상',
-        accentColorDescription:
-          '버튼, 활성 메뉴 글씨, 차트 강조처럼 작은 곳에만 쓰여요. 화면의 큰 면은 항상 무채색이에요.',
+        paletteLabel: '컬러 팔레트',
+        paletteDescription:
+          '사이드바를 주색으로 칠하고, 메인에서는 주요 버튼·링크·차트 강조·활성 탭·칩에만 색을 써요. 메인의 큰 면은 항상 무채색이에요.',
       },
       security: {
         heading: '보안',
@@ -300,12 +300,23 @@ export const messages = {
       demoAccountPrefix: '데모 계정:',
     },
     colorThemePicker: {
-      neutral: '무채색',
-      blue: '블루',
-      green: '그린',
-      purple: '퍼플',
-      rose: '로즈',
-      orange: '오렌지',
+      groupLabel: '컬러 팔레트',
+      neutral: '기본(무채색)',
+      roles: { main: '주색', accent: '포인트', soft: '옅은 색' },
+      presets: {
+        pop: '톡톡 튀는 스타일',
+        'pop-red': '선명한 레드 포인트',
+        dreamy: '몽환적인 분위기',
+        nature: '차분한 자연의 감성',
+        energy: '강렬한 에너지',
+        'pop-color': '경쾌한 팝 컬러',
+        sweet: '달콤한 즐거움',
+        cozy: '포근한 달콤함',
+        retro: '경쾌한 레트로',
+        rest: '편안한 휴식',
+        elegant: '부드러운 우아함',
+        clear: '맑고 깨끗한 분위기',
+      },
     },
     stylePicker: {
       clean: '8px 모서리와 가는 테두리, 깔끔한 고딕',
@@ -665,9 +676,9 @@ export const messages = {
         styleLabel: 'Style',
         styleDescription:
           'Changes the shape and typography. Colors stay the same.',
-        accentColorLabel: 'Accent color',
-        accentColorDescription:
-          'Used only in small places such as buttons, the active menu text and chart highlights. Large surfaces always stay neutral.',
+        paletteLabel: 'Color palette',
+        paletteDescription:
+          'Paints the sidebar in the main color. In the main area only primary buttons, links, chart highlights, active tabs and chips take color — large surfaces always stay neutral.',
       },
       security: {
         heading: 'Security',
@@ -718,12 +729,23 @@ export const messages = {
       demoAccountPrefix: 'Demo account:',
     },
     colorThemePicker: {
-      neutral: 'Neutral',
-      blue: 'Blue',
-      green: 'Green',
-      purple: 'Purple',
-      rose: 'Rose',
-      orange: 'Orange',
+      groupLabel: 'Color palette',
+      neutral: 'Default (neutral)',
+      roles: { main: 'Main', accent: 'Accent', soft: 'Soft' },
+      presets: {
+        pop: 'Pop',
+        'pop-red': 'Pop · Red accent',
+        dreamy: 'Dreamy',
+        nature: 'Nature',
+        energy: 'Energy',
+        'pop-color': 'Pop Color',
+        sweet: 'Sweet',
+        cozy: 'Cozy',
+        retro: 'Retro',
+        rest: 'Rest',
+        elegant: 'Elegant',
+        clear: 'Clear',
+      },
     },
     stylePicker: {
       clean: 'Clean sans-serif with 8px corners and thin borders',
