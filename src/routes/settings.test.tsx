@@ -66,8 +66,15 @@ describe('Settings route', () => {
         screen.getByRole('button', { name: new RegExp(`^${name}`) }),
       ).toBeInTheDocument()
     }
-    for (const label of ['무채색', '블루', '그린', '퍼플', '로즈', '오렌지']) {
-      expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+    expect(
+      screen.getByRole('radiogroup', { name: '컬러 팔레트' }),
+    ).toBeInTheDocument()
+    for (const label of [
+      '기본(무채색)',
+      '톡톡 튀는 스타일',
+      '맑고 깨끗한 분위기',
+    ]) {
+      expect(screen.getByRole('radio', { name: label })).toBeInTheDocument()
     }
   })
 
