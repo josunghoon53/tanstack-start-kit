@@ -235,9 +235,9 @@ function ThemeSection() {
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-0.5">
-            <Label>{t.theme.accentColorLabel}</Label>
+            <Label>{t.theme.paletteLabel}</Label>
             <span className="text-sm text-muted-foreground">
-              {t.theme.accentColorDescription}
+              {t.theme.paletteDescription}
             </span>
           </div>
           <ColorThemePicker />
