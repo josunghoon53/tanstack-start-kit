@@ -204,6 +204,11 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 600;
   --shadow-card: 0 1px 2px oklch(0.3 0.01 90 / 0.06);
+  /* 떠 있는 패널(행 보기 시트): 카드보다 한 단계 높은 그림자와 패널 반경 */
+  --shadow-panel:
+    0 16px 40px -16px oklch(0.3 0.01 90 / 0.22),
+    0 2px 6px oklch(0.3 0.01 90 / 0.06);
+  --radius-panel: 0.75rem;
   --card-border: var(--border);
   --input: oklch(0.86 0.006 90);
 }
@@ -215,6 +220,11 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 700;
   --shadow-card: 0 8px 24px -16px oklch(0.35 0.02 90 / 0.35);
+  /* 떠 있는 패널(행 보기 시트): 카드보다 한 단계 높은 그림자와 패널 반경 */
+  --shadow-panel:
+    0 24px 56px -20px oklch(0.35 0.02 90 / 0.4),
+    0 4px 12px -6px oklch(0.35 0.02 90 / 0.12);
+  --radius-panel: 1.25rem;
   --card-border: var(--border);
   --input: oklch(0.86 0.006 90);
 }
@@ -227,6 +237,9 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 800;
   --shadow-card: none;
+  /* 떠 있는 패널(행 보기 시트): 카드보다 한 단계 높은 그림자와 패널 반경 */
+  --shadow-panel: 0 16px 40px -20px oklch(0.2 0.006 90 / 0.28);
+  --radius-panel: 0;
   --card-border: var(--border);
   --input: oklch(0.2 0.006 90);
 }
@@ -239,6 +252,9 @@ button:not(:disabled),
   --weight-body: 500;
   --weight-title: 800;
   --shadow-card: none;
+  /* 떠 있는 패널(행 보기 시트): 카드보다 한 단계 높은 그림자와 패널 반경 */
+  --shadow-panel: 0 16px 40px -20px oklch(0.22 0.004 90 / 0.3);
+  --radius-panel: 0;
   --card-border: oklch(0.22 0.004 90);
   --input: oklch(0.22 0.004 90);
 }
@@ -472,6 +488,12 @@ button:not(:disabled),
 }
 [data-slot='sheet-content'][data-state='closed'] {
   animation-duration: var(--motion-duration-base);
+}
+/* 떠 있는 시트(row-actions.tsx, 오른쪽 여백 12px): 100%만 밀면 여백만큼 패널 가장자리와 그림자가
+   화면에 남은 채로 시작/끝나므로, 여백+그림자까지 화면 밖으로 밀어낸다. */
+[data-slot='sheet-content'][data-floating-panel][data-state] {
+  --tw-enter-translate-x: calc(100% + 3rem);
+  --tw-exit-translate-x: calc(100% + 3rem);
 }
 @media (prefers-reduced-motion: reduce) {
   :is(

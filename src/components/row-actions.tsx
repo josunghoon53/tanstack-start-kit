@@ -188,8 +188,11 @@ export function RowActions({
 
       <Sheet open={viewOpen} onOpenChange={setViewOpen}>
         <SheetContent
-          // ui/sheet 기본 폭(w-3/4 sm:max-w-sm)을 고정 440px로 덮는다. sm:은 생성된 기본값을 지우기 위한 것뿐이다.
-          className="w-[440px] gap-0 sm:max-w-none"
+          // 화면 가장자리에 붙지 않는 떠 있는 패널: 위·아래·오른쪽 12px 여백, 고정 폭 440px.
+          // ui/sheet 기본(inset-y-0 right-0 h-full border-l w-3/4 sm:max-w-sm shadow-lg)을 className으로만 덮는다
+          // (sm:은 생성된 기본값을 지우기 위한 것뿐). 반경·그림자는 스타일별 토큰(--radius-panel, --shadow-panel).
+          data-floating-panel=""
+          className="inset-y-3 right-3 h-auto w-[440px] gap-0 overflow-hidden rounded-(--radius-panel) border border-(--card-border) shadow-(--shadow-panel) sm:max-w-none"
           onCloseAutoFocus={(event) => {
             if (handingOffRef.current) {
               handingOffRef.current = false
