@@ -13,6 +13,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import appCss from '../styles.css?url'
 import { AppSidebar } from '../components/app-sidebar'
 import { NotFound } from '../components/not-found'
+import { PageTransition } from '../components/page-transition'
 import { SiteFooter } from '../components/site-footer'
 import { SiteHeader } from '../components/site-header'
 import { SidebarInset, SidebarProvider } from '../components/ui/sidebar'
@@ -93,7 +94,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 <SiteHeader />
                 <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-background">
                   <div className="flex min-h-full min-w-5xl shrink-0 flex-col gap-4 p-4">
-                    {children}
+                    <PageTransition>{children}</PageTransition>
                   </div>
                   <SiteFooter />
                 </div>
