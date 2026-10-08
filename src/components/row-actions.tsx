@@ -146,6 +146,12 @@ export function RowActions({
     open()
   }
 
+  const openedFromMenuRef = useRef(false)
+  function fromMenu(open: () => void) {
+    openedFromMenuRef.current = true
+    open()
+  }
+
   function returnFocusToTrigger(event: Event) {
     event.preventDefault()
     triggerRef.current?.focus()
@@ -165,20 +171,29 @@ export function RowActions({
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent
+          align="end"
+          // 메뉴 항목이 시트/다이얼로그를 열었으면, 메뉴가 닫힌 뒤(퇴장 애니메이션 후) 포커스를 트리거로
+          // 되돌리지 않는다 — 되돌리면 방금 연 시트/다이얼로그에서 포커스를 빼앗는다.
+          onCloseAutoFocus={(event) => {
+            if (!openedFromMenuRef.current) return
+            openedFromMenuRef.current = false
+            event.preventDefault()
+          }}
+        >
           <DropdownMenuLabel>{t.rowActions.actionsLabel}</DropdownMenuLabel>
-          <DropdownMenuItem onSelect={() => setViewOpen(true)}>
+          <DropdownMenuItem onSelect={() => fromMenu(() => setViewOpen(true))}>
             <Eye />
             {t.common.view}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={openEdit}>
+          <DropdownMenuItem onSelect={() => fromMenu(openEdit)}>
             <Pencil />
             {t.common.edit}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setDeleteOpen(true)}
+            onSelect={() => fromMenu(() => setDeleteOpen(true))}
           >
             <Trash2 />
             {t.common.delete}
@@ -192,7 +207,13 @@ export function RowActions({
           // ui/sheet 기본(inset-y-0 right-0 h-full border-l w-3/4 sm:max-w-sm shadow-lg)을 className으로만 덮는다
           // (sm:은 생성된 기본값을 지우기 위한 것뿐). 반경·그림자는 스타일별 토큰(--radius-panel, --shadow-panel).
           data-floating-panel=""
-          className="inset-y-3 right-3 h-auto w-[440px] gap-0 overflow-hidden rounded-(--radius-panel) border border-(--card-border) shadow-(--shadow-panel) sm:max-w-none"
+          className="inset-y-3 right-3 h-auto w-[440px] gap-0 overflow-hidden rounded-(--radius-panel) outline-none border border-(--card-border) shadow-(--shadow-panel) sm:max-w-none"
+          // 첫 포커스를 맨 앞 버튼(삭제)이 아니라 패널 자체에 둔다 — Enter 한 번에 삭제 확인이 열리지 않게.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault()
+            const panel = event.currentTarget as HTMLElement | null
+            panel?.focus()
+          }}
           onCloseAutoFocus={(event) => {
             if (handingOffRef.current) {
               handingOffRef.current = false
