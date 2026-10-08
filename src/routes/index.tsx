@@ -1,5 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { m } from 'motion/react'
+import { AnimatedNumber } from '@/components/animated-number'
 import { Sparkline } from '@/components/sparkline'
 import { StatusDot } from '@/components/status-dot'
 import { WeeklyBars } from '@/components/weekly-bars'
@@ -23,6 +25,7 @@ import { NOTIFICATION_ICONS } from '@/config/notifications'
 import { ordersQueryOptions } from '@/server/orders'
 import { notificationsQueryOptions } from '@/server/notifications'
 import { useTranslation } from '@/i18n/use-translation'
+import { fade, fadeUp, staggerDelay } from '@/lib/motion'
 
 export const Route = createFileRoute('/')({
   loader: ({ context }) =>
@@ -36,6 +39,13 @@ const ORDERS_TREND = [4, 2, 9, 6, 11, 8, 14, 12]
 const USERS_TREND = [16, 14, 15, 10, 11, 6, 8, 3]
 const WEEKLY_REVENUE = [40, 55, 35, 70, 60, 48, 92]
 const WEEKLY_TOTAL = '₩8,400,000'
+
+// 진입 애니메이션: KPI 칸 4개(0~3) → 최근 주문(4) → 최근 알림(5) → 주간 매출(6) 순으로 60ms씩 늦게
+// 올라온다(fadeUp, 마지막 카드까지 약 0.66초). 데이터·서버 함수는 그대로다.
+const MotionCard = m.create(Card)
+const ORDERS_CARD = 4
+const NOTIFICATIONS_CARD = 5
+const WEEKLY_CARD = 6
 
 function Dashboard() {
   const t = useTranslation()
@@ -70,26 +80,42 @@ function Dashboard() {
   ]
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card className="grid grid-cols-4 gap-0 divide-x py-0">
-        {stats.map((stat) => (
-          <div key={stat.label} className="flex flex-col gap-2 px-5 py-4">
+    <m.div initial="hidden" animate="visible" className="flex flex-col gap-4">
+      <MotionCard
+        variants={fade}
+        className="grid grid-cols-4 gap-0 divide-x py-0"
+      >
+        {stats.map((stat, index) => (
+          <m.div
+            key={stat.label}
+            variants={fadeUp}
+            custom={index}
+            className="flex flex-col gap-2 px-5 py-4"
+          >
             <span className="text-sm font-medium text-muted-foreground">
               {stat.label}
             </span>
-            <span className="text-3xl tracking-tight [font-family:var(--font-title)] [font-weight:var(--weight-title)]">
-              {stat.value}
-            </span>
+            <AnimatedNumber
+              value={stat.value}
+              delay={staggerDelay(index)}
+              className="text-3xl tracking-tight [font-family:var(--font-title)] [font-weight:var(--weight-title)]"
+            />
             <div className="flex items-end justify-between gap-2">
               <span className="text-sm text-muted-foreground">{stat.hint}</span>
-              {stat.trend && <Sparkline values={stat.trend} tone={stat.tone} />}
+              {stat.trend && (
+                <Sparkline
+                  values={stat.trend}
+                  tone={stat.tone}
+                  delay={staggerDelay(index) + 0.1}
+                />
+              )}
             </div>
-          </div>
+          </m.div>
         ))}
-      </Card>
+      </MotionCard>
 
       <div className="grid grid-cols-[1.7fr_1fr] gap-4">
-        <Card>
+        <MotionCard variants={fadeUp} custom={ORDERS_CARD}>
           <CardHeader>
             <CardTitle>{t.dashboard.recentOrders.title}</CardTitle>
             <CardDescription>
@@ -124,10 +150,10 @@ function Dashboard() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </MotionCard>
 
         <div className="flex flex-col gap-4">
-          <Card>
+          <MotionCard variants={fadeUp} custom={NOTIFICATIONS_CARD}>
             <CardHeader>
               <CardTitle>{t.dashboard.recentNotifications.title}</CardTitle>
               <CardDescription>
@@ -155,9 +181,9 @@ function Dashboard() {
                 )
               })}
             </CardContent>
-          </Card>
+          </MotionCard>
 
-          <Card>
+          <MotionCard variants={fadeUp} custom={WEEKLY_CARD}>
             <CardHeader>
               <CardTitle>{t.dashboard.weeklyRevenue.title}</CardTitle>
               <CardDescription>{WEEKLY_TOTAL}</CardDescription>
@@ -166,11 +192,12 @@ function Dashboard() {
               <WeeklyBars
                 values={WEEKLY_REVENUE}
                 label={t.dashboard.weeklyRevenue.title}
+                delay={staggerDelay(WEEKLY_CARD) + 0.05}
               />
             </CardContent>
-          </Card>
+          </MotionCard>
         </div>
       </div>
-    </div>
+    </m.div>
   )
 }
