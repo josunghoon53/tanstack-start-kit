@@ -416,3 +416,72 @@ button:not(:disabled),
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* ── 모션 토큰(CSS 쪽) ─────────────────────────────────────────────
+   src/lib/motion.tsx의 duration/ease와 같은 값이다. 한쪽을 바꾸면 같이 바꿀 것. */
+:root {
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-duration-fast: 150ms;
+  --motion-duration-base: 250ms;
+}
+
+/* 팔레트/스타일을 바꿀 때만 잠깐(<html data-theme-transition>, startThemeTransition()이 약 300ms 붙였다 뗀다)
+   색이 부드럽게 바뀐다. 첫 로드(초기화 스크립트)에는 이 속성이 없어서 애니메이션되지 않는다.
+   전체(*)가 아니라 팔레트가 닿는 곳만 고른다: 사이드바 면·글자·활성 메뉴, --primary 버튼·링크·배지·탭, 차트 막대. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme-transition]
+    :is(
+      [data-slot^='sidebar'],
+      [data-slot='button'],
+      [data-slot='badge'],
+      [data-slot='tabs-trigger'],
+      [role='tab'],
+      a,
+      [data-bar]
+    ) {
+    transition-property: background-color, color, border-color, fill, stroke;
+    transition-duration: var(--motion-duration-base);
+    transition-timing-function: var(--motion-ease-out);
+  }
+}
+
+/* 다이얼로그/시트/알림 다이얼로그는 Radix의 data-[state] CSS 애니메이션을 그대로 쓴다(motion으로 다시 만들지 않는다).
+   오버레이에 옅은 블러를 더하고, 길이·이징만 모션 토큰에 맞춘다. ui/* 파일은 생성된 형태로 두고 여기서만 조정한다. */
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='alert-dialog-overlay']
+) {
+  backdrop-filter: blur(2px);
+}
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='alert-dialog-overlay'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content']
+)[data-state] {
+  animation-duration: var(--motion-duration-base);
+  animation-timing-function: var(--motion-ease-out);
+}
+[data-slot='sheet-content'][data-state] {
+  animation-timing-function: var(--motion-ease-out);
+}
+[data-slot='sheet-content'][data-state='open'] {
+  animation-duration: 350ms;
+}
+[data-slot='sheet-content'][data-state='closed'] {
+  animation-duration: var(--motion-duration-base);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    [data-slot='dialog-overlay'],
+    [data-slot='sheet-overlay'],
+    [data-slot='alert-dialog-overlay'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content']
+  )[data-state] {
+    animation-duration: 1ms;
+  }
+}

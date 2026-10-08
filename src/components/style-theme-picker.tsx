@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { LayoutGroup, LazyMotion, m } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { loadLayoutFeatures, spring, startThemeTransition } from '@/lib/motion'
 import { useTranslation } from '@/i18n/use-translation'
 import {
   DEFAULT_THEME_STYLE,
@@ -53,67 +55,87 @@ const PREVIEWS: Record<
 export function StyleThemePicker() {
   const t = useTranslation().stylePicker
   const [style, setStyle] = useState<ThemeStyle>(DEFAULT_THEME_STYLE)
+  // 저장값을 읽기 전에는 정적 테두리, 읽은 뒤부터 움직이는 선택 표시(color-theme-picker와 같은 이유).
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     setStyle(parseThemeStyle(window.localStorage.getItem(STYLE_STORAGE_KEY)))
+    setReady(true)
   }, [])
 
   function selectStyle(next: ThemeStyle) {
     setStyle(next)
+    startThemeTransition()
     applyThemeStyle(document.documentElement, next)
     window.localStorage.setItem(STYLE_STORAGE_KEY, next)
   }
 
   return (
-    <div className="grid grid-cols-4 gap-3">
-      {THEME_STYLES.map((key) => {
-        const preview = PREVIEWS[key]
-        const selected = style === key
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => selectStyle(key)}
-            aria-pressed={selected}
-            className={cn(
-              'flex flex-col gap-2 rounded-lg border bg-card p-2 text-left transition-colors',
-              selected
-                ? 'border-primary ring-2 ring-primary/30'
-                : 'hover:border-foreground/30',
-            )}
-          >
-            <span
-              aria-hidden="true"
-              className="flex h-14 overflow-hidden rounded-md border"
-              style={{ background: 'oklch(0.955 0.006 90)' }}
-            >
-              <span
-                className="w-1/4"
-                style={{ background: 'oklch(0.21 0.004 90)' }}
-              />
-              <span className="flex flex-1 items-center p-2">
+    <LazyMotion features={loadLayoutFeatures} strict>
+      <LayoutGroup id="style-theme-picker">
+        <div className="grid grid-cols-4 gap-3">
+          {THEME_STYLES.map((key) => {
+            const preview = PREVIEWS[key]
+            const selected = style === key
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => selectStyle(key)}
+                aria-pressed={selected}
+                className={cn(
+                  'relative flex flex-col gap-2 rounded-lg border bg-card p-2 text-left transition-colors',
+                  selected
+                    ? !ready && 'border-primary ring-2 ring-primary/30'
+                    : 'hover:border-foreground/30',
+                )}
+              >
+                {selected && ready && (
+                  <m.span
+                    layoutId="selection"
+                    aria-hidden="true"
+                    transition={spring}
+                    className="pointer-events-none absolute -inset-px rounded-lg border border-primary ring-2 ring-primary/30"
+                  />
+                )}
                 <span
-                  className="w-full border px-2 py-1 text-xs leading-tight"
-                  style={{
-                    background: 'oklch(0.988 0.003 90)',
-                    borderRadius: preview.radius,
-                    borderColor: preview.border,
-                    boxShadow: preview.shadow,
-                    fontFamily: preview.font,
-                    color: 'oklch(0.2 0.006 90)',
-                  }}
+                  aria-hidden="true"
+                  className="flex h-14 overflow-hidden rounded-md border"
+                  style={{ background: 'oklch(0.955 0.006 90)' }}
                 >
-                  가나다 Aa
+                  <span
+                    className="w-1/4"
+                    style={{ background: 'oklch(0.21 0.004 90)' }}
+                  />
+                  <span className="flex flex-1 items-center p-2">
+                    <span
+                      className="w-full border px-2 py-1 text-xs leading-tight"
+                      style={{
+                        background: 'oklch(0.988 0.003 90)',
+                        borderRadius: preview.radius,
+                        borderColor: preview.border,
+                        boxShadow: preview.shadow,
+                        fontFamily: preview.font,
+                        color: 'oklch(0.2 0.006 90)',
+                      }}
+                    >
+                      가나다 Aa
+                    </span>
+                  </span>
                 </span>
-              </span>
-            </span>
-            <span className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold">{STYLE_NAMES[key]}</span>
-              <span className="text-xs text-muted-foreground">{t[key]}</span>
-            </span>
-          </button>
-        )
-      })}
-    </div>
+                <span className="flex flex-col gap-0.5">
+                  <span className="text-sm font-semibold">
+                    {STYLE_NAMES[key]}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t[key]}
+                  </span>
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </LayoutGroup>
+    </LazyMotion>
   )
 }

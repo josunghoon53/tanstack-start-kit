@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check } from 'lucide-react'
+import { LayoutGroup, LazyMotion, m } from 'motion/react'
 import { cn } from '@/lib/utils'
+import {
+  loadLayoutFeatures,
+  scaleIn,
+  spring,
+  startThemeTransition,
+} from '@/lib/motion'
 import { useTranslation } from '@/i18n/use-translation'
 import {
   COLOR_STORAGE_KEY,
@@ -28,14 +35,19 @@ type Option = {
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
   const [color, setColor] = useState<ThemeColor | null>(null)
+  // 저장값을 읽기 전(SSR·첫 렌더)에는 정적 테두리로 표시하고, 읽은 뒤부터 움직이는 선택 표시를 쓴다.
+  // 그래야 페이지를 열자마자 기본 카드 → 저장된 카드로 표시가 미끄러지지 않는다.
+  const [ready, setReady] = useState(false)
   const refs = useRef<Array<HTMLButtonElement | null>>([])
 
   useEffect(() => {
     setColor(parseThemeColor(window.localStorage.getItem(COLOR_STORAGE_KEY)))
+    setReady(true)
   }, [])
 
   function selectColor(next: ThemeColor | null) {
     setColor(next)
+    startThemeTransition()
     applyThemeColor(document.documentElement, next)
     if (next === null) {
       window.localStorage.removeItem(COLOR_STORAGE_KEY)
@@ -77,55 +89,76 @@ export function ColorThemePicker() {
     refs.current[next]?.focus()
   }
 
+  // 선택 테두리는 layoutId를 공유하는 m.span 하나라, 고르면 이전 카드에서 새 카드로 미끄러져 옮겨간다.
+  // layoutId에는 레이아웃 기능(domMax)이 필요해서 이 화면에서만 지연 로드한다.
   return (
-    <div
-      role="radiogroup"
-      aria-label={t.groupLabel}
-      className="grid grid-cols-4 gap-3"
-    >
-      {options.map((item, index) => {
-        const selected = index === selectedIndex
-        return (
-          <button
-            key={item.key ?? 'default'}
-            ref={(element) => {
-              refs.current[index] = element
-            }}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            tabIndex={selected ? 0 : -1}
-            onClick={() => selectColor(item.key)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            className={cn(
-              'flex flex-col gap-2 rounded-lg border bg-card p-2 text-left transition-colors',
-              selected
-                ? 'border-foreground ring-2 ring-foreground/20'
-                : 'hover:border-foreground/30',
-            )}
-          >
-            <span
-              aria-hidden="true"
-              className="relative flex h-10 overflow-hidden rounded-md border"
-            >
-              {item.swatches.map((swatch, swatchIndex) => (
+    <LazyMotion features={loadLayoutFeatures} strict>
+      <LayoutGroup id="color-theme-picker">
+        <div
+          role="radiogroup"
+          aria-label={t.groupLabel}
+          className="grid grid-cols-4 gap-3"
+        >
+          {options.map((item, index) => {
+            const selected = index === selectedIndex
+            return (
+              <button
+                key={item.key ?? 'default'}
+                ref={(element) => {
+                  refs.current[index] = element
+                }}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => selectColor(item.key)}
+                onKeyDown={(event) => handleKeyDown(event, index)}
+                className={cn(
+                  'relative flex flex-col gap-2 rounded-lg border bg-card p-2 text-left transition-colors',
+                  selected
+                    ? !ready && 'border-foreground ring-2 ring-foreground/20'
+                    : 'hover:border-foreground/30',
+                )}
+              >
+                {selected && ready && (
+                  <m.span
+                    layoutId="selection"
+                    aria-hidden="true"
+                    transition={spring}
+                    className="pointer-events-none absolute -inset-px rounded-lg border border-foreground ring-2 ring-foreground/20"
+                  />
+                )}
                 <span
-                  key={swatchIndex}
-                  title={roleLabels[swatchIndex]}
-                  className={swatchIndex === 0 ? 'w-1/2' : 'w-1/4'}
-                  style={{ background: swatch }}
-                />
-              ))}
-              {selected && (
-                <span className="absolute top-1 left-1 flex size-5 items-center justify-center rounded-full bg-white text-black shadow-sm">
-                  <Check className="size-3.5" strokeWidth={3} />
+                  aria-hidden="true"
+                  className="relative flex h-10 overflow-hidden rounded-md border"
+                >
+                  {item.swatches.map((swatch, swatchIndex) => (
+                    <span
+                      key={swatchIndex}
+                      title={roleLabels[swatchIndex]}
+                      className={swatchIndex === 0 ? 'w-1/2' : 'w-1/4'}
+                      style={{ background: swatch }}
+                    />
+                  ))}
+                  {selected && (
+                    <m.span
+                      variants={scaleIn}
+                      initial={ready ? 'hidden' : false}
+                      animate="visible"
+                      className="absolute top-1 left-1 flex size-5 items-center justify-center rounded-full bg-white text-black shadow-sm"
+                    >
+                      <Check className="size-3.5" strokeWidth={3} />
+                    </m.span>
+                  )}
                 </span>
-              )}
-            </span>
-            <span className="truncate text-xs font-medium">{item.label}</span>
-          </button>
-        )
-      })}
-    </div>
+                <span className="truncate text-xs font-medium">
+                  {item.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </LayoutGroup>
+    </LazyMotion>
   )
 }

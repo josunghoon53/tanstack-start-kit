@@ -97,6 +97,22 @@ export function useHasMounted() {
   return mounted
 }
 
+// 테마(팔레트/스타일)를 바꾸기 직전에 부른다. <html data-theme-transition>을 잠깐 붙여
+// styles.css의 색 전환(background-color/color/border-color/fill, 250ms)을 켰다가 끈다.
+// 상시로 켜두지 않는 이유: 첫 로드와 일반 hover 전환에는 영향을 주지 않기 위해서다.
+const THEME_TRANSITION_MS = 300
+let themeTransitionTimer: ReturnType<typeof setTimeout> | undefined
+
+export function startThemeTransition(
+  root: HTMLElement = document.documentElement,
+) {
+  root.setAttribute('data-theme-transition', '')
+  clearTimeout(themeTransitionTimer)
+  themeTransitionTimer = setTimeout(() => {
+    root.removeAttribute('data-theme-transition')
+  }, THEME_TRANSITION_MS)
+}
+
 // 앱 전체에 한 번 마운트한다(__root.tsx). reducedMotion="user"라 OS의 "동작 줄이기"를
 // 켜면 transform/레이아웃 애니메이션은 즉시 끝나고 opacity만 남는다.
 export function MotionProvider({ children }: { children: ReactNode }) {
