@@ -22,6 +22,7 @@ TanStack Start 기반의 **최소 어드민 셸 킷**입니다.
 | 스타일 | Tailwind CSS v4, shadcn/ui, Radix (`radix-ui`) | CSS-first `@theme` |
 | 토스트 | `sonner` | |
 | 아이콘 | `lucide-react` | |
+| 애니메이션 | `motion` (`motion/react`) | `LazyMotion` + `m`만 사용, 규칙은 `src/lib/motion.tsx` — 아래 "애니메이션 — motion" 섹션 참고 |
 | 클래스 유틸 | `cn` (npm 패키지) | `src/lib/utils.ts`에서 재노출, 자체 구현 아님 |
 | 폼 | `react-hook-form`, `zod`, `@hookform/resolvers` | shadcn `form.tsx` 포함 |
 | 서버 상태 | `@tanstack/react-query` | 리스트 5개 + 대시보드 + 헤더 알림까지 전부 적용됨 |
@@ -47,7 +48,7 @@ pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 
 **테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
 컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
-config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 58개 테스트 파일, 431개 테스트. `vitest.config.ts`는
+config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 61개 테스트 파일, 451개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
 (예: `src/i18n/messages.test.ts`).
@@ -320,7 +321,16 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 `src/components/row-actions.tsx`
 수정은 `Dialog`, 삭제 확인은 `AlertDialog`, "보기"는 `Sheet`로 한 컴포넌트 안에서
 구성하는 게 표준 패턴. `details?: Array<{ label, value }>`를 넘기면 Sheet 안에 그
-목록을 보여준다. 같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
+목록을 정의 목록(`dl`, 왼쪽 96px 라벨 / 오른쪽 값, 옅은 둥근 박스 하나에 선 없이 행 간격으로만 구분)으로 보여준다.
+시트 구조는 헤더(제목 첫 글자 원형 + 제목 + 상태 배지, 아래 한 줄 요약) → 본문(`flex-1`) → 푸터(`삭제` ghost 위험색 · `닫기` · `수정` 주 버튼)다.
+선택 prop: `status?: { label, tone }`(리스트의 `*_STATUS_TONE`과 같은 tone, 없으면 배지 생략 — `details`에 같은 글자의 값이 있으면 그 줄도 배지로 보인다),
+`summary?: string`(제목 아래 요약, 없으면 그리지 않는다 — 일반 문구로 채우지 말 것). 요약은 `joinSummary(대표 속성, '라벨 값')`으로 만든다
+(사용자: 역할 · 가입일, 주문: 주문자 · 주문일, 상품: 카테고리 · 가격, 콘텐츠: 작성자 · 작성일).
+시트의 수정/삭제는 메뉴와 같은 다이얼로그를 연다 — 시트를 먼저 닫고 같은 렌더에서 다이얼로그를 열며(겹쳐 띄우지 않음), 다이얼로그가 닫히면 포커스는 행의 작업 버튼으로 돌아간다.
+**시트는 떠 있는 패널이다**: `ui/sheet.tsx`는 그대로 두고 `SheetContent` className으로 위·아래·오른쪽 12px 여백, 고정 폭 440px,
+스타일별 토큰 `--radius-panel`/`--shadow-panel`/`--panel-border`(스타일 radius와 별개로 떠 있는 패널은 항상 둥글다: clean 16px, soft 22px, editorial 16px, crisp 8px; 안쪽 상세 박스는 패널 반경 − 4px)를 준다. 여백 때문에 슬라이드 시작/끝이 화면에 남지 않도록
+`styles.css`의 `[data-floating-panel]` 규칙이 이동 거리를 늘린다. 내용은 `riseIn`(8px, 30ms 간격)으로 헤더 → 줄 → 푸터 순서로 나타난다.
+같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
 테이블 행을 클릭했을 때 인라인 아코디언으로도 똑같이 펼쳐 보여줄 수 있다 — 한 번
 필드를 정의해서 Sheet와 인라인 확장 양쪽에 재사용하는 게 패턴이다(`orders.tsx` 등 참고).
 행 아코디언은 `useAccordionGroup`(한 번에 하나만 펼쳐짐)으로 열림 상태를 관리하고,
@@ -447,6 +457,49 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
   배경이 그대로 드러나 카드가 붕 떠 보인다 — 예전에 이것 때문에 "박스가 푸터 있는 데까지
   길게 있는 게 낫다"는 피드백을 받고 전부 고쳤다. 대시보드(`index.tsx`)/분석(`analytics.tsx`)처럼
   카드가 여러 개로 나뉜 페이지는 이 규칙 대상이 아니다 — 개별 카드에 `flex-1`을 억지로 주지 말 것.
+
+---
+
+## 애니메이션 — motion
+
+UI 애니메이션은 `motion`(framer-motion 후속, `motion/react`) 하나로 통일한다. 짧고 차분하게 — 150~450ms, 튀는 스프링 없음.
+설계 메모: `docs/superpowers/specs/2026-10-08-motion-design.md`.
+
+- **`LazyMotion` + `m`만 쓴다.** `__root.tsx`의 `MotionProvider`(`src/lib/motion.tsx`)가 `LazyMotion features={domAnimation} strict`와
+  `MotionConfig reducedMotion="user"`를 건다. `strict`라서 `motion.div`를 쓰면 런타임 에러가 난다 — 항상 `m.div`, 컴포넌트는 `m.create(Card)`.
+  레이아웃 애니메이션(`layout`/`layoutId`)이 필요한 곳만 `<LazyMotion features={loadLayoutFeatures} strict>`로 감싸 `domMax`를 지연 로드한다
+  (선택기 2종, 리스트 테이블). 메인 번들에 `domMax`를 넣지 말 것.
+- **값은 `src/lib/motion.tsx`의 토큰을 쓴다**: `duration.fast/base/slow`(0.15/0.25/0.45초, 카운트업만 `count` 0.8초), `ease.out`/`ease.inOut`,
+  작은 `spring`, 형제 간격 `STAGGER`(60ms)·`STAGGER_TIGHT`(30ms), 변형 `fadeUp`(custom=순번)/`riseIn`(custom=순번, 행 보기 시트)/`fade`/`scaleIn`/`staggerContainer()`. 숫자를 컴포넌트에 직접 박지 말 것.
+  CSS 쪽 같은 값은 `styles.css`의 `--motion-ease-out`, `--motion-duration-*`.
+- **동작 줄이기**: `reducedMotion="user"`가 transform/레이아웃을 즉시 끝낸다. `animate()`를 직접 부르는 곳(`AnimatedNumber`)과
+  opacity·pathLength처럼 transform이 아닌 애니메이션은 `useReducedMotion()`으로 직접 끈다(`transition`만 바꾸고 렌더 결과는 바꾸지 않는다 — 아래 SSR 규칙).
+- **SSR 규칙**: 서버 렌더와 하이드레이션 첫 렌더는 같은 결과여야 한다. `useReducedMotion()`·`window` 같은 클라이언트 값으로 `initial`이나 글자를
+  분기하지 말 것(불일치 경고). "첫 화면엔 애니메이션 없이, 이후 변화에만"이 필요하면 `useHasMounted()`로 `initial={false}`를 고른다(`PageTransition`).
+  대시보드 진입처럼 첫 화면부터 애니메이션하는 곳은 SSR도 `initial` 상태(투명)로 나가고 하이드레이션 뒤 재생된다 — JS가 늦으면 그동안 카드가 안 보이니
+  이런 연출은 대시보드처럼 꼭 필요한 곳에만 쓴다. `AnimatedNumber`는 SSR에서 최종 글자를 내보내고 페인트 전에 0으로 되돌린다.
+- **페이지 전환은 진입 전용이다** (`src/components/page-transition.tsx`): 렌더된 마지막 매치의 경로를 key로 쓰는 `m.div`가 opacity 0→1, y 8→0(220ms).
+  **`Outlet`(children)을 `AnimatePresence`로 감싸지 말고 퇴장 애니메이션도 넣지 말 것** — 나가는 라우트가 새 라우터 상태로 다시 렌더링돼
+  내용이 바뀌거나 멈춰 보이는 문제가 있다. 대기 화면(`defaultPendingComponent`)이 떠 있는 상태로 바뀐 경로와 첫(SSR) 렌더는 애니메이션하지 않는다.
+  래퍼는 `flex flex-1 flex-col gap-4`라 위 레이아웃 규칙(`min-h-full shrink-0` 래퍼, 페이지 `Card className="flex-1"`)이 그대로 동작한다.
+  사이드바·헤더·푸터는 애니메이션하지 않는다.
+- **다이얼로그/시트/알림 다이얼로그는 CSS 그대로다.** Radix의 `data-[state]` + `tw-animate-css`를 쓰고 motion으로 다시 만들지 않는다(`forceMount` 금지).
+  `styles.css` 끝에서 오버레이 블러(2px)와 길이·이징만 토큰에 맞춘다. `ui/*` 파일은 생성된 형태로 둔다.
+- **테마 전환**: 팔레트/스타일을 바꿀 때 `startThemeTransition()`이 `<html data-theme-transition>`을 300ms 붙여 사이드바·버튼·링크·배지·탭·막대의
+  색만 250ms로 바꾼다(`*` 전체 전환 금지). 초기화 스크립트로 정해지는 첫 로드에는 이 속성이 없어서 애니메이션되지 않는다. 새 선택 UI도 같은 함수를 부를 것.
+- **리스트 테이블 행** (`src/components/animated-table-row.tsx`): 리스트 페이지는 `TableBody` 대신 `AnimatedTableBody layoutKey={pageItems.map((x) => x.id).join('|')}`,
+  행은 `TableRow` 대신 `AnimatedTableRow`(key는 바깥 `Fragment`/행)를 쓴다. 검색·필터·정렬·페이지가 바뀌면 남는 행이 `layout="position"`으로 이동하고,
+  새 행은 페이드인, 빠지는 행은 `AnimatePresence`로 짧게 사라진다. 표 칸 너비가 무너지므로 `mode="popLayout"`은 쓰지 않는다.
+  **아코디언 보정**: `layoutDependency`가 `layoutKey`라서 `TableRowDetail`을 펼치거나 접을 때(목록 동일)는 행이 움직이지 않는다 — 이게 없으면 펼친 상세 위로
+  아래 행들이 미끄러져 겹친다. 같은 이유로 목록이 바뀔 때만 위치를 재서 타이핑 중 비용도 작다. 한 페이지(≤10행) 테이블에만 쓰고, 수백 행 테이블에는 쓰지 말 것.
+- **테스트**: `src/test/setup.ts`가 `MotionGlobalConfig.skipAnimations = true`로 모든 애니메이션을 즉시 끝낸다. 시간에 따른 중간 값을 검증해야 하면
+  그 테스트 안에서만 `false`로 바꾸고 `afterEach`에서 되돌린다(`animated-number.test.tsx`).
+- **새 애니메이션 컴포넌트 추가 방법**: (1) `m.*`/`m.create()`로 만들고 (2) `variants`/`transition`은 `src/lib/motion.tsx`에서 가져오고
+  (부족하면 거기에 토큰·변형을 추가) (3) SSR 첫 렌더가 서버와 같은지, 동작 줄이기에서 즉시 끝나는지 확인하고 (4) 테스트는 skip 상태에서 최종 결과를 검증한다.
+- **dev 콘솔 되먹임 주의**: OS "동작 줄이기"가 켜진 기기에서는 motion이 개발 모드에서 경고 한 줄("You have Reduced Motion enabled…")을 찍는다.
+  Vite 8의 `server.forwardConsole`(브라우저 → 터미널)과 TanStack Devtools 콘솔 파이프(터미널 ↔ 브라우저)가 같이 켜져 있으면 이 한 줄이
+  서로 되먹임되며 무한히 불어나 dev 로그가 수 GB가 된다(실제로 9.5GB까지 감). 그래서 `vite.config.ts`에서 `forwardConsole: false`로 끊어뒀다 — 되돌리지 말 것.
+- 보류: 칸반 드래그, 퇴장 전환, 필터 시 카드 재배치(`layout`) — 필요해지면 설계 메모의 "보류" 항목부터 볼 것.
 
 ---
 

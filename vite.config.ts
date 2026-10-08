@@ -17,6 +17,13 @@ const config = defineConfig(({ mode }) => {
 
   return {
     resolve: { tsconfigPaths: true },
+    server: {
+      // Vite 8의 브라우저 콘솔 → 터미널 전달을 끈다. TanStack Devtools의 콘솔 파이프(터미널 ↔ 브라우저)와
+      // 같이 켜져 있으면 경고 한 줄이 "[vite] (client) [console.warn] [Server] ..."로 서로 되먹임되며
+      // 무한히 불어나 dev 로그가 수 GB가 된다(동작 줄이기를 켠 기기에서 motion의 개발용 경고 한 줄로 재현).
+      // 브라우저 로그는 Devtools 파이프가 이미 "[Client]"로 터미널에 찍어준다.
+      forwardConsole: false,
+    },
     plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
   }
 })

@@ -204,6 +204,10 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 600;
   --shadow-card: 0 1px 2px oklch(0.3 0.01 90 / 0.06);
+  /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
+  --shadow-panel: 0 24px 48px -16px oklch(0.3 0.01 90 / 0.14);
+  --panel-border: oklch(0.3 0.01 90 / 0.08);
+  --radius-panel: 1rem;
   --card-border: var(--border);
   --input: oklch(0.86 0.006 90);
 }
@@ -215,6 +219,10 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 700;
   --shadow-card: 0 8px 24px -16px oklch(0.35 0.02 90 / 0.35);
+  /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
+  --shadow-panel: 0 28px 56px -18px oklch(0.35 0.02 90 / 0.18);
+  --panel-border: oklch(0.35 0.02 90 / 0.07);
+  --radius-panel: 1.375rem;
   --card-border: var(--border);
   --input: oklch(0.86 0.006 90);
 }
@@ -227,6 +235,10 @@ button:not(:disabled),
   --weight-body: 400;
   --weight-title: 800;
   --shadow-card: none;
+  /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
+  --shadow-panel: 0 24px 48px -16px oklch(0.2 0.006 90 / 0.14);
+  --panel-border: oklch(0.2 0.006 90 / 0.12);
+  --radius-panel: 1rem; /* 카드는 각져도 떠 있는 패널은 둥글게(입체감) */
   --card-border: var(--border);
   --input: oklch(0.2 0.006 90);
 }
@@ -239,6 +251,10 @@ button:not(:disabled),
   --weight-body: 500;
   --weight-title: 800;
   --shadow-card: none;
+  /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
+  --shadow-panel: 0 24px 48px -16px oklch(0.22 0.004 90 / 0.14);
+  --panel-border: oklch(0.22 0.004 90 / 0.25);
+  --radius-panel: 0.5rem; /* crisp: 각진 느낌을 남긴 약한 둥글기 */
   --card-border: oklch(0.22 0.004 90);
   --input: oklch(0.22 0.004 90);
 }
@@ -414,5 +430,80 @@ button:not(:disabled),
   td,
   th {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ── 모션 토큰(CSS 쪽) ─────────────────────────────────────────────
+   src/lib/motion.tsx의 duration/ease와 같은 값이다. 한쪽을 바꾸면 같이 바꿀 것. */
+:root {
+  --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-duration-fast: 150ms;
+  --motion-duration-base: 250ms;
+}
+
+/* 팔레트/스타일을 바꿀 때만 잠깐(<html data-theme-transition>, startThemeTransition()이 약 300ms 붙였다 뗀다)
+   색이 부드럽게 바뀐다. 첫 로드(초기화 스크립트)에는 이 속성이 없어서 애니메이션되지 않는다.
+   전체(*)가 아니라 팔레트가 닿는 곳만 고른다: 사이드바 면·글자·활성 메뉴, --primary 버튼·링크·배지·탭, 차트 막대. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme-transition]
+    :is(
+      [data-slot^='sidebar'],
+      [data-slot='button'],
+      [data-slot='badge'],
+      [data-slot='tabs-trigger'],
+      [role='tab'],
+      a,
+      [data-bar]
+    ) {
+    transition-property: background-color, color, border-color, fill, stroke;
+    transition-duration: var(--motion-duration-base);
+    transition-timing-function: var(--motion-ease-out);
+  }
+}
+
+/* 다이얼로그/시트/알림 다이얼로그는 Radix의 data-[state] CSS 애니메이션을 그대로 쓴다(motion으로 다시 만들지 않는다).
+   오버레이에 옅은 블러를 더하고, 길이·이징만 모션 토큰에 맞춘다. ui/* 파일은 생성된 형태로 두고 여기서만 조정한다. */
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='alert-dialog-overlay']
+) {
+  backdrop-filter: blur(2px);
+}
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='alert-dialog-overlay'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content']
+)[data-state] {
+  animation-duration: var(--motion-duration-base);
+  animation-timing-function: var(--motion-ease-out);
+}
+[data-slot='sheet-content'][data-state] {
+  animation-timing-function: var(--motion-ease-out);
+}
+[data-slot='sheet-content'][data-state='open'] {
+  animation-duration: 350ms;
+}
+[data-slot='sheet-content'][data-state='closed'] {
+  animation-duration: var(--motion-duration-base);
+}
+/* 떠 있는 시트(row-actions.tsx, 오른쪽 여백 12px): 100%만 밀면 여백만큼 패널 가장자리와 그림자가
+   화면에 남은 채로 시작/끝나므로, 여백+그림자까지 화면 밖으로 밀어낸다. */
+[data-slot='sheet-content'][data-floating-panel][data-state] {
+  --tw-enter-translate-x: calc(100% + 3rem);
+  --tw-exit-translate-x: calc(100% + 3rem);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    [data-slot='dialog-overlay'],
+    [data-slot='sheet-overlay'],
+    [data-slot='alert-dialog-overlay'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content']
+  )[data-state] {
+    animation-duration: 1ms;
   }
 }

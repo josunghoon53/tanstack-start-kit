@@ -13,9 +13,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
+import {
+  AnimatedTableBody,
+  AnimatedTableRow,
+} from '@/components/animated-table-row'
 import { TableBulkActionsBar } from '@/components/table-bulk-actions-bar'
 import { TableMultiSelectFilter } from '@/components/table-multi-select-filter'
 import { TablePagination } from '@/components/table-pagination'
@@ -29,7 +33,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -247,7 +250,9 @@ function Users() {
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <AnimatedTableBody
+            layoutKey={pageItems.map((user) => user.email).join('|')}
+          >
             {pageItems.map((user) => {
               const details = [
                 { label: t.users.columns.role, value: user.role },
@@ -258,7 +263,7 @@ function Users() {
 
               return (
                 <Fragment key={user.email}>
-                  <TableRow
+                  <AnimatedTableRow
                     className="cursor-pointer"
                     onClick={() => setOpen(user.email, !open)}
                   >
@@ -300,9 +305,20 @@ function Users() {
                     </TableCell>
                     <TableCell>{user.joinedAt}</TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={user.name} details={details} />
+                      <RowActions
+                        label={user.name}
+                        details={details}
+                        summary={joinSummary(
+                          user.role,
+                          `${t.users.columns.joinedAt} ${user.joinedAt}`,
+                        )}
+                        status={{
+                          label: user.status,
+                          tone: USER_STATUS_TONE[user.status],
+                        }}
+                      />
                     </TableCell>
-                  </TableRow>
+                  </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={7} details={details} />}
                 </Fragment>
               )
@@ -317,7 +333,7 @@ function Users() {
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
+          </AnimatedTableBody>
         </Table>
         <TablePagination
           page={page}

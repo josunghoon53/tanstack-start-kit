@@ -13,6 +13,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import appCss from '../styles.css?url'
 import { AppSidebar } from '../components/app-sidebar'
 import { NotFound } from '../components/not-found'
+import { PageTransition } from '../components/page-transition'
 import { SiteFooter } from '../components/site-footer'
 import { SiteHeader } from '../components/site-header'
 import { SidebarInset, SidebarProvider } from '../components/ui/sidebar'
@@ -20,6 +21,7 @@ import { Toaster } from '../components/ui/sonner'
 import { getCurrentUserFn } from '../server/auth'
 import { notificationsQueryOptions } from '../server/notifications'
 import { THEME_INIT_SCRIPT } from '../config/theme'
+import { MotionProvider } from '../lib/motion'
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -82,22 +84,24 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere]">
-        {isLoginPage ? (
-          children
-        ) : (
-          <SidebarProvider className="h-svh overflow-hidden">
-            <AppSidebar />
-            <SidebarInset className="overflow-hidden">
-              <SiteHeader />
-              <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-background">
-                <div className="flex min-h-full min-w-5xl shrink-0 flex-col gap-4 p-4">
-                  {children}
+        <MotionProvider>
+          {isLoginPage ? (
+            children
+          ) : (
+            <SidebarProvider className="h-svh overflow-hidden">
+              <AppSidebar />
+              <SidebarInset className="overflow-hidden">
+                <SiteHeader />
+                <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-background">
+                  <div className="flex min-h-full min-w-5xl shrink-0 flex-col gap-4 p-4">
+                    <PageTransition>{children}</PageTransition>
+                  </div>
+                  <SiteFooter />
                 </div>
-                <SiteFooter />
-              </div>
-            </SidebarInset>
-          </SidebarProvider>
-        )}
+              </SidebarInset>
+            </SidebarProvider>
+          )}
+        </MotionProvider>
         <Toaster position="top-center" />
         <TanStackDevtools
           config={{

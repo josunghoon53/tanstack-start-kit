@@ -14,9 +14,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
+import {
+  AnimatedTableBody,
+  AnimatedTableRow,
+} from '@/components/animated-table-row'
 import { TableBulkActionsBar } from '@/components/table-bulk-actions-bar'
 import { TableDateRangeFilter } from '@/components/table-date-range-filter'
 import { TablePagination } from '@/components/table-pagination'
@@ -30,7 +34,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -244,7 +247,9 @@ function Contents() {
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <AnimatedTableBody
+            layoutKey={pageItems.map((content) => content.title).join('|')}
+          >
             {pageItems.map((content) => {
               const details = [
                 { label: t.contents.columns.author, value: content.author },
@@ -255,7 +260,7 @@ function Contents() {
 
               return (
                 <Fragment key={content.title}>
-                  <TableRow
+                  <AnimatedTableRow
                     className="cursor-pointer"
                     onClick={() => setOpen(content.title, !open)}
                   >
@@ -292,9 +297,20 @@ function Contents() {
                     </TableCell>
                     <TableCell>{content.date}</TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={content.title} details={details} />
+                      <RowActions
+                        label={content.title}
+                        details={details}
+                        summary={joinSummary(
+                          content.author,
+                          `${t.contents.columns.date} ${content.date}`,
+                        )}
+                        status={{
+                          label: content.status,
+                          tone: CONTENT_STATUS_TONE[content.status],
+                        }}
+                      />
                     </TableCell>
-                  </TableRow>
+                  </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={7} details={details} />}
                 </Fragment>
               )
@@ -309,7 +325,7 @@ function Contents() {
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
+          </AnimatedTableBody>
         </Table>
         <TablePagination
           page={page}

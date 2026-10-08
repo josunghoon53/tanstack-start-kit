@@ -133,7 +133,6 @@ export const messages = {
     rowActions: {
       openMenu: (label: string) => `${label} 작업 열기`,
       actionsLabel: '작업',
-      viewSheetDescription: '간단한 정보를 확인하세요.',
       editDialogTitle: (label: string) => `${label} 수정`,
       editDialogDescription: '이름을 변경하고 저장하세요.',
       nameLabel: '이름',
@@ -558,7 +557,6 @@ export const messages = {
     rowActions: {
       openMenu: (label: string) => `Open actions for ${label}`,
       actionsLabel: 'Actions',
-      viewSheetDescription: 'A quick look at the details.',
       editDialogTitle: (label: string) => `Edit ${label}`,
       editDialogDescription: 'Change the name and save.',
       nameLabel: 'Name',
