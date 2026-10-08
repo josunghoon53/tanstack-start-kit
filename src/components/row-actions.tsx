@@ -1,5 +1,5 @@
 import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import {
   AlertDialog,
@@ -100,6 +100,9 @@ export function RowActions({
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [editValue, setEditValue] = useState(label)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  // 시트의 수정/삭제 버튼으로 닫을 때는 포커스를 트리거로 돌리지 않는다(바로 다이얼로그가 받는다).
+  const handingOffRef = useRef(false)
 
   function handleSaveEdit() {
     setEditOpen(false)
@@ -110,11 +113,34 @@ export function RowActions({
     toast.success(t.rowActions.deleteSuccessToast(label))
   }
 
+  function openEdit() {
+    setEditValue(label)
+    setEditOpen(true)
+  }
+
+  // 시트 → 다이얼로그: 시트를 먼저 닫고 같은 렌더에서 다이얼로그를 연다(겹쳐 띄우지 않는다).
+  // 다이얼로그가 닫히면 포커스는 행의 작업 버튼으로 돌아간다(returnFocusToTrigger).
+  function handOff(open: () => void) {
+    handingOffRef.current = true
+    setViewOpen(false)
+    open()
+  }
+
+  function returnFocusToTrigger(event: Event) {
+    event.preventDefault()
+    triggerRef.current?.focus()
+  }
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8">
+          <Button
+            ref={triggerRef}
+            variant="ghost"
+            size="icon"
+            className="size-8"
+          >
             <span className="sr-only">{t.rowActions.openMenu(label)}</span>
             <MoreHorizontal />
           </Button>
@@ -125,12 +151,7 @@ export function RowActions({
             <Eye />
             {t.common.view}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => {
-              setEditValue(label)
-              setEditOpen(true)
-            }}
-          >
+          <DropdownMenuItem onSelect={openEdit}>
             <Pencil />
             {t.common.edit}
           </DropdownMenuItem>
@@ -146,8 +167,20 @@ export function RowActions({
       </DropdownMenu>
 
       <Sheet open={viewOpen} onOpenChange={setViewOpen}>
-        <SheetContent {...(summary ? {} : { 'aria-describedby': undefined })}>
-          <SheetHeader className="gap-2 p-6 pr-12">
+        <SheetContent
+          // ui/sheet 기본 폭(w-3/4 sm:max-w-sm)을 고정 440px로 덮는다. sm:은 생성된 기본값을 지우기 위한 것뿐이다.
+          className="w-[440px] gap-0 sm:max-w-none"
+          onCloseAutoFocus={(event) => {
+            if (handingOffRef.current) {
+              handingOffRef.current = false
+              event.preventDefault()
+              return
+            }
+            returnFocusToTrigger(event)
+          }}
+          {...(summary ? {} : { 'aria-describedby': undefined })}
+        >
+          <SheetHeader className="gap-2 border-b p-6 pr-12">
             <SheetTitle className="text-xl leading-tight [font-weight:var(--weight-title)]">
               {label}
             </SheetTitle>
@@ -161,21 +194,33 @@ export function RowActions({
             )}
             {summary && <SheetDescription>{summary}</SheetDescription>}
           </SheetHeader>
-          {details && details.length > 0 && (
-            <div className="px-6">
-              <DetailList details={details} />
+          <div className="flex-1 overflow-y-auto px-6 py-2">
+            {details && details.length > 0 && <DetailList details={details} />}
+          </div>
+          <SheetFooter className="mt-0 flex-row items-center gap-2 border-t px-6 py-4">
+            <Button
+              variant="ghost"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => handOff(() => setDeleteOpen(true))}
+            >
+              <Trash2 />
+              {t.common.delete}
+            </Button>
+            <div className="ml-auto flex items-center gap-2">
+              <SheetClose asChild>
+                <Button variant="outline">{t.common.close}</Button>
+              </SheetClose>
+              <Button onClick={() => handOff(openEdit)}>
+                <Pencil />
+                {t.common.edit}
+              </Button>
             </div>
-          )}
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="outline">{t.common.close}</Button>
-            </SheetClose>
           </SheetFooter>
         </SheetContent>
       </Sheet>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+        <DialogContent onCloseAutoFocus={returnFocusToTrigger}>
           <DialogHeader>
             <DialogTitle>{t.rowActions.editDialogTitle(label)}</DialogTitle>
             <DialogDescription>
@@ -203,7 +248,7 @@ export function RowActions({
       </Dialog>
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent onCloseAutoFocus={returnFocusToTrigger}>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {t.rowActions.deleteDialogTitle(label)}
