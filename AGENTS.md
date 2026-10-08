@@ -487,6 +487,9 @@ UI 애니메이션은 `motion`(framer-motion 후속, `motion/react`) 하나로 �
   그 테스트 안에서만 `false`로 바꾸고 `afterEach`에서 되돌린다(`animated-number.test.tsx`).
 - **새 애니메이션 컴포넌트 추가 방법**: (1) `m.*`/`m.create()`로 만들고 (2) `variants`/`transition`은 `src/lib/motion.tsx`에서 가져오고
   (부족하면 거기에 토큰·변형을 추가) (3) SSR 첫 렌더가 서버와 같은지, 동작 줄이기에서 즉시 끝나는지 확인하고 (4) 테스트는 skip 상태에서 최종 결과를 검증한다.
+- **dev 콘솔 되먹임 주의**: OS "동작 줄이기"가 켜진 기기에서는 motion이 개발 모드에서 경고 한 줄("You have Reduced Motion enabled…")을 찍는다.
+  Vite 8의 `server.forwardConsole`(브라우저 → 터미널)과 TanStack Devtools 콘솔 파이프(터미널 ↔ 브라우저)가 같이 켜져 있으면 이 한 줄이
+  서로 되먹임되며 무한히 불어나 dev 로그가 수 GB가 된다(실제로 9.5GB까지 감). 그래서 `vite.config.ts`에서 `forwardConsole: false`로 끊어뒀다 — 되돌리지 말 것.
 - 보류: 칸반 드래그, 퇴장 전환, 필터 시 카드 재배치(`layout`) — 필요해지면 설계 메모의 "보류" 항목부터 볼 것.
 
 ---
