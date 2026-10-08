@@ -1,5 +1,6 @@
 import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { m, useReducedMotion } from 'motion/react'
 import { toast } from 'sonner'
 import {
   AlertDialog,
@@ -43,6 +44,7 @@ import {
 import { StatusDot } from '@/components/status-dot'
 import type { StatusTone } from '@/components/status-dot'
 import { useTranslation } from '@/i18n/use-translation'
+import { riseIn } from '@/lib/motion'
 
 export interface RowDetail {
   label: string
@@ -64,19 +66,36 @@ export function joinSummary(
     .join(' · ')
 }
 
+const MotionSheetHeader = m.create(SheetHeader)
+const MotionSheetFooter = m.create(SheetFooter)
+
+// 시트 내용 진입: 헤더(0) → 상세 줄(1..n) → 푸터(n+1) 순서로 30ms씩.
+// 시트는 열릴 때만(클라이언트에서) 렌더되므로 동작 줄이기면 initial={false}로 바로 보여도 SSR 불일치가 없다.
+function useEnterProps() {
+  const reduceMotion = useReducedMotion()
+  return {
+    variants: riseIn,
+    initial: reduceMotion ? false : ('hidden' as const),
+    animate: 'visible' as const,
+  }
+}
+
 // "보기" 시트 본문: 왼쪽 라벨(고정 폭) / 오른쪽 값, 행 사이 얇은 구분선.
 function DetailList({ details }: { details: Array<RowDetail> }) {
+  const enter = useEnterProps()
   return (
     <dl className="divide-y">
-      {details.map((detail) => (
-        <div
+      {details.map((detail, index) => (
+        <m.div
+          {...enter}
+          custom={index + 1}
           key={detail.label}
           data-slot="row-detail"
           className="grid grid-cols-[96px_1fr] items-baseline gap-4 py-3"
         >
           <dt className="text-sm text-muted-foreground">{detail.label}</dt>
           <dd className="text-sm font-medium break-words">{detail.value}</dd>
-        </div>
+        </m.div>
       ))}
     </dl>
   )
@@ -96,6 +115,7 @@ export function RowActions({
   status?: RowStatus
 }) {
   const t = useTranslation()
+  const enter = useEnterProps()
   const [viewOpen, setViewOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -180,7 +200,11 @@ export function RowActions({
           }}
           {...(summary ? {} : { 'aria-describedby': undefined })}
         >
-          <SheetHeader className="gap-2 border-b p-6 pr-12">
+          <MotionSheetHeader
+            {...enter}
+            custom={0}
+            className="gap-2 border-b p-6 pr-12"
+          >
             <SheetTitle className="text-xl leading-tight [font-weight:var(--weight-title)]">
               {label}
             </SheetTitle>
@@ -193,11 +217,15 @@ export function RowActions({
               </span>
             )}
             {summary && <SheetDescription>{summary}</SheetDescription>}
-          </SheetHeader>
+          </MotionSheetHeader>
           <div className="flex-1 overflow-y-auto px-6 py-2">
             {details && details.length > 0 && <DetailList details={details} />}
           </div>
-          <SheetFooter className="mt-0 flex-row items-center gap-2 border-t px-6 py-4">
+          <MotionSheetFooter
+            {...enter}
+            custom={(details?.length ?? 0) + 1}
+            className="mt-0 flex-row items-center gap-2 border-t px-6 py-4"
+          >
             <Button
               variant="ghost"
               className="text-destructive hover:bg-destructive/10 hover:text-destructive"
@@ -215,7 +243,7 @@ export function RowActions({
                 {t.common.edit}
               </Button>
             </div>
-          </SheetFooter>
+          </MotionSheetFooter>
         </SheetContent>
       </Sheet>
 

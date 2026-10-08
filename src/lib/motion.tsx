@@ -32,6 +32,8 @@ export const spring = {
 
 // 형제 사이 진입 간격(초).
 export const STAGGER = 0.06
+// 시트 안 정의 목록처럼 촘촘한 줄의 진입 간격(초).
+export const STAGGER_TIGHT = 0.03
 
 export const defaultTransition: Transition = {
   duration: duration.base,
@@ -64,6 +66,21 @@ export const fadeUp: Variants = {
       duration: duration.base + 0.05,
       ease: ease.out,
       delay: staggerDelay(index),
+    },
+  }),
+}
+
+// fadeUp보다 작게(6px) 올라오며 나타남. custom={순번}마다 STAGGER_TIGHT씩 늦게 시작한다.
+// 행 보기 시트의 헤더 → 상세 줄 → 푸터 순차 진입에 쓴다.
+export const riseIn: Variants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: (index: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: duration.base,
+      ease: ease.out,
+      delay: index * STAGGER_TIGHT,
     },
   }),
 }
