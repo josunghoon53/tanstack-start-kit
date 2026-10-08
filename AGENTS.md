@@ -48,7 +48,7 @@ pnpm dlx shadcn@latest add <component>    # shadcn 컴포넌트 추가
 
 **테스트**: `vitest` + `@testing-library/react`(유닛/컴포넌트)로 기존 기능 전체(훅, 순수
 컴포넌트, 라우터/사이드바 의존 컴포넌트, 5개 리스트 페이지 + 대시보드 + 로그인/설정 페이지,
-config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 61개 테스트 파일, 445개 테스트. `vitest.config.ts`는
+config 데이터 정합성, LLM 러너 페이지·사용량 패널)를 커버해뒀다 — 61개 테스트 파일, 451개 테스트. `vitest.config.ts`는
 `vite.config.ts`와 별도 파일이다 — `tanstackStart()`/`devtools()` 플러그인은 개발 서버/빌드
 전용이라 테스트에는 불필요하다. 테스트 파일은 `*.test.ts`/`*.test.tsx`로 테스트 대상 옆에 둔다
 (예: `src/i18n/messages.test.ts`).
@@ -321,7 +321,16 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 `src/components/row-actions.tsx`
 수정은 `Dialog`, 삭제 확인은 `AlertDialog`, "보기"는 `Sheet`로 한 컴포넌트 안에서
 구성하는 게 표준 패턴. `details?: Array<{ label, value }>`를 넘기면 Sheet 안에 그
-목록을 보여준다. 같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
+목록을 정의 목록(`dl`, 왼쪽 96px 라벨 / 오른쪽 값, 옅은 둥근 박스 하나에 선 없이 행 간격으로만 구분)으로 보여준다.
+시트 구조는 헤더(제목 첫 글자 원형 + 제목 + 상태 배지, 아래 한 줄 요약) → 본문(`flex-1`) → 푸터(`삭제` ghost 위험색 · `닫기` · `수정` 주 버튼)다.
+선택 prop: `status?: { label, tone }`(리스트의 `*_STATUS_TONE`과 같은 tone, 없으면 배지 생략 — `details`에 같은 글자의 값이 있으면 그 줄도 배지로 보인다),
+`summary?: string`(제목 아래 요약, 없으면 그리지 않는다 — 일반 문구로 채우지 말 것). 요약은 `joinSummary(대표 속성, '라벨 값')`으로 만든다
+(사용자: 역할 · 가입일, 주문: 주문자 · 주문일, 상품: 카테고리 · 가격, 콘텐츠: 작성자 · 작성일).
+시트의 수정/삭제는 메뉴와 같은 다이얼로그를 연다 — 시트를 먼저 닫고 같은 렌더에서 다이얼로그를 열며(겹쳐 띄우지 않음), 다이얼로그가 닫히면 포커스는 행의 작업 버튼으로 돌아간다.
+**시트는 떠 있는 패널이다**: `ui/sheet.tsx`는 그대로 두고 `SheetContent` className으로 위·아래·오른쪽 12px 여백, 고정 폭 440px,
+스타일별 토큰 `--radius-panel`/`--shadow-panel`/`--panel-border`(crisp·editorial은 각진 0)를 준다. 여백 때문에 슬라이드 시작/끝이 화면에 남지 않도록
+`styles.css`의 `[data-floating-panel]` 규칙이 이동 거리를 늘린다. 내용은 `riseIn`(8px, 30ms 간격)으로 헤더 → 줄 → 푸터 순서로 나타난다.
+같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
 테이블 행을 클릭했을 때 인라인 아코디언으로도 똑같이 펼쳐 보여줄 수 있다 — 한 번
 필드를 정의해서 Sheet와 인라인 확장 양쪽에 재사용하는 게 패턴이다(`orders.tsx` 등 참고).
 행 아코디언은 `useAccordionGroup`(한 번에 하나만 펼쳐짐)으로 열림 상태를 관리하고,
@@ -461,7 +470,7 @@ UI 애니메이션은 `motion`(framer-motion 후속, `motion/react`) 하나로 �
   레이아웃 애니메이션(`layout`/`layoutId`)이 필요한 곳만 `<LazyMotion features={loadLayoutFeatures} strict>`로 감싸 `domMax`를 지연 로드한다
   (선택기 2종, 리스트 테이블). 메인 번들에 `domMax`를 넣지 말 것.
 - **값은 `src/lib/motion.tsx`의 토큰을 쓴다**: `duration.fast/base/slow`(0.15/0.25/0.45초, 카운트업만 `count` 0.8초), `ease.out`/`ease.inOut`,
-  작은 `spring`, 형제 간격 `STAGGER`(60ms), 변형 `fadeUp`(custom=순번)/`fade`/`scaleIn`/`staggerContainer()`. 숫자를 컴포넌트에 직접 박지 말 것.
+  작은 `spring`, 형제 간격 `STAGGER`(60ms)·`STAGGER_TIGHT`(30ms), 변형 `fadeUp`(custom=순번)/`riseIn`(custom=순번, 행 보기 시트)/`fade`/`scaleIn`/`staggerContainer()`. 숫자를 컴포넌트에 직접 박지 말 것.
   CSS 쪽 같은 값은 `styles.css`의 `--motion-ease-out`, `--motion-duration-*`.
 - **동작 줄이기**: `reducedMotion="user"`가 transform/레이아웃을 즉시 끝낸다. `animate()`를 직접 부르는 곳(`AnimatedNumber`)과
   opacity·pathLength처럼 transform이 아닌 애니메이션은 `useReducedMotion()`으로 직접 끈다(`transition`만 바꾸고 렌더 결과는 바꾸지 않는다 — 아래 SSR 규칙).
