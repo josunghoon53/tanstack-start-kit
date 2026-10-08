@@ -102,7 +102,7 @@ function DetailList({
 }) {
   const enter = useEnterProps()
   return (
-    <dl className="rounded-xl bg-muted/50 px-4 py-1">
+    <dl className="rounded-[calc(var(--radius-panel)-0.25rem)] bg-muted/50 px-4 py-1">
       {details.map((detail, index) => (
         <m.div
           {...enter}

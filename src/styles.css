@@ -238,7 +238,7 @@ button:not(:disabled),
   /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
   --shadow-panel: 0 24px 48px -16px oklch(0.2 0.006 90 / 0.14);
   --panel-border: oklch(0.2 0.006 90 / 0.12);
-  --radius-panel: 0;
+  --radius-panel: 1rem; /* 카드는 각져도 떠 있는 패널은 둥글게(입체감) */
   --card-border: var(--border);
   --input: oklch(0.2 0.006 90);
 }
@@ -254,7 +254,7 @@ button:not(:disabled),
   /* 떠 있는 패널(행 보기 시트): 넓고 흐린 그림자, 아주 옅은 1px 테두리, 카드보다 한 단계 큰 반경 */
   --shadow-panel: 0 24px 48px -16px oklch(0.22 0.004 90 / 0.14);
   --panel-border: oklch(0.22 0.004 90 / 0.25);
-  --radius-panel: 0;
+  --radius-panel: 0.5rem; /* crisp: 각진 느낌을 남긴 약한 둥글기 */
   --card-border: oklch(0.22 0.004 90);
   --input: oklch(0.22 0.004 90);
 }

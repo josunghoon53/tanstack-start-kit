@@ -328,7 +328,7 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 (사용자: 역할 · 가입일, 주문: 주문자 · 주문일, 상품: 카테고리 · 가격, 콘텐츠: 작성자 · 작성일).
 시트의 수정/삭제는 메뉴와 같은 다이얼로그를 연다 — 시트를 먼저 닫고 같은 렌더에서 다이얼로그를 열며(겹쳐 띄우지 않음), 다이얼로그가 닫히면 포커스는 행의 작업 버튼으로 돌아간다.
 **시트는 떠 있는 패널이다**: `ui/sheet.tsx`는 그대로 두고 `SheetContent` className으로 위·아래·오른쪽 12px 여백, 고정 폭 440px,
-스타일별 토큰 `--radius-panel`/`--shadow-panel`/`--panel-border`(crisp·editorial은 각진 0)를 준다. 여백 때문에 슬라이드 시작/끝이 화면에 남지 않도록
+스타일별 토큰 `--radius-panel`/`--shadow-panel`/`--panel-border`(스타일 radius와 별개로 떠 있는 패널은 항상 둥글다: clean 16px, soft 22px, editorial 16px, crisp 8px; 안쪽 상세 박스는 패널 반경 − 4px)를 준다. 여백 때문에 슬라이드 시작/끝이 화면에 남지 않도록
 `styles.css`의 `[data-floating-panel]` 규칙이 이동 거리를 늘린다. 내용은 `riseIn`(8px, 30ms 간격)으로 헤더 → 줄 → 푸터 순서로 나타난다.
 같은 `details` 배열을 `src/components/table-row-detail.tsx`에도 넘기면
 테이블 행을 클릭했을 때 인라인 아코디언으로도 똑같이 펼쳐 보여줄 수 있다 — 한 번
