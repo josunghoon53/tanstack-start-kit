@@ -16,6 +16,10 @@ import {
 import { RowActions } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
+import {
+  AnimatedTableBody,
+  AnimatedTableRow,
+} from '@/components/animated-table-row'
 import { TableBulkActionsBar } from '@/components/table-bulk-actions-bar'
 import { TableMultiSelectFilter } from '@/components/table-multi-select-filter'
 import { TablePagination } from '@/components/table-pagination'
@@ -29,7 +33,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -262,7 +265,9 @@ function Products() {
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <AnimatedTableBody
+            layoutKey={pageItems.map((product) => product.name).join('|')}
+          >
             {pageItems.map((product) => {
               const details = [
                 {
@@ -277,7 +282,7 @@ function Products() {
 
               return (
                 <Fragment key={product.name}>
-                  <TableRow
+                  <AnimatedTableRow
                     className="cursor-pointer"
                     onClick={() => setOpen(product.name, !open)}
                   >
@@ -317,7 +322,7 @@ function Products() {
                     <TableCell onClick={(event) => event.stopPropagation()}>
                       <RowActions label={product.name} details={details} />
                     </TableCell>
-                  </TableRow>
+                  </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={8} details={details} />}
                 </Fragment>
               )
@@ -332,7 +337,7 @@ function Products() {
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
+          </AnimatedTableBody>
         </Table>
         <TablePagination
           page={page}

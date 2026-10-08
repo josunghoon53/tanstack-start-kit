@@ -17,6 +17,10 @@ import {
 import { RowActions } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
+import {
+  AnimatedTableBody,
+  AnimatedTableRow,
+} from '@/components/animated-table-row'
 import { TableBulkActionsBar } from '@/components/table-bulk-actions-bar'
 import { TableDateRangeFilter } from '@/components/table-date-range-filter'
 import { TablePagination } from '@/components/table-pagination'
@@ -30,7 +34,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -244,7 +247,9 @@ function Contents() {
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <AnimatedTableBody
+            layoutKey={pageItems.map((content) => content.title).join('|')}
+          >
             {pageItems.map((content) => {
               const details = [
                 { label: t.contents.columns.author, value: content.author },
@@ -255,7 +260,7 @@ function Contents() {
 
               return (
                 <Fragment key={content.title}>
-                  <TableRow
+                  <AnimatedTableRow
                     className="cursor-pointer"
                     onClick={() => setOpen(content.title, !open)}
                   >
@@ -294,7 +299,7 @@ function Contents() {
                     <TableCell onClick={(event) => event.stopPropagation()}>
                       <RowActions label={content.title} details={details} />
                     </TableCell>
-                  </TableRow>
+                  </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={7} details={details} />}
                 </Fragment>
               )
@@ -309,7 +314,7 @@ function Contents() {
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
+          </AnimatedTableBody>
         </Table>
         <TablePagination
           page={page}

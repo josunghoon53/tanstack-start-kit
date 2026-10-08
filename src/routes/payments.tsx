@@ -5,6 +5,10 @@ import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
+import {
+  AnimatedTableBody,
+  AnimatedTableRow,
+} from '@/components/animated-table-row'
 import { TableBulkActionsBar } from '@/components/table-bulk-actions-bar'
 import { TablePagination } from '@/components/table-pagination'
 import { TableSearchInput } from '@/components/table-search-input'
@@ -27,7 +31,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -283,9 +286,11 @@ function Payments() {
               <TableHead className="w-16" />
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <AnimatedTableBody
+            layoutKey={pageItems.map((payment) => payment.id).join('|')}
+          >
             {pageItems.map((payment) => (
-              <TableRow key={payment.id}>
+              <AnimatedTableRow key={payment.id}>
                 <TableCell>
                   <Checkbox
                     aria-label={t.common.selectRow(payment.orderNo)}
@@ -320,7 +325,7 @@ function Payments() {
                     disabled={payment.status !== '결제완료'}
                   />
                 </TableCell>
-              </TableRow>
+              </AnimatedTableRow>
             ))}
             {pageItems.length === 0 && (
               <TableRow>
@@ -332,7 +337,7 @@ function Payments() {
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
+          </AnimatedTableBody>
         </Table>
         <TablePagination
           page={page}
