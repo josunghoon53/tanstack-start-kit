@@ -40,6 +40,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { StatusDot } from '@/components/status-dot'
+import type { StatusTone } from '@/components/status-dot'
 import { useTranslation } from '@/i18n/use-translation'
 
 export interface RowDetail {
@@ -47,12 +49,51 @@ export interface RowDetail {
   value: React.ReactNode
 }
 
+export interface RowStatus {
+  label: string
+  tone: StatusTone
+}
+
+// 시트 제목 아래 한 줄 요약. 비어 있는 조각은 빼고 ' · '로 잇는다.
+// 규칙: [대표 속성(역할·주문자·카테고리·작성자), '라벨 값' 형태의 날짜(없으면 대표 수치)].
+export function joinSummary(
+  ...parts: Array<string | number | null | undefined | false>
+) {
+  return parts
+    .filter((part) => part !== '' && part != null && part !== false)
+    .join(' · ')
+}
+
+// "보기" 시트 본문: 왼쪽 라벨(고정 폭) / 오른쪽 값, 행 사이 얇은 구분선.
+function DetailList({ details }: { details: Array<RowDetail> }) {
+  return (
+    <dl className="divide-y">
+      {details.map((detail) => (
+        <div
+          key={detail.label}
+          data-slot="row-detail"
+          className="grid grid-cols-[96px_1fr] items-baseline gap-4 py-3"
+        >
+          <dt className="text-sm text-muted-foreground">{detail.label}</dt>
+          <dd className="text-sm font-medium break-words">{detail.value}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 export function RowActions({
   label,
   details,
+  summary,
+  status,
 }: {
   label: string
   details?: Array<RowDetail>
+  // 제목 아래 한 줄 요약(예: "관리자 · 가입일 2026-01-14"). 없으면 요약 줄을 그리지 않는다.
+  summary?: string
+  // 제목 옆 상태 배지(점 + 글자). 리스트의 *_STATUS_TONE과 같은 tone을 넘긴다.
+  status?: RowStatus
 }) {
   const t = useTranslation()
   const [viewOpen, setViewOpen] = useState(false)
@@ -105,23 +146,24 @@ export function RowActions({
       </DropdownMenu>
 
       <Sheet open={viewOpen} onOpenChange={setViewOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>{label}</SheetTitle>
-            <SheetDescription>
-              {t.rowActions.viewSheetDescription}
-            </SheetDescription>
+        <SheetContent {...(summary ? {} : { 'aria-describedby': undefined })}>
+          <SheetHeader className="gap-2 p-6 pr-12">
+            <SheetTitle className="text-xl leading-tight [font-weight:var(--weight-title)]">
+              {label}
+            </SheetTitle>
+            {status && (
+              <span
+                data-slot="row-status"
+                className="inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              >
+                <StatusDot tone={status.tone}>{status.label}</StatusDot>
+              </span>
+            )}
+            {summary && <SheetDescription>{summary}</SheetDescription>}
           </SheetHeader>
           {details && details.length > 0 && (
-            <div className="flex flex-col gap-4 px-4">
-              {details.map((detail) => (
-                <div key={detail.label} className="flex flex-col gap-1">
-                  <span className="text-xs text-muted-foreground">
-                    {detail.label}
-                  </span>
-                  <span className="text-sm font-medium">{detail.value}</span>
-                </div>
-              ))}
+            <div className="px-6">
+              <DetailList details={details} />
             </div>
           )}
           <SheetFooter>

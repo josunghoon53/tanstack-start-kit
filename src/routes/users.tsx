@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
 import {
@@ -305,7 +305,18 @@ function Users() {
                     </TableCell>
                     <TableCell>{user.joinedAt}</TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={user.name} details={details} />
+                      <RowActions
+                        label={user.name}
+                        details={details}
+                        summary={joinSummary(
+                          user.role,
+                          `${t.users.columns.joinedAt} ${user.joinedAt}`,
+                        )}
+                        status={{
+                          label: user.status,
+                          tone: USER_STATUS_TONE[user.status],
+                        }}
+                      />
                     </TableCell>
                   </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={7} details={details} />}

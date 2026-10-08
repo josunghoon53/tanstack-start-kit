@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
 import {
@@ -320,7 +320,18 @@ function Products() {
                       </StatusDot>
                     </TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={product.name} details={details} />
+                      <RowActions
+                        label={product.name}
+                        details={details}
+                        summary={joinSummary(
+                          product.category,
+                          `${t.products.columns.price} ${product.price}`,
+                        )}
+                        status={{
+                          label: product.status,
+                          tone: PRODUCT_STATUS_TONE[product.status],
+                        }}
+                      />
                     </TableCell>
                   </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={8} details={details} />}

@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
 import {
@@ -305,7 +305,18 @@ function Orders() {
                     </TableCell>
                     <TableCell>{order.date}</TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={order.id} details={details} />
+                      <RowActions
+                        label={order.id}
+                        details={details}
+                        summary={joinSummary(
+                          order.customer,
+                          `${t.orders.columns.date} ${order.date}`,
+                        )}
+                        status={{
+                          label: order.status,
+                          tone: ORDER_STATUS_TONE[order.status],
+                        }}
+                      />
                     </TableCell>
                   </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={8} details={details} />}

@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { RowActions } from '@/components/row-actions'
+import { RowActions, joinSummary } from '@/components/row-actions'
 import { SortableTableHead } from '@/components/sortable-table-head'
 import { StatusDot } from '@/components/status-dot'
 import {
@@ -297,7 +297,18 @@ function Contents() {
                     </TableCell>
                     <TableCell>{content.date}</TableCell>
                     <TableCell onClick={(event) => event.stopPropagation()}>
-                      <RowActions label={content.title} details={details} />
+                      <RowActions
+                        label={content.title}
+                        details={details}
+                        summary={joinSummary(
+                          content.author,
+                          `${t.contents.columns.date} ${content.date}`,
+                        )}
+                        status={{
+                          label: content.status,
+                          tone: CONTENT_STATUS_TONE[content.status],
+                        }}
+                      />
                     </TableCell>
                   </AnimatedTableRow>
                   {open && <TableRowDetail colSpan={7} details={details} />}
