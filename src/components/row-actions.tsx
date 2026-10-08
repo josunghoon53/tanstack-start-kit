@@ -1,4 +1,4 @@
-import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { Eye, FileText, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { m, useReducedMotion } from 'motion/react'
 import { toast } from 'sonner'
@@ -80,24 +80,61 @@ function useEnterProps() {
   }
 }
 
-// "보기" 시트 본문: 왼쪽 라벨(고정 폭) / 오른쪽 값, 행 사이 얇은 구분선.
-function DetailList({ details }: { details: Array<RowDetail> }) {
+function StatusBadge({ status }: { status: RowStatus }) {
+  return (
+    <span
+      data-slot="row-status"
+      className="inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium"
+    >
+      <StatusDot tone={status.tone}>{status.label}</StatusDot>
+    </span>
+  )
+}
+
+// "보기" 시트 본문: 옅은 둥근 박스 하나에 왼쪽 라벨(고정 96px) / 오른쪽 값.
+// 선을 긋지 않고 행 패딩으로만 나눈다. 값이 상태 배지의 글자와 같으면 그 줄은 배지로 보여준다.
+function DetailList({
+  details,
+  status,
+}: {
+  details: Array<RowDetail>
+  status?: RowStatus
+}) {
   const enter = useEnterProps()
   return (
-    <dl className="divide-y">
+    <dl className="rounded-xl bg-muted/50 px-4 py-1">
       {details.map((detail, index) => (
         <m.div
           {...enter}
           custom={index + 1}
           key={detail.label}
           data-slot="row-detail"
-          className="grid grid-cols-[96px_1fr] items-baseline gap-4 py-3"
+          className="grid grid-cols-[96px_1fr] items-center gap-4 py-3.5"
         >
-          <dt className="text-sm text-muted-foreground">{detail.label}</dt>
-          <dd className="text-sm font-medium break-words">{detail.value}</dd>
+          <dt className="text-[13px] text-muted-foreground">{detail.label}</dt>
+          <dd className="text-sm leading-relaxed break-words">
+            {status && detail.value === status.label ? (
+              <StatusBadge status={status} />
+            ) : (
+              detail.value
+            )}
+          </dd>
         </m.div>
       ))}
     </dl>
+  )
+}
+
+// 제목 첫 글자를 넣은 옅은 무채색 원. 글자가 없으면 아이콘.
+function Initial({ label }: { label: string }) {
+  const initial = Array.from(label.trim())[0]
+  return (
+    <span
+      aria-hidden
+      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-base font-medium text-muted-foreground"
+    >
+      {initial ? initial.toUpperCase() : <FileText className="size-4" />}
+    </span>
   )
 }
 
@@ -207,7 +244,7 @@ export function RowActions({
           // ui/sheet 기본(inset-y-0 right-0 h-full border-l w-3/4 sm:max-w-sm shadow-lg)을 className으로만 덮는다
           // (sm:은 생성된 기본값을 지우기 위한 것뿐). 반경·그림자는 스타일별 토큰(--radius-panel, --shadow-panel).
           data-floating-panel=""
-          className="inset-y-3 right-3 h-auto w-[440px] gap-0 overflow-hidden rounded-(--radius-panel) outline-none border border-(--card-border) shadow-(--shadow-panel) sm:max-w-none"
+          className="inset-y-3 right-3 h-auto w-[440px] gap-0 overflow-hidden rounded-(--radius-panel) border border-(--panel-border) shadow-(--shadow-panel) outline-none sm:max-w-none"
           // 첫 포커스를 맨 앞 버튼(삭제)이 아니라 패널 자체에 둔다 — Enter 한 번에 삭제 확인이 열리지 않게.
           onOpenAutoFocus={(event) => {
             event.preventDefault()
@@ -227,32 +264,37 @@ export function RowActions({
           <MotionSheetHeader
             {...enter}
             custom={0}
-            className="gap-2 border-b p-6 pr-12"
+            className="gap-3 px-7 pt-7 pb-5 pr-14"
           >
-            <SheetTitle className="text-xl leading-tight [font-weight:var(--weight-title)]">
-              {label}
-            </SheetTitle>
-            {status && (
-              <span
-                data-slot="row-status"
-                className="inline-flex w-fit items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              >
-                <StatusDot tone={status.tone}>{status.label}</StatusDot>
-              </span>
+            <div className="flex items-center gap-3">
+              <Initial label={label} />
+              <div className="flex min-w-0 flex-col items-start gap-1.5">
+                {/* 굵기는 스타일 토큰보다 한 단계 가볍게 */}
+                <SheetTitle className="text-xl leading-snug [font-weight:calc(var(--weight-title)_-_100)]">
+                  {label}
+                </SheetTitle>
+                {status && <StatusBadge status={status} />}
+              </div>
+            </div>
+            {summary && (
+              <SheetDescription className="leading-relaxed">
+                {summary}
+              </SheetDescription>
             )}
-            {summary && <SheetDescription>{summary}</SheetDescription>}
           </MotionSheetHeader>
-          <div className="flex-1 overflow-y-auto px-6 py-2">
-            {details && details.length > 0 && <DetailList details={details} />}
+          <div className="flex-1 overflow-y-auto px-7 py-1">
+            {details && details.length > 0 && (
+              <DetailList details={details} status={status} />
+            )}
           </div>
           <MotionSheetFooter
             {...enter}
             custom={(details?.length ?? 0) + 1}
-            className="mt-0 flex-row items-center gap-2 border-t px-6 py-4"
+            className="mt-0 flex-row items-center gap-2 px-7 pt-4 pb-7"
           >
             <Button
               variant="ghost"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="h-10 rounded-lg px-3 text-destructive hover:bg-transparent hover:text-destructive hover:underline hover:underline-offset-4"
               onClick={() => handOff(() => setDeleteOpen(true))}
             >
               <Trash2 />
@@ -260,9 +302,14 @@ export function RowActions({
             </Button>
             <div className="ml-auto flex items-center gap-2">
               <SheetClose asChild>
-                <Button variant="outline">{t.common.close}</Button>
+                <Button variant="ghost" className="h-10 rounded-lg px-4">
+                  {t.common.close}
+                </Button>
               </SheetClose>
-              <Button onClick={() => handOff(openEdit)}>
+              <Button
+                className="h-10 rounded-lg px-5"
+                onClick={() => handOff(openEdit)}
+              >
                 <Pencil />
                 {t.common.edit}
               </Button>

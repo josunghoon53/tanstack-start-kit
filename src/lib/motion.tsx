@@ -70,15 +70,15 @@ export const fadeUp: Variants = {
   }),
 }
 
-// fadeUp보다 작게(6px) 올라오며 나타남. custom={순번}마다 STAGGER_TIGHT씩 늦게 시작한다.
+// 8px 아래에서 천천히(slow) 올라오며 나타남. custom={순번}마다 STAGGER_TIGHT씩 늦게 시작한다.
 // 행 보기 시트의 헤더 → 상세 줄 → 푸터 순차 진입에 쓴다.
 export const riseIn: Variants = {
-  hidden: { opacity: 0, y: 6 },
+  hidden: { opacity: 0, y: 8 },
   visible: (index: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: duration.base,
+      duration: duration.slow,
       ease: ease.out,
       delay: index * STAGGER_TIGHT,
     },
