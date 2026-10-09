@@ -31,7 +31,7 @@ type Option = {
   swatches: readonly [string, string, string]
 }
 
-// 기본 + 팔레트 12종을 라디오 그룹으로 보여준다. 방향키로 옮기면 바로 적용된다(라디오 버튼과 같은 동작).
+// 기본 + 팔레트 프리셋(THEME_COLORS 전부)을 라디오 그룹으로 보여준다. 방향키로 옮기면 바로 적용된다(라디오 버튼과 같은 동작).
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
   const [color, setColor] = useState<ThemeColor | null>(null)
