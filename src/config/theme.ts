@@ -22,16 +22,9 @@ const LEGACY_STYLES = new Map<string, ThemeStyle>([
 export const THEME_COLORS = [
   'pop',
   'pop-red',
-  'dreamy',
-  'nature',
-  'energy',
-  'pop-color',
-  'sweet',
-  'cozy',
-  'retro',
-  'rest',
-  'elegant',
-  'clear',
+  'navy-yellow',
+  'violet-lime',
+  'charcoal-orange',
 ] as const
 export type ThemeColor = (typeof THEME_COLORS)[number]
 
@@ -40,9 +33,9 @@ export type ThemeColor = (typeof THEME_COLORS)[number]
 //   main(주색)=가장 어두운 색, accent(포인트)=중간, soft(옅은 색)=가장 밝은 색.
 // 나머지는 승인된 미리보기(docs/superpowers/specs/assets/color-combos-preview.html, 모드 2)의
 // 규칙으로 미리 계산한 값이다:
-//   mainFg       주색 위 글자. 항상 흰색(흰 글자 4.5:1 미만이면 주색을 5%씩 어둡게 — 12종 모두 필요 없었다).
+//   mainFg       주색 위 글자. 항상 흰색(흰 글자 4.5:1 미만이면 주색을 5%씩 어둡게).
 //   accentFg     포인트 위 글자(사이드바 활성 메뉴). #111/#FFF 중 대비가 높은 쪽.
-//   softFg       옅은 색 위 칩 글자. 중립 잉크 #1F2024(4.5:1 미만이면 어둡게 — 필요 없었다).
+//   softFg       옅은 색 위 칩 글자. 중립 잉크 #1F2024(4.5:1 미만이면 어둡게).
 //   sidebarText  사이드바 비활성 글자. 옅은 색을 흰색 쪽으로 40% 섞음(4.5:1 미만이면 더 흰색 쪽으로).
 //   sidebarStrong 사이드바 강한 글자(브랜드·호버). 옅은 색을 흰색 쪽으로 70%(7:1 보장).
 //   sidebarLine  사이드바 구분선·호버 면. 주색을 흰색 쪽으로 16% 섞음.
@@ -83,125 +76,41 @@ export const PALETTE_PRESETS: Record<ThemeColor, PalettePreset> = {
     sidebarStrong: '#FCFBF8',
     sidebarLine: '#414651',
   },
-  // 플럼 / 모브 / 애프리콧
-  dreamy: {
-    main: '#3A1D37',
-    accent: '#A868A6',
-    soft: '#FCA873',
+  // 후보(평가 중): 네이비 / 옐로 / 크림
+  'navy-yellow': {
+    main: '#0B1F3A',
+    accent: '#FFD60A',
+    soft: '#FFF8DB',
     mainFg: '#FFFFFF',
     accentFg: '#111111',
     softFg: '#1F2024',
-    sidebarText: '#FDCBAB',
-    sidebarStrong: '#FEE5D5',
-    sidebarLine: '#5A4157',
+    sidebarText: '#FFFBE9',
+    sidebarStrong: '#FFFDF4',
+    sidebarLine: '#32435A',
   },
-  // 모스 / 라일락 / 미스트
-  nature: {
-    main: '#344638',
-    accent: '#C4B7D8',
-    soft: '#E9E7DB',
+  // 후보(평가 중): 바이올렛 / 라임 / 라벤더 화이트
+  'violet-lime': {
+    main: '#241B4D',
+    accent: '#C8F03A',
+    soft: '#F1EEFC',
     mainFg: '#FFFFFF',
     accentFg: '#111111',
     softFg: '#1F2024',
-    sidebarText: '#F2F1E9',
-    sidebarStrong: '#F8F8F4',
-    sidebarLine: '#546458',
+    sidebarText: '#F7F5FD',
+    sidebarStrong: '#FBFAFE',
+    sidebarLine: '#473F69',
   },
-  // 인디고 / 오렌지 / 옐로
-  energy: {
-    main: '#1B2B86',
-    accent: '#FC5C2F',
-    soft: '#E7FC66',
+  // 후보(평가 중): 차콜 / 오렌지 / 피치 화이트
+  'charcoal-orange': {
+    main: '#1C1C1E',
+    accent: '#FF7A1A',
+    soft: '#FFF1E6',
     mainFg: '#FFFFFF',
     accentFg: '#111111',
     softFg: '#1F2024',
-    sidebarText: '#F1FDA3',
-    sidebarStrong: '#F8FED1',
-    sidebarLine: '#3F4D99',
-  },
-  // 바이올렛 / 코랄 / 레몬
-  'pop-color': {
-    main: '#4D2BBA',
-    accent: '#FF796B',
-    soft: '#F4F27D',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#F8F7B1',
-    sidebarStrong: '#FCFBD8',
-    sidebarLine: '#694DC5',
-  },
-  // 라즈베리 / 피스타치오 / 옐로
-  sweet: {
-    main: '#BF1D46',
-    accent: '#C6D699',
-    soft: '#FEEAA5',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#FEF2C9',
-    sidebarStrong: '#FFFFFF',
-    sidebarLine: '#C94164',
-  },
-  // 코코아 / 피치 / 바닐라
-  cozy: {
-    main: '#5B342D',
-    accent: '#F3A891',
-    soft: '#FFF0D9',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#FFF6E8',
-    sidebarStrong: '#FFFBF4',
-    sidebarLine: '#75544F',
-  },
-  // 그린 / 탠저린 / 블루
-  retro: {
-    main: '#163729',
-    accent: '#F86E32',
-    soft: '#7AD0EC',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#AFE3F4',
-    sidebarStrong: '#D7F1F9',
-    sidebarLine: '#3B574B',
-  },
-  // 말차 / 살구 / 크림
-  rest: {
-    main: '#465936',
-    accent: '#E9AB7C',
-    soft: '#F2EAD8',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#F7F2E8',
-    sidebarStrong: '#FBF9F3',
-    sidebarLine: '#647456',
-  },
-  // 버건디 / 핑크 / 아이보리
-  elegant: {
-    main: '#45090F',
-    accent: '#F1BAB9',
-    soft: '#FBECDF',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#FDF4EC',
-    sidebarStrong: '#FEF9F5',
-    sidebarLine: '#633035',
-  },
-  // 틸 / 라벤더 / 아이스
-  clear: {
-    main: '#1C4B52',
-    accent: '#BFB2D9',
-    soft: '#EAF4F6',
-    mainFg: '#FFFFFF',
-    accentFg: '#111111',
-    softFg: '#1F2024',
-    sidebarText: '#F2F8FA',
-    sidebarStrong: '#F9FCFC',
-    sidebarLine: '#40686E',
+    sidebarText: '#FFF7F0',
+    sidebarStrong: '#FFFBF8',
+    sidebarLine: '#404042',
   },
 }
 

@@ -31,7 +31,7 @@ type Option = {
   swatches: readonly [string, string, string]
 }
 
-// 기본 + 팔레트 12종을 라디오 그룹으로 보여준다. 방향키로 옮기면 바로 적용된다(라디오 버튼과 같은 동작).
+// 기본 + 팔레트 프리셋(THEME_COLORS 전부)을 라디오 그룹으로 보여준다. 방향키로 옮기면 바로 적용된다(라디오 버튼과 같은 동작).
 export function ColorThemePicker() {
   const t = useTranslation().colorThemePicker
   const [color, setColor] = useState<ThemeColor | null>(null)
@@ -91,6 +91,8 @@ export function ColorThemePicker() {
 
   // 선택 테두리는 layoutId를 공유하는 m.span 하나라, 고르면 이전 카드에서 새 카드로 미끄러져 옮겨간다.
   // layoutId에는 레이아웃 기능(domMax)이 필요해서 이 화면에서만 지연 로드한다.
+  // 그리드는 위 스타일 피커와 같은 4열이다 — 카드 너비가 두 피커에서 맞아떨어지게 하려고 일부러 맞췄다.
+  // 카드가 4개를 넘으면 다음 줄로 왼쪽부터 이어진다(기본 + 5종 = 4 + 2).
   return (
     <LazyMotion features={loadLayoutFeatures} strict>
       <LayoutGroup id="color-theme-picker">

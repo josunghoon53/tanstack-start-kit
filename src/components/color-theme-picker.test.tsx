@@ -7,16 +7,23 @@ import { useLocaleStore } from '@/i18n/locale-store'
 const KO_NAMES = [
   '톡톡 튀는 스타일',
   '선명한 레드 포인트',
-  '몽환적인 분위기',
-  '차분한 자연의 감성',
-  '강렬한 에너지',
-  '경쾌한 팝 컬러',
-  '달콤한 즐거움',
-  '포근한 달콤함',
-  '경쾌한 레트로',
-  '편안한 휴식',
-  '부드러운 우아함',
-  '맑고 깨끗한 분위기',
+  '네이비 옐로',
+  '바이올렛 라임',
+  '차콜 오렌지',
+]
+
+// 지금은 없는 예전 프리셋 id. 저장돼 있으면 기본(무채색)으로 돌아가야 한다.
+const REMOVED_PRESETS = [
+  'dreamy',
+  'nature',
+  'energy',
+  'pop-color',
+  'sweet',
+  'cozy',
+  'retro',
+  'rest',
+  'elegant',
+  'clear',
 ]
 
 beforeEach(() => {
@@ -29,13 +36,13 @@ afterEach(() => {
 })
 
 describe('ColorThemePicker', () => {
-  it('renders a radio group with the default and the 12 palettes', () => {
+  it('renders a radio group with the default and every palette', () => {
     render(<ColorThemePicker />)
 
     expect(
       screen.getByRole('radiogroup', { name: '컬러 팔레트' }),
     ).toBeInTheDocument()
-    expect(screen.getAllByRole('radio')).toHaveLength(13)
+    expect(screen.getAllByRole('radio')).toHaveLength(KO_NAMES.length + 1)
     for (const label of ['기본(무채색)', ...KO_NAMES]) {
       expect(screen.getByRole('radio', { name: label })).toBeInTheDocument()
     }
@@ -60,7 +67,14 @@ describe('ColorThemePicker', () => {
     useLocaleStore.setState({ locale: 'en' })
     render(<ColorThemePicker />)
 
-    for (const label of ['Default (neutral)', 'Pop', 'Pop · Red accent']) {
+    for (const label of [
+      'Default (neutral)',
+      'Pop',
+      'Pop · Red accent',
+      'Navy Yellow',
+      'Violet Lime',
+      'Charcoal Orange',
+    ]) {
       expect(screen.getByRole('radio', { name: label })).toBeInTheDocument()
     }
   })
@@ -78,12 +92,12 @@ describe('ColorThemePicker', () => {
     const user = userEvent.setup()
     render(<ColorThemePicker />)
 
-    await user.click(screen.getByRole('radio', { name: '차분한 자연의 감성' }))
+    await user.click(screen.getByRole('radio', { name: '선명한 레드 포인트' }))
 
-    expect(document.documentElement).toHaveAttribute('data-color', 'nature')
-    expect(window.localStorage.getItem('theme-color')).toBe('nature')
+    expect(document.documentElement).toHaveAttribute('data-color', 'pop-red')
+    expect(window.localStorage.getItem('theme-color')).toBe('pop-red')
     expect(
-      screen.getByRole('radio', { name: '차분한 자연의 감성' }),
+      screen.getByRole('radio', { name: '선명한 레드 포인트' }),
     ).toHaveAttribute('aria-checked', 'true')
   })
 
@@ -99,15 +113,19 @@ describe('ColorThemePicker', () => {
       screen.getByRole('radio', { name: '톡톡 튀는 스타일' }),
     ).toHaveFocus()
 
+    // 처음(기본)에서 왼쪽으로 가면 마지막 프리셋으로 돈다.
     await user.keyboard('{ArrowLeft}{ArrowLeft}')
-    expect(document.documentElement).toHaveAttribute('data-color', 'clear')
+    expect(document.documentElement).toHaveAttribute(
+      'data-color',
+      'charcoal-orange',
+    )
   })
 
   it('clears the attribute and storage when the default is chosen again', async () => {
     const user = userEvent.setup()
     render(<ColorThemePicker />)
 
-    await user.click(screen.getByRole('radio', { name: '부드러운 우아함' }))
+    await user.click(screen.getByRole('radio', { name: '톡톡 튀는 스타일' }))
     await user.click(screen.getByRole('radio', { name: '기본(무채색)' }))
 
     expect(document.documentElement).not.toHaveAttribute('data-color')
@@ -115,10 +133,10 @@ describe('ColorThemePicker', () => {
   })
 
   it('restores a stored palette and treats legacy accent colors as the default', () => {
-    window.localStorage.setItem('theme-color', 'retro')
+    window.localStorage.setItem('theme-color', 'pop-red')
     const { unmount } = render(<ColorThemePicker />)
     expect(
-      screen.getByRole('radio', { name: '경쾌한 레트로' }),
+      screen.getByRole('radio', { name: '선명한 레드 포인트' }),
     ).toHaveAttribute('aria-checked', 'true')
     unmount()
 
@@ -129,4 +147,15 @@ describe('ColorThemePicker', () => {
       'true',
     )
   })
+  it.each(REMOVED_PRESETS)(
+    'treats the removed preset %s as the default',
+    (removed) => {
+      window.localStorage.setItem('theme-color', removed)
+      render(<ColorThemePicker />)
+      expect(
+        screen.getByRole('radio', { name: '기본(무채색)' }),
+      ).toHaveAttribute('aria-checked', 'true')
+      expect(screen.queryAllByRole('radio', { checked: true })).toHaveLength(1)
+    },
+  )
 })

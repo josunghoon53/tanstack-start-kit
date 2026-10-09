@@ -15,6 +15,20 @@ import {
   parseThemeStyle,
 } from './theme'
 
+// 2026-10에 정리한 예전 프리셋 id. 저장돼 있어도 기본(무채색)으로 조용히 돌아가야 한다.
+const REMOVED_PRESETS = [
+  'dreamy',
+  'nature',
+  'energy',
+  'pop-color',
+  'sweet',
+  'cozy',
+  'retro',
+  'rest',
+  'elegant',
+  'clear',
+]
+
 afterEach(() => {
   window.localStorage.clear()
   document.documentElement.removeAttribute('data-style')
@@ -63,6 +77,13 @@ describe('parseThemeColor', () => {
       expect(parseThemeColor(legacy)).toBeNull()
     },
   )
+
+  it.each(REMOVED_PRESETS)(
+    'falls back to neutral for the removed preset %s',
+    (removed) => {
+      expect(parseThemeColor(removed)).toBeNull()
+    },
+  )
 })
 
 describe('apply helpers', () => {
@@ -72,8 +93,8 @@ describe('apply helpers', () => {
   })
 
   it('sets and clears data-color', () => {
-    applyThemeColor(document.documentElement, 'nature')
-    expect(document.documentElement).toHaveAttribute('data-color', 'nature')
+    applyThemeColor(document.documentElement, 'pop-red')
+    expect(document.documentElement).toHaveAttribute('data-color', 'pop-red')
 
     applyThemeColor(document.documentElement, null)
     expect(document.documentElement).not.toHaveAttribute('data-color')
@@ -108,6 +129,18 @@ describe('THEME_INIT_SCRIPT', () => {
     (legacy) => {
       document.documentElement.setAttribute('data-color', 'pop')
       window.localStorage.setItem(COLOR_STORAGE_KEY, legacy)
+
+      runScript()
+
+      expect(document.documentElement).not.toHaveAttribute('data-color')
+    },
+  )
+
+  it.each(REMOVED_PRESETS)(
+    'drops the removed preset %s back to neutral',
+    (removed) => {
+      document.documentElement.setAttribute('data-color', 'pop')
+      window.localStorage.setItem(COLOR_STORAGE_KEY, removed)
 
       runScript()
 
@@ -186,6 +219,13 @@ describe('styles.css consistency', () => {
       const value = PALETTE_PRESETS[color][key as keyof typeof PAL_VARS]
       expect(block).toContain(`${cssVar}: ${value.toLowerCase()};`)
     }
+  })
+
+  it('has no CSS block for a color that is not in THEME_COLORS', () => {
+    const ids = [...css.matchAll(/:root\[data-color='([^']+)'\]/g)].map(
+      (match) => match[1],
+    )
+    expect([...new Set(ids)].sort()).toEqual([...THEME_COLORS].sort())
   })
 
   it('maps the palette onto shadcn tokens after the style blocks', () => {

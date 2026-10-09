@@ -367,13 +367,16 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
 테마는 두 축이다. 스타일 4종(`clean` 기본/`soft`/`editorial`/`crisp`)은 `<html data-style>`로 고르고
 모양과 글꼴(`--radius`, 폰트·굵기, `--shadow-card`, `--card-border`, `--input`)만 바꾼다 — 색은 하나도 갖지 않는다.
 컬러 팔레트는 `<html data-color>`로 고른다. 값이 없으면 기본(무채색 — 어두운 중립 사이드바, 흰 활성 메뉴 박스)이고,
-프리셋은 12종이다: `pop`(코발트/라임/아이보리), `pop-red`(잉크/레드/오프화이트), `dreamy`(플럼/모브/애프리콧),
-`nature`(모스/라일락/미스트), `energy`(인디고/오렌지/옐로), `pop-color`(바이올렛/코랄/레몬), `sweet`(라즈베리/피스타치오/옐로),
-`cozy`(코코아/피치/바닐라), `retro`(그린/탠저린/블루), `rest`(말차/살구/크림), `elegant`(버건디/핑크/아이보리),
-`clear`(틸/라벤더/아이스). 이름은 `messages.ts`의 `colorThemePicker.presets`에 있다. 라이트 전용이다(다크 모드 없음).
+확정 프리셋은 2종이다: `pop`(톡톡 튀는 스타일 — 코발트 `#003FE2`/라임 `#D6FC43`/아이보리 `#F6F4F0`),
+`pop-red`(선명한 레드 포인트 — 잉크 `#1D2330`/레드 `#E84635`/오프화이트 `#F4F1E8`).
+**후보(평가 중)** 3종도 들어가 있다: `navy-yellow`(네이비 옐로 — `#0B1F3A`/`#FFD60A`/`#FFF8DB`),
+`violet-lime`(바이올렛 라임 — `#241B4D`/`#C8F03A`/`#F1EEFC`), `charcoal-orange`(차콜 오렌지 — `#1C1C1E`/`#FF7A1A`/`#FFF1E6`).
+확정 전이라 평가 뒤 남기거나 뺀다(설계 노트의 "후보(평가 중)" 절, 스크린샷 `docs/screenshots/palette-candidates/`). 예전 10종(`dreamy`·`nature`·`energy`·`pop-color`·
+`sweet`·`cozy`·`retro`·`rest`·`elegant`·`clear`)은 2026-10에 뺐다(이유는 `docs/superpowers/specs/2026-10-06-palette-presets-design.md`).
+프리셋은 앞으로 하나씩 늘린다. 이름은 `messages.ts`의 `colorThemePicker.presets`에 있다. 라이트 전용이다(다크 모드 없음).
 
 - **역할은 상대 휘도로 정한다**: 가장 어두운 색 = 주색(`main`), 중간 = 포인트(`accent`), 가장 밝은 색 = 옅은 색(`soft`).
-  두 색의 휘도 차가 0.05 미만이면 프리셋별로 순서를 명시해도 된다(지금 12종은 해당 없음).
+  두 색의 휘도 차가 0.05 미만이면 프리셋별로 순서를 명시해도 된다(지금 2종과 후보 3종 모두 해당 없음).
 - **사이드바만 팔레트 면을 갖는다**: 면 = 주색, 비활성 글자 = 옅은 색을 흰색 쪽으로 40%(4.5:1 미만이면 더 흰색 쪽으로),
   활성 메뉴 = 포인트 박스 + `#111`/`#FFF` 중 대비 높은 글자(굵게), 구분선·호버 = 주색을 흰색 쪽으로 16%.
 - **메인은 무채색으로 둔다.** 페이지·카드·표·본문/제목/KPI 글자·테두리·차트의 일반 막대·보조 버튼에는 팔레트를 쓰지 않는다.
@@ -386,17 +389,24 @@ JSON으로 직렬화가 안 돼서 서버→클라이언트 전송 중 깨진다
   `--sidebar*`)에 연결한다. 프리셋이 없으면 `:root` 기본값(예전 무채색과 같은 값)이 그대로 쓰인다.
 - 허용 값·저장 키(`theme-style`, `theme-color`)·초기화 스크립트는 `src/config/theme.ts`가 단일 출처이고,
   선택 UI는 `style-theme-picker.tsx` / `color-theme-picker.tsx`(라디오 그룹, 카드마다 주색/포인트/옅은 색 스와치)다.
-  예전 저장값은 읽을 때 옮긴다(스타일 `graphite`/`nordic` → `clean`, `warm` → `soft`; 예전 포인트색 `blue`/`green`/`purple`/`rose`/`orange`와
-  알 수 없는 값 → 기본(무채색)).
+  예전 저장값은 읽을 때 옮긴다(스타일 `graphite`/`nordic` → `clean`, `warm` → `soft`; 예전 포인트색 `blue`/`green`/`purple`/`rose`/`orange`, 빠진 예전 프리셋 id, 그 밖의 알 수 없는 값 → 기본(무채색)).
+  초기화 스크립트도 `THEME_COLORS`에서 만들어지므로 프리셋을 빼면 저장값은 자동으로 기본으로 돌아간다.
 
 새 스타일은 `THEME_STYLES`에 추가하고 `styles.css`에 `:root[data-style='...']` 블록을 만들면 된다 —
 이 블록에는 **색 토큰을 넣지 말 것**(모양·글꼴 토큰만). `theme.test.ts`가 둘의 불일치를 잡아준다.
-새 팔레트는 (1) 세 색을 휘도 순으로 정렬해 역할을 정하고, (2) 위 규칙(미리보기
-`docs/superpowers/specs/assets/color-combos-preview.html`의 `derive()`, 모드 2)으로 파생 값을 계산해
-(3) `THEME_COLORS`·`PALETTE_PRESETS`·`messages.ts`(ko/en 이름)·`styles.css`의 `:root[data-color='...']` 블록(`--pal-*`만, 스타일 블록보다 뒤)에
-추가한다. `palette-contrast.test.ts`가 대비(흰 글자/주색 ≥ 4.5, 사이드바 글자/주색 ≥ 4.5, 활성 메뉴 글자/포인트 ≥ 4.5,
-칩 글자/옅은 색 ≥ 4.5, 포인트/주색 ≥ 3)를 확인하고, `theme.test.ts`가 CSS 값 일치를 확인한다.
-흰 글자가 주색 위에서 4.5:1이 안 되면 주색을 검정 쪽으로 5%씩 어둡게 해서 저장한다.
+**프리셋 추가 방법** (하나씩 추가한다 — 코드는 프리셋 목록에 대해 일반적이라 아래 데이터만 늘리면 된다):
+
+1. **조합을 고른다**: 사이드바 면이 될 **깨끗한 진한 색**(무채색에 가깝거나 선명한 색 — 탁하거나 중간 톤 X)과
+   **선명한 포인트**(활성 메뉴 박스)를 짝짓는다. 세 색을 휘도 순으로 정렬해 역할(주색/포인트/옅은 색)을 정하고,
+   대비 규칙(흰 글자/주색 ≥ 4.5, 주색 글자/흰 카드 ≥ 4.5, 사이드바 글자/주색 ≥ 4.5, 활성 메뉴 글자/포인트 ≥ 4.5,
+   칩 글자/옅은 색 ≥ 4.5, 포인트/주색 ≥ 3)을 만족해야 한다. 파생 값(`mainFg`·`accentFg`·`softFg`·`sidebarText`·
+   `sidebarStrong`·`sidebarLine`)은 위 규칙(미리보기 `docs/superpowers/specs/assets/color-combos-preview.html`의 `derive()`, 모드 2)으로 계산한다.
+   흰 글자가 주색 위에서 4.5:1이 안 되면 주색을 검정 쪽으로 5%씩 어둡게 해서 저장한다.
+2. **데이터**: `src/config/theme.ts`의 `THEME_COLORS`에 id를, `PALETTE_PRESETS`에 hex 9개(대문자)를 추가한다.
+3. **CSS**: `src/styles.css`에 `:root[data-color='<id>']` 블록(`--pal-*`만, 스타일 블록보다 뒤, 기존 프리셋 블록 옆)을 추가한다.
+4. **이름**: `src/i18n/messages.ts`의 `colorThemePicker.presets`에 ko/en 이름을 추가한다.
+5. **테스트**: `pnpm test src/config` — `palette-contrast.test.ts`가 모든 프리셋의 대비를 자동으로 검사하고,
+   `theme.test.ts`가 CSS 값 일치·블록 누락/잔여를 확인한다. 피커 테스트는 프리셋 이름 목록(`KO_NAMES`)만 늘린다.
 
 - 알려진 주의사항 1: 스타일별 폰트(@fontsource) CSS를 전부 정적 import해서 렌더 차단 CSS가 약 1.1MB(gzip ~400KB)다. 폰트 파일 자체는 unicode-range로 필요한 조각만 받지만 @font-face 선언이 모든 페이지 첫 렌더에 포함된다. 줄이려면 쓰지 않는 굵기를 빼거나 선택한 스타일의 폰트만 동적으로 import하는 방식을 검토할 것.
 - 알려진 주의사항 2: Editorial의 `--radius`는 rounded-xl이 0이 되도록 의도적으로 음수(-0.25rem)다. sonner 토스트처럼 `var(--radius)`를 직접 쓰는 곳에서는 무효값이 되어 기본 반경으로 떨어진다. Crisp의 `--radius`도 0이라 같은 주의가 필요하고, 카드만 4px로 따로 둔다.
