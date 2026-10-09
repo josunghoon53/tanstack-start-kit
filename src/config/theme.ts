@@ -19,7 +19,13 @@ const LEGACY_STYLES = new Map<string, ThemeStyle>([
 ])
 
 // 팔레트 프리셋. 값이 없으면(null) 기본(무채색)이다.
-export const THEME_COLORS = ['pop', 'pop-red'] as const
+export const THEME_COLORS = [
+  'pop',
+  'pop-red',
+  'navy-yellow',
+  'violet-lime',
+  'charcoal-orange',
+] as const
 export type ThemeColor = (typeof THEME_COLORS)[number]
 
 // 프리셋 하나의 최종 색 토큰(hex). styles.css의 :root[data-color='…'] 블록과 값이 같아야 한다
@@ -69,6 +75,42 @@ export const PALETTE_PRESETS: Record<ThemeColor, PalettePreset> = {
     sidebarText: '#F8F7F1',
     sidebarStrong: '#FCFBF8',
     sidebarLine: '#414651',
+  },
+  // 후보(평가 중): 네이비 / 옐로 / 크림
+  'navy-yellow': {
+    main: '#0B1F3A',
+    accent: '#FFD60A',
+    soft: '#FFF8DB',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FFFBE9',
+    sidebarStrong: '#FFFDF4',
+    sidebarLine: '#32435A',
+  },
+  // 후보(평가 중): 바이올렛 / 라임 / 라벤더 화이트
+  'violet-lime': {
+    main: '#241B4D',
+    accent: '#C8F03A',
+    soft: '#F1EEFC',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#F7F5FD',
+    sidebarStrong: '#FBFAFE',
+    sidebarLine: '#473F69',
+  },
+  // 후보(평가 중): 차콜 / 오렌지 / 피치 화이트
+  'charcoal-orange': {
+    main: '#1C1C1E',
+    accent: '#FF7A1A',
+    soft: '#FFF1E6',
+    mainFg: '#FFFFFF',
+    accentFg: '#111111',
+    softFg: '#1F2024',
+    sidebarText: '#FFF7F0',
+    sidebarStrong: '#FFFBF8',
+    sidebarLine: '#404042',
   },
 }
 

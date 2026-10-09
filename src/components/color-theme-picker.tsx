@@ -91,6 +91,8 @@ export function ColorThemePicker() {
 
   // 선택 테두리는 layoutId를 공유하는 m.span 하나라, 고르면 이전 카드에서 새 카드로 미끄러져 옮겨간다.
   // layoutId에는 레이아웃 기능(domMax)이 필요해서 이 화면에서만 지연 로드한다.
+  // 그리드는 위 스타일 피커와 같은 4열이다 — 카드 너비가 두 피커에서 맞아떨어지게 하려고 일부러 맞췄다.
+  // 카드가 4개를 넘으면 다음 줄로 왼쪽부터 이어진다(기본 + 5종 = 4 + 2).
   return (
     <LazyMotion features={loadLayoutFeatures} strict>
       <LayoutGroup id="color-theme-picker">

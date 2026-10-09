@@ -305,6 +305,9 @@ export const messages = {
       presets: {
         pop: '톡톡 튀는 스타일',
         'pop-red': '선명한 레드 포인트',
+        'navy-yellow': '네이비 옐로',
+        'violet-lime': '바이올렛 라임',
+        'charcoal-orange': '차콜 오렌지',
       },
     },
     stylePicker: {
@@ -723,6 +726,9 @@ export const messages = {
       presets: {
         pop: 'Pop',
         'pop-red': 'Pop · Red accent',
+        'navy-yellow': 'Navy Yellow',
+        'violet-lime': 'Violet Lime',
+        'charcoal-orange': 'Charcoal Orange',
       },
     },
     stylePicker: {

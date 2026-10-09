@@ -302,6 +302,40 @@ button:not(:disabled),
   --pal-sidebar-strong: #fcfbf8;
   --pal-sidebar-line: #414651;
 }
+/* 후보(평가 중) — navy-yellow · violet-lime · charcoal-orange */
+:root[data-color='navy-yellow'] {
+  --pal-main: #0b1f3a;
+  --pal-accent: #ffd60a;
+  --pal-soft: #fff8db;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fffbe9;
+  --pal-sidebar-strong: #fffdf4;
+  --pal-sidebar-line: #32435a;
+}
+:root[data-color='violet-lime'] {
+  --pal-main: #241b4d;
+  --pal-accent: #c8f03a;
+  --pal-soft: #f1eefc;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #f7f5fd;
+  --pal-sidebar-strong: #fbfafe;
+  --pal-sidebar-line: #473f69;
+}
+:root[data-color='charcoal-orange'] {
+  --pal-main: #1c1c1e;
+  --pal-accent: #ff7a1a;
+  --pal-soft: #fff1e6;
+  --pal-main-fg: #ffffff;
+  --pal-accent-fg: #111111;
+  --pal-soft-fg: #1f2024;
+  --pal-sidebar-text: #fff7f0;
+  --pal-sidebar-strong: #fffbf8;
+  --pal-sidebar-line: #404042;
+}
 
 @layer base {
   * {
