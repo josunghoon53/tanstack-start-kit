@@ -4,7 +4,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { ColorThemePicker } from './color-theme-picker'
 import { useLocaleStore } from '@/i18n/locale-store'
 
-const KO_NAMES = ['톡톡 튀는 스타일', '선명한 레드 포인트']
+const KO_NAMES = [
+  '톡톡 튀는 스타일',
+  '선명한 레드 포인트',
+  '네이비 옐로',
+  '바이올렛 라임',
+  '차콜 오렌지',
+]
 
 // 지금은 없는 예전 프리셋 id. 저장돼 있으면 기본(무채색)으로 돌아가야 한다.
 const REMOVED_PRESETS = [
@@ -61,7 +67,14 @@ describe('ColorThemePicker', () => {
     useLocaleStore.setState({ locale: 'en' })
     render(<ColorThemePicker />)
 
-    for (const label of ['Default (neutral)', 'Pop', 'Pop · Red accent']) {
+    for (const label of [
+      'Default (neutral)',
+      'Pop',
+      'Pop · Red accent',
+      'Navy Yellow',
+      'Violet Lime',
+      'Charcoal Orange',
+    ]) {
       expect(screen.getByRole('radio', { name: label })).toBeInTheDocument()
     }
   })
@@ -102,7 +115,10 @@ describe('ColorThemePicker', () => {
 
     // 처음(기본)에서 왼쪽으로 가면 마지막 프리셋으로 돈다.
     await user.keyboard('{ArrowLeft}{ArrowLeft}')
-    expect(document.documentElement).toHaveAttribute('data-color', 'pop-red')
+    expect(document.documentElement).toHaveAttribute(
+      'data-color',
+      'charcoal-orange',
+    )
   })
 
   it('clears the attribute and storage when the default is chosen again', async () => {
