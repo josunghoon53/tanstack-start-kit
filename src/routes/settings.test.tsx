@@ -72,7 +72,7 @@ describe('Settings route', () => {
     for (const label of [
       '기본(무채색)',
       '톡톡 튀는 스타일',
-      '맑고 깨끗한 분위기',
+      '선명한 레드 포인트',
     ]) {
       expect(screen.getByRole('radio', { name: label })).toBeInTheDocument()
     }

@@ -16,6 +16,7 @@ function contrast(a: string, b: string) {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
 }
 
+// THEME_COLORS 전부를 돈다 — 프리셋을 추가하면 아래 검사가 자동으로 그 프리셋에도 걸린다.
 const presets = THEME_COLORS.map((id) => [id, PALETTE_PRESETS[id]] as const)
 
 describe('palette presets', () => {
@@ -63,7 +64,7 @@ describe('palette contrast (WCAG)', () => {
   it.each(presets)(
     '%s: sidebar strong text beats the inactive text and is at least 4.5:1 on the hover surface',
     (_, p) => {
-      // 목표는 7:1이지만 주색이 밝은 프리셋(sweet: 흰색도 6.0:1)은 흰색까지만 올라간다.
+      // 목표는 7:1이지만 주색이 밝은 프리셋은 흰색까지만 올라갈 수 있어 7:1을 강제하지 않는다.
       expect(contrast(p.sidebarStrong, p.main)).toBeGreaterThanOrEqual(
         contrast(p.sidebarText, p.main),
       )
